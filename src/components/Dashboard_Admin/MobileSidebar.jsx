@@ -1,10 +1,10 @@
 import React from 'react';
 import { HiX, HiPhone, HiLogout, HiMenu, HiChevronLeft } from 'react-icons/hi';
-import flatDetailsIcon from '../assets/flat details.png';
-import currentDuesIcon from '../assets/current dues.png';
-import paymentIcon from '../assets/payment.png';
-import documentsIcon from '../assets/documents.png';
-import userImageBig from '../assets/user Image big.png';
+import flatDetailsIcon from '../../assets/flat details.png';
+import currentDuesIcon from '../../assets/current dues.png';
+import paymentIcon from '../../assets/payment.png';
+import documentsIcon from '../../assets/documents.png';
+import userImageBig from '../../assets/user Image big.png';
 
 const MobileSidebar = ({ isOpen, onClose, activePage, setActivePage, onLogout, onCustomerCareOpen }) => {
   const menuItems = [

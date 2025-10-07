@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { HiBell, HiPhone, HiUser, HiLogout, HiCog, HiDocumentText } from 'react-icons/hi';
-import TheArtLogo from '../assets/TheArtLogo.png';
-import Hamburger from '../assets/Hamburger.png';
-import flatDetailsIcon from '../assets/flat details.png';
-import currentDuesIcon from '../assets/current dues.png';
-import paymentIcon from '../assets/payment.png';
-import documentsIcon from '../assets/documents.png';
+import TheArtLogo from '../../assets/TheArtLogo.png';
+import Hamburger from '../../assets/Hamburger.png';
+import flatDetailsIcon from '../../assets/flat details.png';
+import currentDuesIcon from '../../assets/current dues.png';
+import paymentIcon from '../../assets/payment.png';
+import documentsIcon from '../../assets/documents.png';
 import PasswordChangePopup from './PasswordChangePopup';
 import ConstructionUpdatesPopup from './ConstructionUpdatesPopup';
 import MyDocumentsPopup from './MyDocumentsPopup';
@@ -65,7 +65,7 @@ const Navbar = ({
 
   return (
     <nav
-      className="bg-[#E8F3EB]"
+      className="relative"
       style={{
         height: '7.25rem',
         position: 'absolute',
@@ -134,7 +134,7 @@ const Navbar = ({
               height: '2.8125rem',
               background:
                 activePage === 'flatDetails'
-                  ? 'linear-gradient(0deg, #000000 0%, #666666 100%)'
+                  ? 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)'
                   : undefined,
             }}
           >
@@ -162,7 +162,7 @@ const Navbar = ({
               height: '2.8125rem',
               background:
                 activePage === 'currentDues'
-                  ? 'linear-gradient(0deg, #000000 0%, #666666 100%)'
+                  ? 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)'
                   : undefined,
             }}
           >
@@ -190,7 +190,7 @@ const Navbar = ({
               height: '2.8125rem',
               background:
                 activePage === 'payment'
-                  ? 'linear-gradient(0deg, #000000 0%, #666666 100%)'
+                  ? 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)'
                   : undefined,
             }}
           >
@@ -218,7 +218,7 @@ const Navbar = ({
               height: '2.8125rem',
               background:
                 activePage === 'documents'
-                  ? 'linear-gradient(0deg, #000000 0%, #666666 100%)'
+                  ? 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)'
                   : undefined,
             }}
           >

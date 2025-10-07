@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HiStar } from 'react-icons/hi';
-import { fetchUpdates } from '../api/mockData';
+import { fetchUpdates } from '../../api/mockData';
 
 const Updates = () => {
   const [loading, setLoading] = useState(true);

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { HiX, HiUser, HiChat, HiCalendar, HiClock, HiPhone } from 'react-icons/hi';
-import { submitCustomerCareMessage } from '../api/mockData';
+import { submitCustomerCareMessage } from '../../api/mockData';
 
 const CustomerCarePopup = ({ isOpen, onClose }) => {
   const [user, setUser] = useState('');

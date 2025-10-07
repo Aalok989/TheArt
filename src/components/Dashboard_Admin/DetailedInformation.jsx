@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { HiUser, HiCalendar, HiLocationMarker } from 'react-icons/hi';
-import circleIcon from '../assets/circle.png';
-import userIcon from '../assets/user.png';
-import user2Icon from '../assets/user 2.png';
-import calIcon from '../assets/cal.png';
-import addressIcon from '../assets/address.png';
-import { fetchDetailedInformation } from '../api/mockData';
+import circleIcon from '../../assets/circle.png';
+import userIcon from '../../assets/user.png';
+import user2Icon from '../../assets/user 2.png';
+import calIcon from '../../assets/cal.png';
+import addressIcon from '../../assets/address.png';
+import { fetchDetailedInformation } from '../../api/mockData';
 
 const DetailedInformation = () => {
   const [detailInfoLoaded, setDetailInfoLoaded] = useState(false);

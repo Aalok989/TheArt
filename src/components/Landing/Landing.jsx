@@ -15,19 +15,24 @@ import {
   HiOutlineSquare3Stack3D,
   HiOutlineMapPin
 } from "react-icons/hi2";
+import LoginPopup from './LoginPopup';
+import FeaturesPopup from './FeaturesPopup';
+import ContactsPopup from './ContactsPopup';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCube, Pagination, Autoplay, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/effect-cube';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-import '../styles/property-swiper.css';
+import '../../styles/property-swiper.css';
 
-function Dashboard({ onNavigateToLogin }) {
+function Landing({ onLogin }) {
   const [activeTab, setActiveTab] = useState('home');
   const [showExploreMenu, setShowExploreMenu] = useState(false);
-  const [selectedPropertyType, setSelectedPropertyType] = useState('buy');
-  const [showBuyOptions, setShowBuyOptions] = useState(false);
+  const [userRole, setUserRole] = useState('user'); // 'user' or 'builder'
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [showFeaturesPopup, setShowFeaturesPopup] = useState(false);
+  const [showContactsPopup, setShowContactsPopup] = useState(false);
 
   // Dummy property data for cube swiper
   const propertyCards = [
@@ -90,6 +95,11 @@ function Dashboard({ onNavigateToLogin }) {
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+    if (tab === 'features') {
+      setShowFeaturesPopup(true);
+    } else if (tab === 'contacts') {
+      setShowContactsPopup(true);
+    }
     console.log(`Clicked on ${tab}`);
   };
 
@@ -103,21 +113,24 @@ function Dashboard({ onNavigateToLogin }) {
   };
 
   const handleUserClick = () => {
-    console.log('User profile clicked - navigating to login');
-    if (onNavigateToLogin) {
-      onNavigateToLogin();
+    console.log('User profile clicked - showing login popup');
+    setShowLoginPopup(true);
+  };
+
+  // Toggle user role for demonstration (you can remove this later)
+  const toggleUserRole = () => {
+    setUserRole(userRole === 'user' ? 'builder' : 'user');
+  };
+
+  // Handle successful login
+  const handleLoginSuccess = (token) => {
+    console.log('User logged in successfully with token:', token);
+    // Call the same onLogin function that the Login page uses
+    if (onLogin) {
+      onLogin(token);
     }
   };
 
-  const handlePropertyTypeClick = (type) => {
-    setSelectedPropertyType(type);
-    console.log(`Property type changed to: ${type}`);
-  };
-
-  const handleBuyVillaClick = () => {
-    setShowBuyOptions(!showBuyOptions);
-    console.log('Buy Villa dropdown toggled');
-  };
 
   return (
     <div className="h-screen bg-white flex flex-col font-outfit">
@@ -137,25 +150,27 @@ function Dashboard({ onNavigateToLogin }) {
           <nav className="hidden md:flex items-center space-x-8">
             <button 
               onClick={() => handleTabClick('home')}
-              className={`px-4 py-2 rounded-full flex items-center space-x-2 transition-colors ${
-                activeTab === 'home' ? 'bg-black text-white' : 'text-black hover:bg-gray-100'
+              className={`px-4 py-2 rounded-full flex items-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 ${
+                activeTab === 'home' ? 'text-white' : 'text-black hover:bg-gray-100'
               }`}
+              style={activeTab === 'home' ? {background: 'linear-gradient(180deg, #FC7117, #96430E)'} : {}}
             >
               <HiHome className="w-4 h-4" />
               <span>Home</span>
             </button>
-            <button 
-              onClick={handleExploreClick}
-              className="text-black flex items-center space-x-1 hover:bg-gray-100 px-4 py-2 rounded-full transition-colors relative"
-            >
-              <span>Explore</span>
-              <HiChevronDown className={`w-4 h-4 transition-transform duration-150 ease-out ${showExploreMenu ? 'rotate-180' : ''}`} />
+              <button 
+                onClick={handleExploreClick}
+                className="flex items-center space-x-1 hover:bg-gray-100 px-4 py-2 rounded-full transition-colors relative"
+                style={showExploreMenu ? {background: 'linear-gradient(180deg, #FC7117, #96430E)', backgroundClip: 'text', color: 'transparent'} : {}}
+              >
+              <span className={showExploreMenu ? '' : 'text-black'}>Explore</span>
+              <HiChevronDown className={`w-4 h-4 transition-transform duration-150 ease-out ${showExploreMenu ? 'rotate-180 text-orange-500' : 'text-black'}`} />
               <div className={`absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg py-2 min-w-48 z-50 transition-all duration-150 ease-out transform ${
                 showExploreMenu ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
               }`}>
-                <div className="block w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors cursor-pointer">Projects</div>
-                <div className="block w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors cursor-pointer">Locations</div>
-                <div className="block w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors cursor-pointer">Agents</div>
+                <div className="block w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors cursor-pointer text-gray-700">Projects</div>
+                <div className="block w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors cursor-pointer text-gray-700">Locations</div>
+                <div className="block w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors cursor-pointer text-gray-700">Agents</div>
               </div>
             </button>
             {/* Grouped Navigation Links */}
@@ -163,24 +178,18 @@ function Dashboard({ onNavigateToLogin }) {
               <button 
                 onClick={() => handleTabClick('features')}
                 className={`transition-colors ${
-                  activeTab === 'features' ? 'text-black font-semibold' : 'text-gray-600 hover:text-black'
+                  activeTab === 'features' ? 'font-semibold' : 'text-gray-600 hover:text-black'
                 }`}
+                style={activeTab === 'features' ? {background: 'linear-gradient(180deg, #FC7117, #96430E)', backgroundClip: 'text', color: 'transparent'} : {}}
               >
                 Features
               </button>
               <button 
-                onClick={() => handleTabClick('mission')}
-                className={`transition-colors ${
-                  activeTab === 'mission' ? 'text-black font-semibold' : 'text-gray-600 hover:text-black'
-                }`}
-              >
-                Our Mission
-              </button>
-              <button 
                 onClick={() => handleTabClick('contacts')}
                 className={`transition-colors ${
-                  activeTab === 'contacts' ? 'text-black font-semibold' : 'text-gray-600 hover:text-black'
+                  activeTab === 'contacts' ? 'font-semibold' : 'text-gray-600 hover:text-black'
                 }`}
+                style={activeTab === 'contacts' ? {background: 'linear-gradient(180deg, #FC7117, #96430E)', backgroundClip: 'text', color: 'transparent'} : {}}
               >
                 Contacts
               </button>
@@ -189,6 +198,12 @@ function Dashboard({ onNavigateToLogin }) {
 
            {/* Right Icons */}
            <div className="flex items-center space-x-4">
+             <button 
+               onClick={toggleUserRole}
+               className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded-full transition-colors"
+             >
+               {userRole === 'user' ? 'Switch to Builder' : 'Switch to User'}
+             </button>
              <button 
                onClick={handleNotificationClick}
                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -218,91 +233,80 @@ function Dashboard({ onNavigateToLogin }) {
             }}
           />
 
-          {/* Left Cards */}
-          <div className="absolute left-4 md:left-8 bottom-8 space-y-2 z-10 max-w-xs md:max-w-none overflow-y-auto max-h-[80vh]">
-            {/* First Card - Find Your Dream Property Based On Time */}
-            <div className="bg-gray-700/60 text-white p-3 rounded-full backdrop-blur-sm w-full max-w-md">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center space-x-2">
-                  <div className="bg-orange-500 p-1 rounded">
-                    <HiCalendar className="w-3 h-3 text-white" />
+          {/* User Dashboard Cards - Only show on home tab and when popups are closed */}
+          {activeTab === 'home' && !showLoginPopup && !showFeaturesPopup && !showContactsPopup && (
+            <div className="absolute left-4 md:left-8 bottom-8 space-y-2 z-10 max-w-xs md:max-w-none overflow-y-auto max-h-[80vh]">
+              {userRole === 'user' ? (
+                /* Take a Tour Card for Regular Users */
+                <div className="bg-gray-100/90 backdrop-blur-sm rounded-2xl shadow-lg p-6 w-60 md:w-80">
+                   {/* Take a Tour Section */}
+                   <div className="flex items-center justify-between mb-4">
+                     <span className="text-gray-800 text-4xl font-medium font-poly">Take a Tour</span>
+                     <img src="/src/assets/Larrow.png" alt="Arrow" className="w-16 h-16" />
+                   </div>
+                  
+                   {/* Dashed Separator */}
+                   <div className="border-t-2 border-dashed border-gray-300 mb-6"></div>
+                   
+                   {/* Book a Demo Button - Right aligned */}
+                   <div className="flex justify-end">
+                     <button 
+                       onClick={() => setShowContactsPopup(true)}
+                       className="py-3 px-4 rounded-full text-white font-semibold text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-poppins w-40" 
+                       style={{background: 'linear-gradient(180deg, #FC7117, #96430E)'}}
+                     >
+                       Book a Demo
+                     </button>
+                   </div>
+                </div>
+              ) : (
+                /* Builder Dashboard Card */
+                <div className="space-y-2 w-80 md:w-96">
+                  {/* Management Buttons */}
+                  <div className="flex space-x-2">
+                    <button className="flex-1 text-white px-4 py-3 rounded-full flex items-center justify-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105" style={{background: 'linear-gradient(180deg, #FC7117, #96430E)'}}>
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-white rounded-full"></div>
+                        <div className="w-2 h-2 bg-white rounded-full"></div>
+                      </div>
+                      <span className="text-sm font-medium">Manage Staff</span>
+                    </button>
+                    <button className="flex-1 bg-gray-400 hover:bg-gray-500 text-white px-4 py-3 rounded-full flex items-center justify-center space-x-2 transition-colors">
+                      <HiHome className="w-4 h-4" />
+                      <span className="text-sm font-medium">Manage Properties</span>
+                    </button>
                   </div>
-                  <span className="text-sm">Find Your Dream Property Based On Time</span>
+
+                  {/* View Reports Section */}
+                  <div className="bg-gray-100/90 backdrop-blur-sm rounded-2xl shadow-lg pt-8 px-8 pb-4 relative">
+                    {/* Plus Icon */}
+                    <button className="absolute top-6 right-6 w-12 h-12 flex items-center justify-center transition-colors">
+                      <HiPlus className="w-10 h-10 text-gray-700" />
+                    </button>
+                    
+                    <h2 className="text-gray-800 mb-3 font-Poly font-regular" style={{fontSize: '36px', lineHeight: '1.1'}}>
+                      View<br />Reports
+                    </h2>
+                    <p className="text-gray-600 text-base mb-2" style={{fontSize: '14px'}}>Manage your property business</p>
+                    
+                    {/* Dashed Separator */}
+                    <div className="border-t-2 border-dashed border-gray-300 mb-4"></div>
+                    
+                    {/* Go to Dashboard Button */}
+                    <div className="flex justify-center">
+                      <button className="py-3 px-6 rounded-full text-white font-semibold text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-poppins w-96" style={{background: 'linear-gradient(180deg, #FC7117, #96430E)'}}>
+                        Go to Dashboard
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-white/20 px-2 py-1 rounded-full text-xs">
-                  28 - 31 August 2024
-                </div>
-              </div>
+              )}
             </div>
+          )}
 
-            {/* Second Card - Property Search */}
-            <div className="bg-gray-700/60 text-white p-4 rounded-full backdrop-blur-sm w-full max-w-md">
-              <div className="flex space-x-2 items-center">
-                <button 
-                  onClick={handleBuyVillaClick}
-                  className={`px-3 py-2 rounded-full flex-1 flex items-center justify-center space-x-1 text-sm transition-colors relative ${
-                    showBuyOptions 
-                      ? 'bg-orange-500 text-white' 
-                      : 'bg-white/20 text-white hover:bg-white/30'
-                  }`}
-                >
-                  <HiHome className="w-4 h-4" />
-                  <span>Buy Villa</span>
-                  <HiChevronRight className={`w-3 h-3 transition-transform duration-150 ease-out ${showBuyOptions ? 'rotate-90' : ''}`} />
-                </button>
-                <button 
-                  onClick={() => handlePropertyTypeClick('rent')}
-                  className="bg-white/20 text-white px-3 py-2 rounded-full flex-1 flex items-center justify-center space-x-1 text-sm hover:bg-white/30 transition-colors"
-                >
-                  <HiHome className="w-4 h-4" />
-                  <span>Rent Villa</span>
-                  <HiChevronRight className="w-3 h-3" />
-                </button>
-                <button className="bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
-                  <HiChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Third Card - Find Nearby Luxurious Estates - Only show when Buy Villa dropdown is open */}
-            {showBuyOptions && (
-              <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-4xl font-outfit font-ExtraLight 200 text-black leading-tight">
-                    <div>Find Nearby</div>
-                    <div>Luxurious Estates</div>
-                  </h3>
-                  <HiPlus className="w-12 h-12 text-gray-600 hover:text-gray-800 cursor-pointer" />
-                </div>
-
-                <p className="text-gray-600 text-sm mb-4">
-                  Enhances the experience of finding and dealing luxury houses
-                </p>
-
-                <div className="flex justify-between mb-4">
-                  <button className="border border-gray-300 px-3 py-1 rounded-full text-sm flex items-center space-x-1 hover:bg-gray-50 transition-colors">
-                    <HiHome className="w-4 h-4 text-gray-500" />
-                    <span>3-Bedroom</span>
-                  </button>
-                  <button className="border border-gray-300 px-3 py-1 rounded-full text-sm flex items-center space-x-1 hover:bg-gray-50 transition-colors">
-                    <HiHome className="w-4 h-4 text-gray-500" />
-                    <span>2-Bathroom</span>
-                  </button>
-                  <button className="border border-gray-300 px-3 py-1 rounded-full text-sm flex items-center space-x-1 hover:bg-gray-50 transition-colors">
-                    <HiHome className="w-4 h-4 text-gray-500" />
-                    <span>Villa</span>
-                  </button>
-                </div>
-
-                <button className="bg-orange-500 hover:bg-orange-600 text-white w-full py-3 rounded-full font-semibold transition-colors">
-                  Search Recent
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Right Property Cards Cube Swiper */}
-          <div className="absolute right-16 md:right-20 bottom-8 z-10 w-72 md:w-80">
+          {/* Right Property Cards Cube Swiper - Only show on home tab and when popups are closed */}
+          {activeTab === 'home' && !showLoginPopup && !showFeaturesPopup && !showContactsPopup && (
+            <div className="absolute right-16 md:right-20 bottom-8 z-10 w-72 md:w-80">
             {/* Custom Navigation Arrows - Outside Card But Inside Background */}
             <button className="swiper-button-next-custom absolute -left-12 top-1/2 transform -translate-y-1/2 z-20 bg-white/90 hover:bg-white text-black rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition-all duration-200 hover:shadow-xl">
               <HiChevronLeft className="w-5 h-5" />
@@ -406,11 +410,37 @@ function Dashboard({ onNavigateToLogin }) {
                 </SwiperSlide>
               ))}
             </Swiper>
-          </div>
+            </div>
+          )}
         </div>
       </main>
+
+      {/* Login Popup */}
+      <LoginPopup 
+        isOpen={showLoginPopup} 
+        onClose={() => setShowLoginPopup(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
+
+      {/* Features Popup */}
+      <FeaturesPopup 
+        isOpen={showFeaturesPopup} 
+        onClose={() => {
+          setShowFeaturesPopup(false);
+          setActiveTab('home'); // Reset to home when closing
+        }} 
+      />
+
+      {/* Contacts Popup */}
+      <ContactsPopup 
+        isOpen={showContactsPopup} 
+        onClose={() => {
+          setShowContactsPopup(false);
+          setActiveTab('home'); // Reset to home when closing
+        }} 
+      />
     </div>
   );
 }
 
-export default Dashboard;
+export default Landing;

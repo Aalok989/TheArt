@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HiX, HiSearch, HiSortDescending, HiDocumentText } from 'react-icons/hi';
-import { fetchMyDocuments } from '../api/mockData';
+import { fetchMyDocuments } from '../../api/mockData';
 
 const MyDocumentsPopup = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState(true);

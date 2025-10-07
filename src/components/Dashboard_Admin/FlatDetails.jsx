@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HiChevronDown, HiSearch } from 'react-icons/hi';
-import { fetchFlatDetails } from '../api/mockData';
+import { fetchFlatDetails } from '../../api/mockData';
 
 const FlatDetails = () => {
   const [isLoaded, setIsLoaded] = useState(false);

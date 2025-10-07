@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HiX, HiCalendar, HiLocationMarker, HiClock, HiCheckCircle, HiExclamationCircle, HiInformationCircle, HiEye } from 'react-icons/hi';
-import { fetchConstructionUpdates } from '../api/mockData';
+import { fetchConstructionUpdates } from '../../api/mockData';
 
 const ConstructionUpdatesPopup = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState(true);

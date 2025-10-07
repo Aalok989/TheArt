@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HiChevronDown, HiSearch } from 'react-icons/hi';
-import { fetchCurrentDues } from '../api/mockData';
+import { fetchCurrentDues } from '../../api/mockData';
 
 const CurrentDues = () => {
   const [isLoaded, setIsLoaded] = useState(false);

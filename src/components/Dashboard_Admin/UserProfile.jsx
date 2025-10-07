@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import userImageBig from '../assets/user Image big.png';
-import emailIcon from '../assets/Mail.png';
-import phoneIcon from '../assets/phone.png';
-import whatsappIcon from '../assets/whatsapp..png';
-import EmailIcon from '../assets/email.png';
-import arrowIcon from '../assets/arrow.png';
-import { fetchUserProfile } from '../api/mockData';
+import userImageBig from '../../assets/user Image big.png';
+import emailIcon from '../../assets/Mail.png';
+import phoneIcon from '../../assets/phone.png';
+import whatsappIcon from '../../assets/whatsapp..png';
+import EmailIcon from '../../assets/email.png';
+import arrowIcon from '../../assets/arrow.png';
+import { fetchUserProfile } from '../../api/mockData';
 
 const UserProfile = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -123,8 +123,11 @@ const UserProfile = () => {
           {/* Email Icon */}
           <div
             className={`cursor-pointer hover:opacity-80 transition-all duration-200 relative w-[2.5rem] h-[2.5rem] lg:w-[3.125rem] lg:h-[3.125rem] ${
-              activeContact === 'email' ? 'bg-black rounded-full' : ''
+              activeContact === 'email' ? 'rounded-full contact-icon-active' : ''
             }`}
+            style={{
+              backgroundColor: activeContact === 'email' ? '#FC7117' : 'transparent'
+            }}
             onClick={() => handleContactClick('email')}
           >
             <img
@@ -145,8 +148,11 @@ const UserProfile = () => {
           {/* Phone Icon */}
           <div
             className={`cursor-pointer hover:opacity-80 transition-all duration-200 relative w-[2.5rem] h-[2.5rem] lg:w-[3.125rem] lg:h-[3.125rem] ${
-              activeContact === 'phone' ? 'bg-black rounded-full' : ''
+              activeContact === 'phone' ? 'rounded-full contact-icon-active' : ''
             }`}
+            style={{
+              backgroundColor: activeContact === 'phone' ? '#FC7117' : 'transparent'
+            }}
             onClick={() => handleContactClick('phone')}
           >
             <img
@@ -167,8 +173,11 @@ const UserProfile = () => {
           {/* WhatsApp Icon */}
           <div
             className={`cursor-pointer hover:opacity-80 transition-all duration-200 relative w-[2.5rem] h-[2.5rem] lg:w-[3.125rem] lg:h-[3.125rem] ${
-              activeContact === 'whatsapp' ? 'bg-black rounded-full' : ''
+              activeContact === 'whatsapp' ? 'rounded-full contact-icon-active' : ''
             }`}
+            style={{
+              backgroundColor: activeContact === 'whatsapp' ? '#FC7117' : 'transparent'
+            }}
             onClick={() => handleContactClick('whatsapp')}
           >
             <img

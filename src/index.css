@@ -446,9 +446,22 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
 }
 
-html {
-  font-size: 16px;
+/* Contact Icon Active State - More Specific Selectors */
+.contact-icon-active {
+  background-color: #FC7117 !important;
 }
-:root {
-  font-size: calc(16px / var(--device-pixel-ratio, 1));
+
+/* Even more specific selector to override any conflicts */
+div.contact-icon-active {
+  background-color: #FC7117 !important;
+}
+
+/* Force override for any potential conflicts */
+div[class*="contact-icon-active"] {
+  background-color: #FC7117 !important;
+}
+
+/* Ensure contact icons use orange background */
+.contact-icon-active.bg-orange-500 {
+  background-color: #FC7117 !important;
 }
