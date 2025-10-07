@@ -123,10 +123,10 @@ const UserProfile = () => {
           {/* Email Icon */}
           <div
             className={`cursor-pointer hover:opacity-80 transition-all duration-200 relative w-[2.5rem] h-[2.5rem] lg:w-[3.125rem] lg:h-[3.125rem] ${
-              activeContact === 'email' ? 'rounded-full contact-icon-active' : ''
+              activeContact === 'email' ? 'rounded-full' : ''
             }`}
             style={{
-              backgroundColor: activeContact === 'email' ? '#FC7117' : 'transparent'
+              backgroundColor: activeContact === 'email' ? '#000000' : 'transparent'
             }}
             onClick={() => handleContactClick('email')}
           >
@@ -148,10 +148,10 @@ const UserProfile = () => {
           {/* Phone Icon */}
           <div
             className={`cursor-pointer hover:opacity-80 transition-all duration-200 relative w-[2.5rem] h-[2.5rem] lg:w-[3.125rem] lg:h-[3.125rem] ${
-              activeContact === 'phone' ? 'rounded-full contact-icon-active' : ''
+              activeContact === 'phone' ? 'rounded-full' : ''
             }`}
             style={{
-              backgroundColor: activeContact === 'phone' ? '#FC7117' : 'transparent'
+              backgroundColor: activeContact === 'phone' ? '#000000' : 'transparent'
             }}
             onClick={() => handleContactClick('phone')}
           >
@@ -173,10 +173,10 @@ const UserProfile = () => {
           {/* WhatsApp Icon */}
           <div
             className={`cursor-pointer hover:opacity-80 transition-all duration-200 relative w-[2.5rem] h-[2.5rem] lg:w-[3.125rem] lg:h-[3.125rem] ${
-              activeContact === 'whatsapp' ? 'rounded-full contact-icon-active' : ''
+              activeContact === 'whatsapp' ? 'rounded-full' : ''
             }`}
             style={{
-              backgroundColor: activeContact === 'whatsapp' ? '#FC7117' : 'transparent'
+              backgroundColor: activeContact === 'whatsapp' ? '#000000' : 'transparent'
             }}
             onClick={() => handleContactClick('whatsapp')}
           >

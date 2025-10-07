@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ChatBotPage from './ChatBotPage';
-import ChatBotImage from '../../assets/ChatBot.png';
+import ChatBotImage from '../assets/ChatBot.png';
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);

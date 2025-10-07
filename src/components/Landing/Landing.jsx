@@ -100,20 +100,16 @@ function Landing({ onLogin }) {
     } else if (tab === 'contacts') {
       setShowContactsPopup(true);
     }
-    console.log(`Clicked on ${tab}`);
   };
 
   const handleExploreClick = () => {
     setShowExploreMenu(!showExploreMenu);
-    console.log('Explore menu toggled');
   };
 
   const handleNotificationClick = () => {
-    console.log('Notification clicked');
   };
 
   const handleUserClick = () => {
-    console.log('User profile clicked - showing login popup');
     setShowLoginPopup(true);
   };
 
@@ -124,7 +120,6 @@ function Landing({ onLogin }) {
 
   // Handle successful login
   const handleLoginSuccess = (token) => {
-    console.log('User logged in successfully with token:', token);
     // Call the same onLogin function that the Login page uses
     if (onLogin) {
       onLogin(token);

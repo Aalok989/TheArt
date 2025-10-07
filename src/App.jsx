@@ -9,6 +9,9 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return localStorage.getItem('isLoggedIn') === 'true';
   });
+  const [userRole, setUserRole] = useState(() => {
+    return localStorage.getItem('userRole') || 'user'; // Default to 'user' role
+  });
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationKey, setAnimationKey] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -31,7 +34,6 @@ function App() {
       const pixelRatio = window.devicePixelRatio || 1;
       const adjustedWidth = window.innerWidth * pixelRatio;
       const mobile = adjustedWidth < 1024;
-      console.log('Pixel Ratio:', pixelRatio, 'Window Width:', window.innerWidth, 'Adjusted Width:', adjustedWidth, 'Is Mobile:', mobile);
       setIsMobile(mobile);
       setActivePage(prevActivePage => mobile ? null : (prevActivePage || 'flatDetails'));
       document.documentElement.style.setProperty('--device-pixel-ratio', pixelRatio);
@@ -121,6 +123,13 @@ function App() {
     setIsCustomerCarePopupOpen(true);
   };
 
+  // Temporary function to test role switching
+  const toggleUserRole = () => {
+    const newRole = userRole === 'user' ? 'admin' : 'user';
+    setUserRole(newRole);
+    localStorage.setItem('userRole', newRole);
+  };
+
 
   return (
     <Routes>
@@ -135,7 +144,21 @@ function App() {
         path="/dashboard" 
         element={
           isLoggedIn ? (
-            renderDashboard()
+            <Dashboard
+              activePage={activePage}
+              onPageChange={handlePageChange}
+              onLogout={handleLogout}
+              onSidebarToggle={handleSidebarToggle}
+              onUpdatesToggle={handleUpdatesToggle}
+              isSidebarOpen={isSidebarOpen}
+              isUpdatesOpen={isUpdatesOpen}
+              isCustomerCarePopupOpen={isCustomerCarePopupOpen}
+              onCustomerCareClose={() => setIsCustomerCarePopupOpen(false)}
+              isAnimating={isAnimating}
+              animationKey={animationKey}
+              userRole={userRole}
+              onRoleToggle={toggleUserRole}
+            />
           ) : (
             <Landing onLogin={handleLogin} />
           )
@@ -145,7 +168,21 @@ function App() {
         path="/dashboard/:page" 
         element={
           isLoggedIn ? (
-            renderDashboard()
+            <Dashboard
+              activePage={activePage}
+              onPageChange={handlePageChange}
+              onLogout={handleLogout}
+              onSidebarToggle={handleSidebarToggle}
+              onUpdatesToggle={handleUpdatesToggle}
+              isSidebarOpen={isSidebarOpen}
+              isUpdatesOpen={isUpdatesOpen}
+              isCustomerCarePopupOpen={isCustomerCarePopupOpen}
+              onCustomerCareClose={() => setIsCustomerCarePopupOpen(false)}
+              isAnimating={isAnimating}
+              animationKey={animationKey}
+              userRole={userRole}
+              onRoleToggle={toggleUserRole}
+            />
           ) : (
             <Landing onLogin={handleLogin} />
           )
@@ -153,24 +190,6 @@ function App() {
       />
     </Routes>
   );
-
-  const renderDashboard = () => {
-    return (
-      <Dashboard
-        activePage={activePage}
-        onPageChange={handlePageChange}
-        onLogout={handleLogout}
-        onSidebarToggle={handleSidebarToggle}
-        onUpdatesToggle={handleUpdatesToggle}
-        isSidebarOpen={isSidebarOpen}
-        isUpdatesOpen={isUpdatesOpen}
-        isCustomerCarePopupOpen={isCustomerCarePopupOpen}
-        onCustomerCareClose={() => setIsCustomerCarePopupOpen(false)}
-        isAnimating={isAnimating}
-        animationKey={animationKey}
-      />
-    );
-  };
 }
 
 export default App;
