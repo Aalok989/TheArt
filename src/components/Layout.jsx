@@ -13,14 +13,16 @@ import CustomerCarePopup from './Dashboard_User/CustomerCarePopup';
 import PasswordChangePopup from './Dashboard_User/PasswordChangePopup';
 import ConstructionUpdatesPopup from './Dashboard_User/ConstructionUpdatesPopup';
 import MyDocumentsPopup from './Dashboard_User/MyDocumentsPopup';
-import TheArtLogo from '../assets/TheArtLogo.png';
+import FlatStatus from './Dashboard_Admin/FlatStatus';
+import Report from './Dashboard_Admin/Report';
+import Proprite from '../assets/proprite.png';
 import Hamburger from '../assets/Hamburger.png';
 import flatDetailsIcon from '../assets/flat details.png';
 import currentDuesIcon from '../assets/current dues.png';
 import paymentIcon from '../assets/payment.png';
 import documentsIcon from '../assets/documents.png';
 
-const Dashboard = ({ 
+const Layout = ({ 
   activePage, 
   onPageChange, 
   onLogout, 
@@ -146,6 +148,36 @@ const Dashboard = ({
       return null;
     }
 
+    // Admin components
+    if (userRole === 'admin') {
+      switch (activePage) {
+        case 'overview':
+          return (
+            <div className={`page-container h-full flex gap-6 ${isAnimating ? 'opacity-50' : ''}`}>
+              <div className="basis-[60%] min-w-0 bg-white rounded-xl shadow-sm border border-gray-200">
+                <FlatStatus key={`flatStatus-${animationKey}`} />
+              </div>
+              <div className="basis-[40%] min-w-0 bg-white rounded-xl shadow-sm border border-gray-200">
+                <Report key={`report-${animationKey}`} />
+              </div>
+            </div>
+          );
+        case 'banking':
+          return <div className={`page-container h-full flex flex-col ${isAnimating ? 'opacity-50' : ''}`}>
+            <div className="text-center py-8 text-gray-500">Banking component coming soon...</div>
+          </div>;
+        case 'projects':
+          return <div className={`page-container h-full flex flex-col ${isAnimating ? 'opacity-50' : ''}`}>
+            <div className="text-center py-8 text-gray-500">Projects component coming soon...</div>
+          </div>;
+        case 'documents':
+          return <Documents key={`documents-${animationKey}`} />;
+        default:
+          return null;
+      }
+    }
+
+    // User components
     const Component = (() => {
       switch (activePage) {
         case 'flatDetails':
@@ -225,7 +257,7 @@ const Dashboard = ({
 
             {/* Logo */}
             <div className="flex-shrink-0">
-              <img src={TheArtLogo} alt="The Art" className="h-[3.5rem] w-auto" />
+              <img src={Proprite} alt="The Art" className="h-[3.5rem] w-auto" />
             </div>
           </div>
 
@@ -384,18 +416,18 @@ const Dashboard = ({
 
       <div className="overflow-hidden h-screen pt-[7.25rem] pb-[2.3125rem] px-11">
         <div className="lg:hidden h-full flex flex-col space-y-3 relative">
-          {!activePage && (
+          {userRole === 'user' && !activePage && (
             <div className="flex-shrink-0 h-[calc(30vh-2.1875rem)]">
               <UserProfile />
             </div>
           )}
-          {!activePage && (
+          {userRole === 'user' && !activePage && (
             <div className="flex-1 min-h-0">
               <DetailedInformation />
             </div>
           )}
-          {activePage && (
-            <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col min-h-0 overflow-hidden">
+          {(activePage || userRole === 'admin') && (
+            <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
               {renderMiddlePanel()}
             </div>
           )}
@@ -423,26 +455,36 @@ const Dashboard = ({
         </div>
 
         <div className="hidden lg:flex h-full items-center justify-center">
-          <div className="flex gap-[0.9375rem]">
-            <div className="flex flex-col w-[29.875rem] gap-[0.9375rem]">
-              <div className="h-[16.125rem]">
-                <UserProfile />
-              </div>
-              <div className="h-[32.75rem]">
-                <DetailedInformation />
-              </div>
-            </div>
-            <div className="flex flex-col w-[52.75rem] h-[49.8125rem]">
-              <div className="bg-white shadow-sm border border-gray-200 h-full flex flex-col min-h-0 rounded-[1.75rem]">
+          {userRole === 'admin' ? (
+            // Admin layout - only middle section with two components
+            <div className="flex gap-[0.9375rem] w-full max-w-[120rem]">
+              <div className="flex flex-col w-full h-[49.8125rem]">
                 {renderMiddlePanel()}
               </div>
             </div>
-            <div className="flex flex-col w-[29.875rem] h-[49.8125rem]">
-              <div className="bg-white shadow-sm border border-gray-200 h-full p-6 rounded-[1.75rem]">
-                <Updates />
+          ) : (
+            // User layout - three sections
+            <div className="flex gap-[0.9375rem]">
+              <div className="flex flex-col w-[29.875rem] gap-[0.9375rem]">
+                <div className="h-[16.125rem]">
+                  <UserProfile />
+                </div>
+                <div className="h-[32.75rem]">
+                  <DetailedInformation />
+                </div>
+              </div>
+              <div className="flex flex-col w-[52.75rem] h-[49.8125rem]">
+                <div className="bg-white shadow-sm border border-gray-200 h-full flex flex-col min-h-0 rounded-[1.75rem]">
+                  {renderMiddlePanel()}
+                </div>
+              </div>
+              <div className="flex flex-col w-[29.875rem] h-[49.8125rem]">
+                <div className="bg-white shadow-sm border border-gray-200 h-full p-6 rounded-[1.75rem]">
+                  <Updates />
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -471,4 +513,4 @@ const Dashboard = ({
   );
 };
 
-export default Dashboard;
+export default Layout;

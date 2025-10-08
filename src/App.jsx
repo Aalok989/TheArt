@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import Dashboard from './components/Dashboard';
+import Layout from './components/Layout';
 import Landing from './components/Landing/Landing';
 
 function App() {
@@ -24,7 +24,9 @@ function App() {
       const pixelRatio = window.devicePixelRatio || 1;
       const adjustedWidth = window.innerWidth * pixelRatio;
       const isMobile = adjustedWidth < 1024;
-      return isMobile ? null : 'flatDetails';
+      const userRole = localStorage.getItem('userRole') || 'user';
+      const defaultPage = userRole === 'admin' ? 'overview' : 'flatDetails';
+      return isMobile ? null : defaultPage;
     }
     return null;
   });
@@ -35,7 +37,9 @@ function App() {
       const adjustedWidth = window.innerWidth * pixelRatio;
       const mobile = adjustedWidth < 1024;
       setIsMobile(mobile);
-      setActivePage(prevActivePage => mobile ? null : (prevActivePage || 'flatDetails'));
+      const userRole = localStorage.getItem('userRole') || 'user';
+      const defaultPage = userRole === 'admin' ? 'overview' : 'flatDetails';
+      setActivePage(prevActivePage => mobile ? null : (prevActivePage || defaultPage));
       document.documentElement.style.setProperty('--device-pixel-ratio', pixelRatio);
     };
 
@@ -60,8 +64,10 @@ function App() {
       if (pageFromUrl && pageFromUrl !== activePage) {
         setActivePage(pageFromUrl);
       } else if (!pageFromUrl && activePage) {
-        // If URL is just /dashboard, set to default page
-        setActivePage('flatDetails');
+        // If URL is just /dashboard, set to default page based on role
+        const userRole = localStorage.getItem('userRole') || 'user';
+        const defaultPage = userRole === 'admin' ? 'overview' : 'flatDetails';
+        setActivePage(defaultPage);
       }
     }
   }, [location.pathname, isLoggedIn, activePage]);
@@ -82,7 +88,11 @@ function App() {
     setIsLoggedIn(true);
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('authToken', token);
-    navigate('/dashboard', { replace: true });
+    // Navigate to default page based on role
+    const role = localStorage.getItem('userRole') || 'user';
+    const defaultPage = role === 'admin' ? 'overview' : 'flatDetails';
+    setActivePage(defaultPage);
+    navigate(`/dashboard/${defaultPage}`, { replace: true });
   };
 
 
@@ -103,7 +113,9 @@ function App() {
     setIsLoggedIn(false);
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('authToken');
-    setActivePage('flatDetails');
+    const userRole = localStorage.getItem('userRole') || 'user';
+    const defaultPage = userRole === 'admin' ? 'overview' : 'flatDetails';
+    setActivePage(defaultPage);
     setIsSidebarOpen(false);
     setIsUpdatesOpen(false);
     navigate('/');
@@ -128,6 +140,10 @@ function App() {
     const newRole = userRole === 'user' ? 'admin' : 'user';
     setUserRole(newRole);
     localStorage.setItem('userRole', newRole);
+    // Switch to the default page for the new role
+    const defaultPage = newRole === 'admin' ? 'overview' : 'flatDetails';
+    setActivePage(defaultPage);
+    navigate(`/dashboard/${defaultPage}`, { replace: true });
   };
 
 
@@ -144,7 +160,7 @@ function App() {
         path="/dashboard" 
         element={
           isLoggedIn ? (
-            <Dashboard
+            <Layout
               activePage={activePage}
               onPageChange={handlePageChange}
               onLogout={handleLogout}
@@ -168,7 +184,7 @@ function App() {
         path="/dashboard/:page" 
         element={
           isLoggedIn ? (
-            <Dashboard
+            <Layout
               activePage={activePage}
               onPageChange={handlePageChange}
               onLogout={handleLogout}

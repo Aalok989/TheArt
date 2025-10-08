@@ -377,6 +377,132 @@ export const submitCustomerCareMessage = async (messageData) => {
   };
 };
 
+// ==================== ADMIN: FLAT STATUS DATA ====================
+const flatStatusData = {
+  floors: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'],
+  blocks: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+  sizes: ['2BHK_1171', '2BHK_1231', '2BHK_1271', '3BHK_1500', '3BHK_1650', '4BHK_2000', '4BHK_2100', '4BHK_2200', '4BHK_2300', '4BHK_2400', '4BHK_2500', '4BHK_2600', '4BHK_2700', '4BHK_2800', '4BHK_2900', '4BHK_3000', '4BHK_3100', '4BHK_3200', '4BHK_3300', '4BHK_3400', '4BHK_3500', '4BHK_3600', '4BHK_3700', '4BHK_3800', '4BHK_3900', '4BHK_4000'],
+  flats: [
+    // Floor 1, Block A
+    { flatNo: 'A101', floor: '1', block: 'A', size: '2BHK_1171', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'A102', floor: '1', block: 'A', size: '2BHK_1231', status: 'Vacant', color: 'text-green-500' },
+    { flatNo: 'A103', floor: '1', block: 'A', size: '3BHK_1500', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'A104', floor: '1', block: 'A', size: '3BHK_1650', status: 'Blocked', color: 'text-yellow-500' },
+    { flatNo: 'A105', floor: '1', block: 'A', size: '2BHK_1171', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'A106', floor: '1', block: 'A', size: '2BHK_1231', status: 'Vacant', color: 'text-green-500' },
+    { flatNo: 'A107', floor: '1', block: 'A', size: '3BHK_1500', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'A108', floor: '1', block: 'A', size: '3BHK_1650', status: 'Blocked', color: 'text-yellow-500' },
+    { flatNo: 'A109', floor: '1', block: 'A', size: '2BHK_1171', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'A110', floor: '1', block: 'A', size: '2BHK_1231', status: 'Vacant', color: 'text-green-500' },
+    { flatNo: 'A111', floor: '1', block: 'A', size: '3BHK_1500', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'A112', floor: '1', block: 'A', size: '3BHK_1650', status: 'Vacant', color: 'text-green-500' },
+    
+    // Floor 1, Block B
+    { flatNo: 'B101', floor: '1', block: 'B', size: '2BHK_1171', status: 'Vacant', color: 'text-green-500' },
+    { flatNo: 'B102', floor: '1', block: 'B', size: '2BHK_1231', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'B103', floor: '1', block: 'B', size: '3BHK_1500', status: 'BBA Signed', color: 'text-blue-500' },
+    { flatNo: 'B104', floor: '1', block: 'B', size: '2BHK_1271', status: 'Blocked', color: 'text-yellow-500' },
+    
+    // Floor 1, Block C
+    { flatNo: 'C101', floor: '1', block: 'C', size: '2BHK_1171', status: 'Vacant', color: 'text-green-500' },
+    { flatNo: 'C102', floor: '1', block: 'C', size: '3BHK_1500', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'C103', floor: '1', block: 'C', size: '3BHK_1650', status: 'BBA Signed', color: 'text-blue-500' },
+    
+    // Floor 2, Block A
+    { flatNo: 'A201', floor: '2', block: 'A', size: '2BHK_1171', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'A202', floor: '2', block: 'A', size: '2BHK_1231', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'A203', floor: '2', block: 'A', size: '3BHK_1500', status: 'Vacant', color: 'text-green-500' },
+    { flatNo: 'A204', floor: '2', block: 'A', size: '3BHK_1650', status: 'Vacant', color: 'text-green-500' },
+    
+    // Floor 2, Block B
+    { flatNo: 'B201', floor: '2', block: 'B', size: '2BHK_1171', status: 'Blocked', color: 'text-yellow-500' },
+    { flatNo: 'B202', floor: '2', block: 'B', size: '2BHK_1231', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'B203', floor: '2', block: 'B', size: '3BHK_1500', status: 'BBA Signed', color: 'text-blue-500' },
+    { flatNo: 'B204', floor: '2', block: 'B', size: '2BHK_1271', status: 'Booked', color: 'text-red-500' },
+    
+    // Floor 2, Block C
+    { flatNo: 'C201', floor: '2', block: 'C', size: '2BHK_1171', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'C202', floor: '2', block: 'C', size: '3BHK_1500', status: 'Vacant', color: 'text-green-500' },
+    { flatNo: 'C203', floor: '2', block: 'C', size: '3BHK_1650', status: 'BBA Signed', color: 'text-blue-500' },
+    
+    // Floor 3, Block A
+    { flatNo: 'A301', floor: '3', block: 'A', size: '2BHK_1171', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'A302', floor: '3', block: 'A', size: '2BHK_1231', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'A303', floor: '3', block: 'A', size: '3BHK_1500', status: 'Vacant', color: 'text-green-500' },
+    { flatNo: 'A304', floor: '3', block: 'A', size: '3BHK_1650', status: 'Vacant', color: 'text-green-500' },
+    
+    // Floor 3, Block B
+    { flatNo: 'B301', floor: '3', block: 'B', size: '2BHK_1171', status: 'Blocked', color: 'text-yellow-500' },
+    { flatNo: 'B302', floor: '3', block: 'B', size: '2BHK_1231', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'B303', floor: '3', block: 'B', size: '3BHK_1500', status: 'BBA Signed', color: 'text-blue-500' },
+    { flatNo: 'B304', floor: '3', block: 'B', size: '2BHK_1271', status: 'Booked', color: 'text-red-500' },
+    
+    // Floor 3, Block C
+    { flatNo: 'C301', floor: '3', block: 'C', size: '2BHK_1171', status: 'Vacant', color: 'text-green-500' },
+    { flatNo: 'C302', floor: '3', block: 'C', size: '3BHK_1500', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'C303', floor: '3', block: 'C', size: '3BHK_1650', status: 'BBA Signed', color: 'text-blue-500' },
+    
+    // Floor 4, Block A
+    { flatNo: 'A401', floor: '4', block: 'A', size: '2BHK_1171', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'A402', floor: '4', block: 'A', size: '2BHK_1231', status: 'Vacant', color: 'text-green-500' },
+    { flatNo: 'A403', floor: '4', block: 'A', size: '3BHK_1500', status: 'Blocked', color: 'text-yellow-500' },
+    { flatNo: 'A404', floor: '4', block: 'A', size: '3BHK_1650', status: 'Booked', color: 'text-red-500' },
+    
+    // Floor 4, Block B
+    { flatNo: 'B401', floor: '4', block: 'B', size: '2BHK_1171', status: 'BBA Signed', color: 'text-blue-500' },
+    { flatNo: 'B402', floor: '4', block: 'B', size: '2BHK_1231', status: 'Vacant', color: 'text-green-500' },
+    { flatNo: 'B403', floor: '4', block: 'B', size: '3BHK_1500', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'B404', floor: '4', block: 'B', size: '2BHK_1271', status: 'Vacant', color: 'text-green-500' },
+    
+    // Floor 4, Block C
+    { flatNo: 'C401', floor: '4', block: 'C', size: '2BHK_1171', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'C402', floor: '4', block: 'C', size: '3BHK_1500', status: 'Blocked', color: 'text-yellow-500' },
+    { flatNo: 'C403', floor: '4', block: 'C', size: '3BHK_1650', status: 'Vacant', color: 'text-green-500' },
+    
+    // Floor 5, Block A
+    { flatNo: 'A501', floor: '5', block: 'A', size: '2BHK_1171', status: 'Vacant', color: 'text-green-500' },
+    { flatNo: 'A502', floor: '5', block: 'A', size: '2BHK_1231', status: 'Booked', color: 'text-red-500' },
+    { flatNo: 'A503', floor: '5', block: 'A', size: '3BHK_1500', status: 'BBA Signed', color: 'text-blue-500' },
+    { flatNo: 'A504', floor: '5', block: 'A', size: '3BHK_1650', status: 'Booked', color: 'text-red-500' },
+  ],
+};
+
+export const fetchFlatStatus = async () => {
+  return {
+    success: true,
+    data: flatStatusData
+  };
+};
+
+// ==================== ADMIN: REPORTS DATA ====================
+const reportsData = [
+  { srNo: 1, username: 'rohit', ipAddress: '103.48.197.219', dateTime: '06-10-2025 10:06:38' },
+  { srNo: 2, username: 'rohit', ipAddress: '103.48.197.219', dateTime: '06-10-2025 10:06:38' },
+  { srNo: 3, username: 'A209', ipAddress: '103.48.197.219', dateTime: '06-10-2025 10:06:38' },
+  { srNo: 4, username: 'A209', ipAddress: '103.48.197.219', dateTime: '06-10-2025 10:06:38' },
+  { srNo: 5, username: 'rohit', ipAddress: '103.48.197.219', dateTime: '06-10-2025 10:06:38' },
+  { srNo: 6, username: 'rohit', ipAddress: '103.48.197.219', dateTime: '06-10-2025 10:06:38' },
+  { srNo: 7, username: 'rohit', ipAddress: '103.48.197.219', dateTime: '06-10-2025 10:06:38' },
+  { srNo: 8, username: 'rohit', ipAddress: '103.48.197.219', dateTime: '06-10-2025 10:06:38' },
+  { srNo: 9, username: 'rohit', ipAddress: '103.48.197.219', dateTime: '06-10-2025 10:06:38' },
+  { srNo: 10, username: 'rohit', ipAddress: '103.48.197.219', dateTime: '06-10-2025 10:06:38' },
+  { srNo: 11, username: 'rohit', ipAddress: '103.48.197.219', dateTime: '06-10-2025 10:06:38' },
+  { srNo: 12, username: 'rohit', ipAddress: '103.48.197.219', dateTime: '06-10-2025 10:06:38' },
+  { srNo: 13, username: 'rohit', ipAddress: '103.48.197.219', dateTime: '06-10-2025 10:06:38' },
+  { srNo: 14, username: 'admin', ipAddress: '192.168.1.100', dateTime: '07-10-2025 09:15:22' },
+  { srNo: 15, username: 'B305', ipAddress: '103.48.197.220', dateTime: '07-10-2025 11:32:45' },
+  { srNo: 16, username: 'manager', ipAddress: '192.168.1.101', dateTime: '07-10-2025 14:20:18' },
+  { srNo: 17, username: 'C401', ipAddress: '103.48.197.221', dateTime: '07-10-2025 16:45:33' },
+  { srNo: 18, username: 'admin', ipAddress: '192.168.1.100', dateTime: '08-10-2025 08:30:12' },
+];
+
+export const fetchReports = async () => {
+  return {
+    success: true,
+    data: reportsData
+  };
+};
+
 // ==================== EXPORT ALL ====================
 export default {
   fetchUserProfile,
@@ -389,5 +515,7 @@ export default {
   fetchConstructionUpdates,
   fetchMyDocuments,
   submitCustomerCareMessage,
+  fetchFlatStatus,
+  fetchReports,
 };
 

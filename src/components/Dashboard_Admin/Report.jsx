@@ -1,0 +1,169 @@
+import React, { useState, useEffect } from 'react';
+import { HiSearch, HiChevronDown } from 'react-icons/hi';
+import { fetchReports } from '../../api/mockData';
+
+const Report = () => {
+  const [sortBy, setSortBy] = useState('Select');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [reportsData, setReportsData] = useState([]);
+
+  // Fetch data on component mount
+  useEffect(() => {
+    const getReports = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchReports();
+        if (response.success) {
+          setReportsData(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching reports:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getReports();
+  }, []);
+
+  const filteredData = reportsData.filter(item =>
+    item.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.ipAddress.includes(searchTerm) ||
+    item.dateTime.includes(searchTerm)
+  );
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="h-full flex items-center justify-center p-[1.5rem]">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+          <p className="text-gray-600">Loading reports...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-full flex flex-col p-[1.5rem]">
+      {/* Header Section */}
+      <div className="mb-[1.5rem]">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-[1.5rem] space-y-4 lg:space-y-0">
+          <h2 className="text-[1.25rem] sm:text-[1.5rem] font-bold text-gray-800">Reports</h2>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+            {/* Sort Dropdown */}
+            <div className="flex items-center space-x-2 w-full sm:w-auto">
+              <span
+                className="text-[0.875rem] font-medium text-gray-700 whitespace-nowrap"
+                style={{ fontFamily: 'Montserrat' }}
+              >
+                Sort by
+              </span>
+              <div className="relative flex-1 sm:flex-none">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="appearance-none px-3 pr-8 focus:outline-none w-full sm:w-[10rem]"
+                  style={{
+                    backgroundColor: '#EFF1F6',
+                    borderRadius: '0.5rem',
+                    height: '2.5rem',
+                    fontFamily: 'Montserrat',
+                    fontSize: '1rem',
+                    color: '#313131',
+                  }}
+                >
+                  <option value="Select">Select</option>
+                  <option value="username">Username</option>
+                  <option value="ipAddress">IP Address</option>
+                  <option value="dateTime">Date & Time</option>
+                </select>
+                <HiChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-[1rem] h-[1rem] text-gray-500 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Search Bar */}
+            <div className="relative w-full sm:w-auto">
+              <input
+                type="text"
+                placeholder="Search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-[2.5rem] pr-3 focus:outline-none w-full sm:w-[10rem]"
+                style={{
+                  backgroundColor: '#EFF1F6',
+                  borderRadius: '0.5rem',
+                  height: '2.5rem',
+                  fontFamily: 'Montserrat',
+                  fontSize: '1rem',
+                  color: '#313131',
+                }}
+              />
+              <HiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 w-[1rem] h-[1rem] text-gray-500" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content Sections */}
+      <div className="flex-1 space-y-[1.5rem] overflow-y-auto pr-[1rem] min-h-0">
+        {/* Table Headers */}
+          <div
+            className="grid gap-[1rem] py-[1rem] border-b sticky top-0 z-10 bg-white"
+            style={{ 
+              gridTemplateColumns: '1fr 1.5fr 2fr 2fr',
+              borderBottomColor: '#616161',
+              borderBottomWidth: '0.1875rem'
+            }}
+          >
+            <div style={{ fontSize: '0.75rem', color: '#8C8C8C', fontWeight: 'bold' }}>
+              Sr. No.
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#8C8C8C', fontWeight: 'bold' }}>
+              Username
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#8C8C8C', fontWeight: 'bold' }}>
+              IP Address
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#8C8C8C', fontWeight: 'bold' }}>
+              Date & Time
+            </div>
+          </div>
+
+          {/* Table Rows */}
+          <div className="space-y-0">
+            {filteredData.map((report, index) => (
+              <div
+                key={index}
+                className="grid gap-[1rem] py-[1.25rem] border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
+                style={{ gridTemplateColumns: '1fr 1.5fr 2fr 2fr' }}
+              >
+                <div style={{ fontSize: '1rem', color: '#000000', fontWeight: '400' }}>
+                  {report.srNo}
+                </div>
+                <div style={{ fontSize: '1rem', color: '#000000', fontWeight: '400' }}>
+                  {report.username}
+                </div>
+                <div style={{ fontSize: '1rem', color: '#000000', fontWeight: '400' }}>
+                  {report.ipAddress}
+                </div>
+                <div style={{ fontSize: '1rem', color: '#000000', fontWeight: '400' }}>
+                  {report.dateTime}
+                </div>
+              </div>
+            ))}
+          </div>
+
+        {/* No Results Message */}
+        {filteredData.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-gray-500 text-sm font-montserrat">No reports found matching your search criteria.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Report;
