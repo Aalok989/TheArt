@@ -25,6 +25,7 @@ import Report from "./Dashboard_Admin/Report";
 import LoanDetails from "./Dashboard_Admin/LoanDetails";
 import LoanDocument from "./Dashboard_Admin/LoanDocument";
 import UploadLoanDoc from "./Dashboard_Admin/UploadLoanDoc";
+import AdminDocuments from "./Dashboard_Admin/docadmin.jsx";
 import Proprite from "../assets/proprite.png";
 import Hamburger from "../assets/Hamburger.png";
 import flatDetailsIcon from "../assets/flat details.png";
@@ -76,7 +77,7 @@ const Layout = ({
           width: "clamp(8.5rem, 10.625rem, 12rem)",
         },
         {
-          key: "documents",
+          key: "docadmin",
           label: "Documents",
           icon: documentsIcon,
           width: "clamp(8.75rem, 10.9375rem, 12.5rem)",
@@ -218,6 +219,20 @@ const Layout = ({
                 <UploadLoanDoc
                   key={`uploadLoanDoc-${animationKey}`}
                   onPageChange={onPageChange}
+                />
+              </div>
+            </div>
+          );
+        case "docadmin":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <AdminDocuments
+                  key={`docadmin-${animationKey}`}
                 />
               </div>
             </div>

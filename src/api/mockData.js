@@ -569,6 +569,84 @@ export const fetchLoanDocuments = async () => {
   };
 };
 
+// ==================== ADMIN: COMMON DOCUMENTS DATA ====================
+const commonDocumentsData = [
+  { srNo: 1, documentName: 'Project Plan', type: 'PDF', uploadDate: '2024-10-01', size: '2.5 MB', status: 'Approved' },
+  { srNo: 2, documentName: 'NOC Certificate', type: 'PDF', uploadDate: '2024-10-02', size: '1.8 MB', status: 'Approved' },
+  { srNo: 3, documentName: 'Fire Safety Certificate', type: 'PDF', uploadDate: '2024-10-03', size: '3.2 MB', status: 'Pending' },
+  { srNo: 4, documentName: 'Building Plan', type: 'PDF', uploadDate: '2024-10-04', size: '5.1 MB', status: 'Approved' },
+  { srNo: 5, documentName: 'Environmental Clearance', type: 'PDF', uploadDate: '2024-10-05', size: '2.9 MB', status: 'Approved' },
+  { srNo: 6, documentName: 'Completion Certificate', type: 'PDF', uploadDate: '2024-10-06', size: '5.1 MB', status: 'Approved' },
+  { srNo: 7, documentName: 'Occupancy Certificate', type: 'PDF', uploadDate: '2024-10-07', size: '2.9 MB', status: 'Approved' },
+  { srNo: 8, documentName: 'Structural Stability Certificate', type: 'PDF', uploadDate: '2024-10-08', size: '5.1 MB', status: 'Approved' },
+  { srNo: 9, documentName: 'Electrical Safety Certificate', type: 'PDF', uploadDate: '2024-10-09', size: '2.9 MB', status: 'Approved' },
+  { srNo: 10, documentName: 'Water Supply NOC', type: 'PDF', uploadDate: '2024-10-10', size: '5.1 MB', status: 'Approved' },
+  { srNo: 11, documentName: 'Sewage Connection NOC', type: 'PDF', uploadDate: '2024-10-11', size: '2.9 MB', status: 'Approved' },
+  { srNo: 12, documentName: 'Layout Plan Approval', type: 'PDF', uploadDate: '2024-10-12', size: '5.1 MB', status: 'Approved' },
+];
+
+export const fetchCommonDocuments = async () => {
+  return {
+    success: true,
+    data: commonDocumentsData
+  };
+};
+
+// ==================== ADMIN: FLAT DOCUMENTS DATA ====================
+const flatDocumentsData = [
+  { srNo: 1, flatNo: 'A101', documentName: 'Sale Agreement', type: 'PDF', uploadDate: '2024-10-01', status: 'Approved' },
+  { srNo: 2, flatNo: 'A102', documentName: 'Allotment Letter', type: 'PDF', uploadDate: '2024-10-02', status: 'Approved' },
+  { srNo: 3, flatNo: 'B203', documentName: 'Payment Receipt', type: 'PDF', uploadDate: '2024-10-03', status: 'Pending' },
+  { srNo: 4, flatNo: 'C304', documentName: 'Registry Document', type: 'PDF', uploadDate: '2024-10-04', status: 'Approved' },
+  { srNo: 5, flatNo: 'D405', documentName: 'Possession Letter', type: 'PDF', uploadDate: '2024-10-05', status: 'Approved' },
+  { srNo: 6, flatNo: 'A201', documentName: 'Parking Allotment', type: 'PDF', uploadDate: '2024-10-06', status: 'Approved' },
+  { srNo: 7, flatNo: 'B102', documentName: 'Maintenance Agreement', type: 'PDF', uploadDate: '2024-10-07', status: 'Pending' },
+  { srNo: 8, flatNo: 'C205', documentName: 'Handover Certificate', type: 'PDF', uploadDate: '2024-10-08', status: 'Approved' },
+];
+
+export const fetchFlatDocuments = async () => {
+  return {
+    success: true,
+    data: flatDocumentsData
+  };
+};
+
+// ==================== ADMIN: LEGAL DOCUMENTS DATA ====================
+const legalDocumentsData = [
+  { srNo: 1, documentName: 'Title Deed', type: 'PDF', category: 'Property', uploadDate: '2024-10-01', status: 'Approved' },
+  { srNo: 2, documentName: 'Legal Opinion', type: 'PDF', category: 'Compliance', uploadDate: '2024-10-02', status: 'Approved' },
+  { srNo: 3, documentName: 'Court Order', type: 'PDF', category: 'Litigation', uploadDate: '2024-10-03', status: 'Pending' },
+  { srNo: 4, documentName: 'Power of Attorney', type: 'PDF', category: 'Authorization', uploadDate: '2024-10-04', status: 'Approved' },
+  { srNo: 5, documentName: 'Encumbrance Certificate', type: 'PDF', category: 'Property', uploadDate: '2024-10-05', status: 'Approved' },
+  { srNo: 6, documentName: 'Land Use Certificate', type: 'PDF', category: 'Property', uploadDate: '2024-10-06', status: 'Approved' },
+  { srNo: 7, documentName: 'Development Agreement', type: 'PDF', category: 'Contract', uploadDate: '2024-10-07', status: 'Approved' },
+];
+
+export const fetchLegalDocuments = async () => {
+  return {
+    success: true,
+    data: legalDocumentsData
+  };
+};
+
+// ==================== ADMIN: FLAT LEGAL DOCUMENTS DATA ====================
+const flatLegalDocumentsData = [
+  { srNo: 1, flatNo: 'A101', documentName: 'Sale Deed', legalType: 'Registration', uploadDate: '2024-10-01', status: 'Approved' },
+  { srNo: 2, flatNo: 'A102', documentName: 'Mutation Certificate', legalType: 'Property Transfer', uploadDate: '2024-10-02', status: 'Approved' },
+  { srNo: 3, flatNo: 'B203', documentName: 'Possession Certificate', legalType: 'Handover', uploadDate: '2024-10-03', status: 'Pending' },
+  { srNo: 4, flatNo: 'C304', documentName: 'Encumbrance Certificate', legalType: 'Verification', uploadDate: '2024-10-04', status: 'Approved' },
+  { srNo: 5, flatNo: 'D405', documentName: 'BBA Agreement', legalType: 'Contract', uploadDate: '2024-10-05', status: 'Approved' },
+  { srNo: 6, flatNo: 'A201', documentName: 'Property Tax Receipt', legalType: 'Tax', uploadDate: '2024-10-06', status: 'Approved' },
+  { srNo: 7, flatNo: 'B102', documentName: 'Registry Extract', legalType: 'Registration', uploadDate: '2024-10-07', status: 'Pending' },
+];
+
+export const fetchFlatLegalDocuments = async () => {
+  return {
+    success: true,
+    data: flatLegalDocumentsData
+  };
+};
+
 // ==================== EXPORT ALL ====================
 export default {
   fetchUserProfile,
@@ -585,5 +663,9 @@ export default {
   fetchReports,
   fetchLoanDetails,
   fetchLoanDocuments,
+  fetchCommonDocuments,
+  fetchFlatDocuments,
+  fetchLegalDocuments,
+  fetchFlatLegalDocuments,
 };
 
