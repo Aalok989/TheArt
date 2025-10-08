@@ -116,13 +116,13 @@ const FlatStatus = () => {
           display: none;
         }
       `}</style>
-      <div className="flex h-full bg-white rounded-2xl overflow-hidden shadow-md w-full">
+    <div className="flex h-full bg-white rounded-2xl overflow-hidden shadow-md w-full">
       {/* LEFT SECTION — FLAT STATUS (55%) */}
       <div className="w-[55%] min-w-0 flex flex-col">
         <div className="p-6 flex-shrink-0">
           <h2 className="text-[1.25rem] sm:text-[1.5rem] font-bold text-gray-800 mb-[1rem]">Flat Status</h2>
 
-          {/* Filter Buttons */}
+        {/* Filter Buttons */}
           <div className="grid grid-cols-3 gap-4 mb-[1rem]">
           {['floor', 'block', 'size'].map((filter) => {
             const isExpanded = expandedFilters.has(filter);
@@ -165,16 +165,16 @@ const FlatStatus = () => {
         </div>
 
           <div className="grid grid-cols-3 gap-4 mb-[1rem]">
-            <button className="h-10 px-3 rounded-full text-sm font-medium bg-gray-200 text-gray-600 hover:bg-gray-300 transition-all duration-300 col-span-1">
-              Mortgaged
-            </button>
+          <button className="h-10 px-3 rounded-full text-sm font-medium bg-gray-200 text-gray-600 hover:bg-gray-300 transition-all duration-300 col-span-1">
+            Mortgaged
+          </button>
             <button 
               onClick={handleViewAll}
               className="h-10 px-3 rounded-full text-sm font-medium bg-gray-200 text-gray-600 hover:bg-gray-300 transition-all duration-300 col-span-1"
             >
-              View All
-            </button>
-            <div></div>
+            View All
+          </button>
+          <div></div>
           </div>
         </div>
 
@@ -362,10 +362,10 @@ const FlatStatus = () => {
       {/* RIGHT SECTION — FLATS SUMMARY (45%) */}
       <div className="w-[45%] min-w-0 bg-[#F3F3F3FE] border-l border-gray-300 flex flex-col">
         <div className="p-6 flex-shrink-0">
-          <h2 className="text-[1.25rem] sm:text-[1.5rem] font-bold text-gray-800 mb-[1rem]">Flats Summary</h2>
+        <h2 className="text-[1.25rem] sm:text-[1.5rem] font-bold text-gray-800 mb-[1rem]">Flats Summary</h2>
 
-          {/* Legend */}
-          <div className="flex items-center gap-6 pb-[1rem]">
+        {/* Legend */}
+        <div className="flex items-center gap-6 pb-[1rem]">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-red-500 rounded-full"></div>
             <span className="text-sm text-gray-800 font-semibold font-montserrat">Booked</span>
@@ -405,16 +405,16 @@ const FlatStatus = () => {
           <div className="space-y-0 mt-[1rem]">
             {filteredFlatsData.length > 0 ? (
               filteredFlatsData.map((flat, index) => (
-                <div
-                  key={index}
-                  className="grid gap-[8rem] py-[1.25rem] border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
-                  style={{ gridTemplateColumns: '1fr 3fr' }}
-                >
+              <div
+                key={index}
+                className="grid gap-[8rem] py-[1.25rem] border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
+                style={{ gridTemplateColumns: '1fr 3fr' }}
+              >
                   <button
                     onClick={() => handleFlatClick(flat)}
                     className={`text-base font-medium ${flat.color} font-montserrat text-left hover:underline cursor-pointer transition-all duration-200`}
                   >
-                    {flat.flatNo}
+                  {flat.flatNo}
                   </button>
                   <div className="text-base text-gray-700 font-montserrat">{flat.status}</div>
                 </div>

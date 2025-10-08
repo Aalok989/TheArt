@@ -531,6 +531,44 @@ export const fetchLoanDetails = async () => {
   };
 };
 
+// ==================== ADMIN: LOAN DOCUMENTS DATA ====================
+const loanDocumentsData = {
+  loans: [
+    { srNo: 1, flatNo: 'A1', name: 'V.REVATHI', contactNo: '9966801523', paymentPlan: 'CLP', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes' },
+    { srNo: 2, flatNo: 'A101', name: 'SMT. Z SINCY', contactNo: '9052730815', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'No' },
+    { srNo: 3, flatNo: 'A102', name: 'S V NARASIMHA SWAMY', contactNo: '9704008535', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
+    { srNo: 4, flatNo: 'A103', name: 'RAJ KUMAR REDDY KOMMIDI', contactNo: '9538775554', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes' },
+    { srNo: 5, flatNo: 'A104', name: 'D. SAI AKSHAY RAJ', contactNo: '8008233657', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
+    { srNo: 6, flatNo: 'A105', name: 'ARASANI SREEKANTH REDDY', contactNo: '9963377522', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'No' },
+    { srNo: 7, flatNo: 'A106', name: 'RAVINDRANATH MEDISETTI', contactNo: '6300022405', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
+    { srNo: 8, flatNo: 'A107', name: 'CHANDRASEKHAR VEERASWAMI DONTHA', contactNo: '9819287227', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes' },
+    { srNo: 9, flatNo: 'A108', name: 'KAPIL DEV CHOWDHRY', contactNo: '9177665757', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
+    { srNo: 10, flatNo: 'A109', name: 'MUTHADI SRIDHAR REDDY', contactNo: '9618245135', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'No' },
+    { srNo: 11, flatNo: 'A11', name: 'Ashu', contactNo: '1234567890', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
+    { srNo: 12, flatNo: 'A110', name: 'SMT: SIRISHA MALYALA', contactNo: '8125308700', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes' },
+    { srNo: 13, flatNo: 'A111', name: 'THAKUR DHEREN SINGH', contactNo: '8897543490', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
+    { srNo: 14, flatNo: 'A112', name: 'CHILUKURI RAMA KRISHNA', contactNo: '8463924759', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'No' },
+    { srNo: 15, flatNo: 'A201', name: 'N. DHANANJOY SINGH', contactNo: '7032909776', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
+    { srNo: 16, flatNo: 'A202', name: 'VIJAY KRISHNA MALLADI', contactNo: '9676892424', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes' },
+    { srNo: 17, flatNo: 'A203', name: 'SMT. NALUMASU SINDHUJA', contactNo: '9666054123', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
+    { srNo: 18, flatNo: 'A204', name: 'SAI KUMAR VALLURI', contactNo: '8008044487', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'No' },
+    { srNo: 19, flatNo: 'A205', name: 'KOMMANA PRADEEP', contactNo: '8790572832', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
+    { srNo: 20, flatNo: 'A206', name: 'RAJESH KUMAR', contactNo: '9876543210', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes' },
+    { srNo: 21, flatNo: 'A207', name: 'PRIYA SHARMA', contactNo: '8765432109', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
+    { srNo: 22, flatNo: 'A208', name: 'AMIT SINGH', contactNo: '7654321098', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'No' },
+    { srNo: 23, flatNo: 'A209', name: 'SUNITA DEVI', contactNo: '6543210987', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
+    { srNo: 24, flatNo: 'A210', name: 'VIKRAM REDDY', contactNo: '5432109876', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes' },
+    { srNo: 25, flatNo: 'B101', name: 'KAVITHA RAO', contactNo: '4321098765', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
+  ],
+};
+
+export const fetchLoanDocuments = async () => {
+  return {
+    success: true,
+    data: loanDocumentsData
+  };
+};
+
 // ==================== EXPORT ALL ====================
 export default {
   fetchUserProfile,
@@ -546,5 +584,6 @@ export default {
   fetchFlatStatus,
   fetchReports,
   fetchLoanDetails,
+  fetchLoanDocuments,
 };
 

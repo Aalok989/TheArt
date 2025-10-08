@@ -1,42 +1,51 @@
-import React, { useState } from 'react';
-import { HiBell, HiPhone, HiUser, HiLogout, HiCog, HiDocumentText } from 'react-icons/hi';
-import UserProfile from './Dashboard_User/UserProfile';
-import FlatDetails from './Dashboard_User/FlatDetails.jsx';
-import PaymentSchedule from './Dashboard_User/Payment.jsx';
-import Updates from './Dashboard_User/Updates';
-import ChatBot from './ChatBot';
-import Documents from './Dashboard_User/Documents';
-import CurrentDues from './Dashboard_User/CurrentDues';
-import DetailedInformation from './Dashboard_User/DetailedInformation';
-import MobileSidebar from './Dashboard_User/MobileSidebar';
-import CustomerCarePopup from './Dashboard_User/CustomerCarePopup';
-import PasswordChangePopup from './Dashboard_User/PasswordChangePopup';
-import ConstructionUpdatesPopup from './Dashboard_User/ConstructionUpdatesPopup';
-import MyDocumentsPopup from './Dashboard_User/MyDocumentsPopup';
-import FlatStatus from './Dashboard_Admin/FlatStatus';
-import Report from './Dashboard_Admin/Report';
-import LoanDetails from './Dashboard_Admin/LoanDetails';
-import Proprite from '../assets/proprite.png';
-import Hamburger from '../assets/Hamburger.png';
-import flatDetailsIcon from '../assets/flat details.png';
-import currentDuesIcon from '../assets/current dues.png';
-import paymentIcon from '../assets/payment.png';
-import documentsIcon from '../assets/documents.png';
+import React, { useState } from "react";
+import {
+  HiBell,
+  HiPhone,
+  HiUser,
+  HiLogout,
+  HiCog,
+  HiDocumentText,
+} from "react-icons/hi";
+import UserProfile from "./Dashboard_User/UserProfile";
+import FlatDetails from "./Dashboard_User/FlatDetails.jsx";
+import PaymentSchedule from "./Dashboard_User/Payment.jsx";
+import Updates from "./Dashboard_User/Updates";
+import ChatBot from "./ChatBot";
+import Documents from "./Dashboard_User/Documents";
+import CurrentDues from "./Dashboard_User/CurrentDues";
+import DetailedInformation from "./Dashboard_User/DetailedInformation";
+import MobileSidebar from "./Dashboard_User/MobileSidebar";
+import CustomerCarePopup from "./Dashboard_User/CustomerCarePopup";
+import PasswordChangePopup from "./Dashboard_User/PasswordChangePopup";
+import ConstructionUpdatesPopup from "./Dashboard_User/ConstructionUpdatesPopup";
+import MyDocumentsPopup from "./Dashboard_User/MyDocumentsPopup";
+import FlatStatus from "./Dashboard_Admin/FlatStatus";
+import Report from "./Dashboard_Admin/Report";
+import LoanDetails from "./Dashboard_Admin/LoanDetails";
+import LoanDocument from "./Dashboard_Admin/LoanDocument";
+import UploadLoanDoc from "./Dashboard_Admin/UploadLoanDoc";
+import Proprite from "../assets/proprite.png";
+import Hamburger from "../assets/Hamburger.png";
+import flatDetailsIcon from "../assets/flat details.png";
+import currentDuesIcon from "../assets/current dues.png";
+import paymentIcon from "../assets/payment.png";
+import documentsIcon from "../assets/documents.png";
 
-const Layout = ({ 
-  activePage, 
-  onPageChange, 
-  onLogout, 
-  onSidebarToggle, 
-  onUpdatesToggle, 
-  isSidebarOpen, 
+const Layout = ({
+  activePage,
+  onPageChange,
+  onLogout,
+  onSidebarToggle,
+  onUpdatesToggle,
+  isSidebarOpen,
   isUpdatesOpen,
   isCustomerCarePopupOpen,
   onCustomerCareClose,
   isAnimating,
   animationKey,
-  userRole = 'user', // Default to 'user' role
-  onRoleToggle // Temporary prop for testing
+  userRole = "user", // Default to 'user' role
+  onRoleToggle, // Temporary prop for testing
 }) => {
   // Navbar state
   const [isPasswordPopupOpen, setIsPasswordPopupOpen] = useState(false);
@@ -46,59 +55,59 @@ const Layout = ({
 
   // Role-based navigation configuration
   const getNavigationItems = () => {
-    if (userRole === 'admin') {
+    if (userRole === "admin") {
       return [
         {
-          key: 'overview',
-          label: 'Overview',
+          key: "overview",
+          label: "Overview",
           icon: flatDetailsIcon, // Using existing icon for now
-          width: '10.625rem'
+          width: "10.625rem",
         },
         {
-          key: 'banking',
-          label: 'Banking',
+          key: "banking",
+          label: "Banking",
           icon: currentDuesIcon, // Using existing icon for now
-          width: '10.625rem'
+          width: "10.625rem",
         },
         {
-          key: 'projects',
-          label: 'Projects',
+          key: "projects",
+          label: "Projects",
           icon: paymentIcon, // Using existing icon for now
-          width: '10.625rem'
+          width: "10.625rem",
         },
         {
-          key: 'documents',
-          label: 'Documents',
+          key: "documents",
+          label: "Documents",
           icon: documentsIcon,
-          width: '10.9375rem'
-        }
+          width: "10.9375rem",
+        },
       ];
     } else {
       return [
         {
-          key: 'flatDetails',
-          label: 'Flat Details',
+          key: "flatDetails",
+          label: "Flat Details",
           icon: flatDetailsIcon,
-          width: '10.625rem'
+          width: "10.625rem",
         },
         {
-          key: 'currentDues',
-          label: 'Current Dues',
+          key: "currentDues",
+          label: "Current Dues",
           icon: currentDuesIcon,
-          width: '12rem'
+          width: "12rem",
         },
         {
-          key: 'payment',
-          label: 'Payments',
+          key: "payment",
+          label: "Payments",
           icon: paymentIcon,
-          width: '10.625rem'
+          width: "10.625rem",
         },
         {
-          key: 'documents',
-          label: 'Documents',
+          key: "documents",
+          label: "Documents",
           icon: documentsIcon,
-          width: '10.9375rem'
-        }
+          width: "10.9375rem",
+        },
       ];
     }
   };
@@ -150,11 +159,15 @@ const Layout = ({
     }
 
     // Admin components
-    if (userRole === 'admin') {
+    if (userRole === "admin") {
       switch (activePage) {
-        case 'overview':
+        case "overview":
           return (
-            <div className={`page-container h-full flex gap-6 ${isAnimating ? 'opacity-50' : ''}`}>
+            <div
+              className={`page-container h-full flex gap-6 ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
               <div className="basis-[60%] min-w-0 bg-white rounded-xl shadow-sm border border-gray-200">
                 <FlatStatus key={`flatStatus-${animationKey}`} />
               </div>
@@ -163,19 +176,64 @@ const Layout = ({
               </div>
             </div>
           );
-        case 'banking':
+        case "banking":
           return (
-            <div className={`page-container h-full flex flex-col ${isAnimating ? 'opacity-50' : ''}`}>
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <LoanDetails key={`loanDetails-${animationKey}`} />
+                <LoanDetails
+                  key={`loanDetails-${animationKey}`}
+                  onPageChange={onPageChange}
+                />
               </div>
             </div>
           );
-        case 'projects':
-          return <div className={`page-container h-full flex flex-col ${isAnimating ? 'opacity-50' : ''}`}>
-            <div className="text-center py-8 text-gray-500">Projects component coming soon...</div>
-          </div>;
-        case 'documents':
+        case "loanDocuments":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <LoanDocument
+                  key={`loanDocument-${animationKey}`}
+                  onPageChange={onPageChange}
+                />
+              </div>
+            </div>
+          );
+        case "uploadLoanDoc":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <UploadLoanDoc
+                  key={`uploadLoanDoc-${animationKey}`}
+                  onPageChange={onPageChange}
+                />
+              </div>
+            </div>
+          );
+        case "projects":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="text-center py-8 text-gray-500">
+                Projects component coming soon...
+              </div>
+            </div>
+          );
+        case "documents":
           return <Documents key={`documents-${animationKey}`} />;
         default:
           return null;
@@ -185,13 +243,13 @@ const Layout = ({
     // User components
     const Component = (() => {
       switch (activePage) {
-        case 'flatDetails':
+        case "flatDetails":
           return <FlatDetails key={`flatDetails-${animationKey}`} />;
-        case 'currentDues':
+        case "currentDues":
           return <CurrentDues key={`currentDues-${animationKey}`} />;
-        case 'payment':
+        case "payment":
           return <PaymentSchedule key={`payment-${animationKey}`} />;
-        case 'documents':
+        case "documents":
           return <Documents key={`documents-${animationKey}`} />;
         default:
           return null;
@@ -199,34 +257,38 @@ const Layout = ({
     })();
 
     return (
-      <div className={`page-container h-full flex flex-col ${isAnimating ? 'opacity-50' : ''}`}>
+      <div
+        className={`page-container h-full flex flex-col ${
+          isAnimating ? "opacity-50" : ""
+        }`}
+      >
         {Component}
       </div>
     );
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen overflow-auto relative"
       style={{
         backgroundImage: "url('/src/assets/bg.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        backgroundRepeat: "no-repeat"
+        backgroundRepeat: "no-repeat",
       }}
     >
       {/* Integrated Navbar */}
       <nav
         className="relative"
         style={{
-          height: '7.25rem',
-          position: 'absolute',
-          top: '0',
-          left: '0',
-          right: '0',
-          zIndex: '40',
-          paddingLeft: '2.75rem',
-          paddingRight: '3.125rem',
+          height: "7.25rem",
+          position: "absolute",
+          top: "0",
+          left: "0",
+          right: "0",
+          zIndex: "40",
+          paddingLeft: "2.75rem",
+          paddingRight: "3.125rem",
         }}
       >
         <div className="h-full flex items-center justify-between relative">
@@ -237,24 +299,30 @@ const Layout = ({
               onClick={onSidebarToggle}
               className={`lg:hidden w-[2.5rem] h-[2.5rem] flex flex-col items-center justify-center rounded-full transition-all duration-300 ${
                 isSidebarOpen
-                  ? 'bg-white shadow-md scale-105 opacity-0 pointer-events-none'
-                  : 'hover:bg-white/50'
+                  ? "bg-white shadow-md scale-105 opacity-0 pointer-events-none"
+                  : "hover:bg-white/50"
               }`}
             >
               <div className="flex flex-col items-center justify-center space-y-1 w-[1.25rem] h-[1.25rem]">
                 <span
                   className={`block w-[1.25rem] h-[0.03125rem] bg-gray-600 transition-all duration-300 ease-in-out ${
-                    isSidebarOpen ? 'rotate-45 translate-y-1.5' : 'rotate-0 translate-y-0'
+                    isSidebarOpen
+                      ? "rotate-45 translate-y-1.5"
+                      : "rotate-0 translate-y-0"
                   }`}
                 ></span>
                 <span
                   className={`block w-[1.25rem] h-[0.03125rem] bg-gray-600 transition-all duration-300 ease-in-out ${
-                    isSidebarOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100'
+                    isSidebarOpen
+                      ? "opacity-0 scale-0"
+                      : "opacity-100 scale-100"
                   }`}
                 ></span>
                 <span
                   className={`block w-[1.25rem] h-[0.03125rem] bg-gray-600 transition-all duration-300 ease-in-out ${
-                    isSidebarOpen ? '-rotate-45 -translate-y-1.5' : 'rotate-0 translate-y-0'
+                    isSidebarOpen
+                      ? "-rotate-45 -translate-y-1.5"
+                      : "rotate-0 translate-y-0"
                   }`}
                 ></span>
               </div>
@@ -262,7 +330,14 @@ const Layout = ({
 
             {/* Logo */}
             <div className="flex-shrink-0">
-              <img src={Proprite} alt="The Art" className="h-[3.5rem] w-auto" />
+              <img
+                src={Proprite}
+                alt="The Art"
+                className="h-[3.5rem] w-auto"
+                style={{
+                  filter: "drop-shadow(0 0 30px rgba(255, 255, 255, 1))",
+                }}
+              />
             </div>
           </div>
 
@@ -270,8 +345,8 @@ const Layout = ({
           <div
             className="hidden lg:flex items-center justify-center absolute left-1/2 transform -translate-x-1/2"
             style={{
-              gap: '0.625rem',
-              minWidth: '20rem',
+              gap: "0.625rem",
+              minWidth: "20rem",
             }}
           >
             {navigationItems.map((item) => (
@@ -280,15 +355,15 @@ const Layout = ({
                 onClick={() => handleNavClick(item.key)}
                 className={`flex items-center justify-center transition-all duration-300 ease-out whitespace-nowrap shadow-sm btn-animate hover-lift rounded-full ${
                   activePage === item.key
-                    ? 'text-white font-medium transform scale-105'
-                    : 'text-gray-600 hover:text-gray-800 bg-white hover:bg-gray-50 hover:shadow-lg'
+                    ? "text-white font-medium transform scale-105"
+                    : "text-gray-600 hover:text-gray-800 bg-white hover:bg-gray-50 hover:shadow-lg"
                 }`}
                 style={{
                   width: item.width,
-                  height: '2.8125rem',
+                  height: "2.8125rem",
                   background:
                     activePage === item.key
-                      ? 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)'
+                      ? "linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)"
                       : undefined,
                 }}
               >
@@ -297,11 +372,13 @@ const Layout = ({
                   alt={item.label}
                   className="w-[1.25rem] h-[1.25rem] flex-shrink-0"
                   style={{
-                    marginRight: '0.5625rem',
-                    filter: activePage === item.key ? 'invert(1)' : 'none',
+                    marginRight: "0.5625rem",
+                    filter: activePage === item.key ? "invert(1)" : "none",
                   }}
                 />
-                <span className="font-medium text-sm font-montserrat">{item.label}</span>
+                <span className="font-medium text-sm font-montserrat">
+                  {item.label}
+                </span>
               </button>
             ))}
           </div>
@@ -341,13 +418,13 @@ const Layout = ({
                   alt="Aman Bhutani"
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                   onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
+                    e.target.style.display = "none";
+                    e.target.nextSibling.style.display = "flex";
                   }}
                 />
                 <div
                   className="w-full h-full bg-gray-300 rounded-full flex items-center justify-center"
-                  style={{ display: 'none' }}
+                  style={{ display: "none" }}
                 >
                   <HiUser className="w-[1.25rem] h-[1.25rem] text-gray-600" />
                 </div>
@@ -355,9 +432,7 @@ const Layout = ({
 
               {/* Profile Dropdown */}
               {isProfileDropdownOpen && (
-                <div
-                  className="absolute right-0 top-[3rem] w-[12rem] bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animate-fade-in-up"
-                >
+                <div className="absolute right-0 top-[3rem] w-[12rem] bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animate-fade-in-up">
                   {/* Desktop Only Items */}
                   <div className="lg:hidden">
                     <button
@@ -365,14 +440,18 @@ const Layout = ({
                       className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200"
                     >
                       <HiCog className="w-[1.25rem] h-[1.25rem] text-gray-600" />
-                      <span className="text-sm font-medium text-gray-700 font-montserrat">Settings</span>
+                      <span className="text-sm font-medium text-gray-700 font-montserrat">
+                        Settings
+                      </span>
                     </button>
                     <button
                       onClick={handleMobileUpdatesClick}
                       className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200"
                     >
                       <HiBell className="w-[1.25rem] h-[1.25rem] text-gray-600" />
-                      <span className="text-sm font-medium text-gray-700 font-montserrat">Updates</span>
+                      <span className="text-sm font-medium text-gray-700 font-montserrat">
+                        Updates
+                      </span>
                     </button>
                   </div>
 
@@ -382,14 +461,18 @@ const Layout = ({
                     className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200"
                   >
                     <HiDocumentText className="w-[1.25rem] h-[1.25rem] text-gray-600" />
-                    <span className="text-sm font-medium text-gray-700 font-montserrat">My Documents</span>
+                    <span className="text-sm font-medium text-gray-700 font-montserrat">
+                      My Documents
+                    </span>
                   </button>
                   <button
                     onClick={handleLogoutClick}
                     className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200"
                   >
                     <HiLogout className="w-[1.25rem] h-[1.25rem] text-gray-600" />
-                    <span className="text-sm font-medium text-gray-700 font-montserrat">Logout</span>
+                    <span className="text-sm font-medium text-gray-700 font-montserrat">
+                      Logout
+                    </span>
                   </button>
                 </div>
               )}
@@ -398,7 +481,7 @@ const Layout = ({
         </div>
       </nav>
 
-      <MobileSidebar 
+      <MobileSidebar
         isOpen={isSidebarOpen}
         onClose={() => onSidebarToggle()}
         activePage={activePage}
@@ -414,38 +497,38 @@ const Layout = ({
             onClick={onRoleToggle}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm font-medium"
           >
-            Switch to {userRole === 'user' ? 'Admin' : 'User'} ({userRole})
+            Switch to {userRole === "user" ? "Admin" : "User"} ({userRole})
           </button>
         </div>
       )}
 
       <div className="overflow-hidden h-screen pt-[7.25rem] pb-[2.3125rem] px-11">
         <div className="lg:hidden h-full flex flex-col space-y-3 relative">
-          {userRole === 'user' && !activePage && (
+          {userRole === "user" && !activePage && (
             <div className="flex-shrink-0 h-[calc(30vh-2.1875rem)]">
               <UserProfile />
             </div>
           )}
-          {userRole === 'user' && !activePage && (
+          {userRole === "user" && !activePage && (
             <div className="flex-1 min-h-0">
               <DetailedInformation />
             </div>
           )}
-          {(activePage || userRole === 'admin') && (
+          {(activePage || userRole === "admin") && (
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
               {renderMiddlePanel()}
             </div>
           )}
           {isUpdatesOpen && (
             <>
-              <div 
+              <div
                 className="fixed bg-black bg-opacity-50 z-40 lg:hidden top-[-1vh] left-[-1vw] right-[-1vw] bottom-[-1vh] w-[102vw] h-[102vh]"
                 onClick={() => onUpdatesToggle()}
               ></div>
               <div className="fixed left-4 right-4 bottom-4 top-20 bg-white rounded-xl shadow-lg border border-gray-200 z-50 animate-slide-in-up lg:hidden">
                 <div className="p-4">
                   <div className="flex items-center justify-end mb-4">
-                    <button 
+                    <button
                       onClick={() => onUpdatesToggle()}
                       className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
                     >
@@ -460,7 +543,7 @@ const Layout = ({
         </div>
 
         <div className="hidden lg:flex h-full items-center justify-center">
-          {userRole === 'admin' ? (
+          {userRole === "admin" ? (
             // Admin layout - only middle section with two components
             <div className="flex gap-[0.9375rem] w-full max-w-[120rem]">
               <div className="flex flex-col w-full h-[49.8125rem]">
@@ -494,8 +577,8 @@ const Layout = ({
       </div>
 
       <ChatBot />
-      <CustomerCarePopup 
-        isOpen={isCustomerCarePopupOpen} 
+      <CustomerCarePopup
+        isOpen={isCustomerCarePopupOpen}
         onClose={onCustomerCareClose}
       />
 
