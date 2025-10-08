@@ -503,6 +503,34 @@ export const fetchReports = async () => {
   };
 };
 
+// ==================== ADMIN: LOAN DETAILS DATA ====================
+const loanDetailsData = {
+  loans: [
+    { srNo: 1, flatNo: 'A301', customerName: 'Akaash', sanctionedAmount: '40000', loanBank: 'PNB', loanAccountNo: '1245786532', loanInterest: '4000', status: 'Successful' },
+    { srNo: 2, flatNo: 'A302', customerName: 'Akhilesh', sanctionedAmount: '50000', loanBank: 'SBI', loanAccountNo: '1245786532', loanInterest: '5000', status: 'Successful' },
+    { srNo: 3, flatNo: 'A303', customerName: 'Mohan', sanctionedAmount: '25000', loanBank: 'PNB', loanAccountNo: '1245786532', loanInterest: '2500', status: 'Failed' },
+    { srNo: 4, flatNo: 'A304', customerName: 'Sohan', sanctionedAmount: '15000', loanBank: 'PNB', loanAccountNo: '1245786532', loanInterest: '1500', status: 'Successful' },
+    { srNo: 5, flatNo: 'A305', customerName: 'Avinash', sanctionedAmount: '25000', loanBank: 'PNB', loanAccountNo: '1245786532', loanInterest: '2500', status: 'Successful' },
+    { srNo: 6, flatNo: 'A306', customerName: 'Bablu', sanctionedAmount: '65000', loanBank: 'PNB', loanAccountNo: '1245786532', loanInterest: '6500', status: 'Successful' },
+    { srNo: 7, flatNo: 'A307', customerName: 'Mohit', sanctionedAmount: '12000', loanBank: 'PNB', loanAccountNo: '1245786532', loanInterest: '1200', status: 'Failed' },
+    { srNo: 8, flatNo: 'B101', customerName: 'Rajesh', sanctionedAmount: '35000', loanBank: 'HDFC', loanAccountNo: '9876543210', loanInterest: '3500', status: 'Successful' },
+    { srNo: 9, flatNo: 'B102', customerName: 'Suresh', sanctionedAmount: '45000', loanBank: 'ICICI', loanAccountNo: '1122334455', loanInterest: '4500', status: 'Successful' },
+    { srNo: 10, flatNo: 'B103', customerName: 'Ramesh', sanctionedAmount: '20000', loanBank: 'PNB', loanAccountNo: '1245786532', loanInterest: '2000', status: 'Failed' },
+    { srNo: 11, flatNo: 'C201', customerName: 'Vikash', sanctionedAmount: '55000', loanBank: 'SBI', loanAccountNo: '5566778899', loanInterest: '5500', status: 'Successful' },
+    { srNo: 12, flatNo: 'C202', customerName: 'Naresh', sanctionedAmount: '30000', loanBank: 'HDFC', loanAccountNo: '9988776655', loanInterest: '3000', status: 'Successful' },
+    { srNo: 13, flatNo: 'C203', customerName: 'Mahesh', sanctionedAmount: '18000', loanBank: 'PNB', loanAccountNo: '1245786532', loanInterest: '1800', status: 'Failed' },
+    { srNo: 14, flatNo: 'D401', customerName: 'Sunil', sanctionedAmount: '42000', loanBank: 'ICICI', loanAccountNo: '4433221100', loanInterest: '4200', status: 'Successful' },
+    { srNo: 15, flatNo: 'D402', customerName: 'Anil', sanctionedAmount: '28000', loanBank: 'SBI', loanAccountNo: '7788990011', loanInterest: '2800', status: 'Successful' },
+  ],
+};
+
+export const fetchLoanDetails = async () => {
+  return {
+    success: true,
+    data: loanDetailsData
+  };
+};
+
 // ==================== EXPORT ALL ====================
 export default {
   fetchUserProfile,
@@ -517,5 +545,6 @@ export default {
   submitCustomerCareMessage,
   fetchFlatStatus,
   fetchReports,
+  fetchLoanDetails,
 };
 

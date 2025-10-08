@@ -15,6 +15,7 @@ import ConstructionUpdatesPopup from './Dashboard_User/ConstructionUpdatesPopup'
 import MyDocumentsPopup from './Dashboard_User/MyDocumentsPopup';
 import FlatStatus from './Dashboard_Admin/FlatStatus';
 import Report from './Dashboard_Admin/Report';
+import LoanDetails from './Dashboard_Admin/LoanDetails';
 import Proprite from '../assets/proprite.png';
 import Hamburger from '../assets/Hamburger.png';
 import flatDetailsIcon from '../assets/flat details.png';
@@ -163,9 +164,13 @@ const Layout = ({
             </div>
           );
         case 'banking':
-          return <div className={`page-container h-full flex flex-col ${isAnimating ? 'opacity-50' : ''}`}>
-            <div className="text-center py-8 text-gray-500">Banking component coming soon...</div>
-          </div>;
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? 'opacity-50' : ''}`}>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <LoanDetails key={`loanDetails-${animationKey}`} />
+              </div>
+            </div>
+          );
         case 'projects':
           return <div className={`page-container h-full flex flex-col ${isAnimating ? 'opacity-50' : ''}`}>
             <div className="text-center py-8 text-gray-500">Projects component coming soon...</div>
