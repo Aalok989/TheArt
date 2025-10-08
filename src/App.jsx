@@ -21,9 +21,8 @@ function App() {
 
   const [activePage, setActivePage] = useState(() => {
     if (typeof window !== 'undefined') {
-      const pixelRatio = window.devicePixelRatio || 1;
-      const adjustedWidth = window.innerWidth * pixelRatio;
-      const isMobile = adjustedWidth < 1024;
+      // Use viewport width directly (browser zoom scales this automatically)
+      const isMobile = window.innerWidth < 1024;
       const userRole = localStorage.getItem('userRole') || 'user';
       const defaultPage = userRole === 'admin' ? 'overview' : 'flatDetails';
       return isMobile ? null : defaultPage;
@@ -33,14 +32,13 @@ function App() {
 
   useEffect(() => {
     const checkScreenSize = () => {
-      const pixelRatio = window.devicePixelRatio || 1;
-      const adjustedWidth = window.innerWidth * pixelRatio;
-      const mobile = adjustedWidth < 1024;
+      // Use viewport width for responsive breakpoints
+      // Browser zoom automatically scales rem/px units, so this works correctly
+      const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
       const userRole = localStorage.getItem('userRole') || 'user';
       const defaultPage = userRole === 'admin' ? 'overview' : 'flatDetails';
       setActivePage(prevActivePage => mobile ? null : (prevActivePage || defaultPage));
-      document.documentElement.style.setProperty('--device-pixel-ratio', pixelRatio);
     };
 
     checkScreenSize();

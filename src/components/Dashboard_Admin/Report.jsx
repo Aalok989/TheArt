@@ -46,17 +46,17 @@ const Report = () => {
   }
 
   return (
-    <div className="h-full flex flex-col p-[1.5rem]">
+    <div className="h-full flex flex-col" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
       {/* Header Section */}
-      <div className="mb-[1.5rem]">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-[1.5rem] space-y-4 lg:space-y-0">
-          <h2 className="text-[1.25rem] sm:text-[1.5rem] font-bold text-gray-800">Reports</h2>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+      <div style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0" style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
+          <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)' }}>Reports</h2>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0" style={{ gap: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
             {/* Sort Dropdown */}
-            <div className="flex items-center space-x-2 w-full sm:w-auto">
+            <div className="flex items-center w-full sm:w-auto" style={{ gap: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
               <span
-                className="text-[0.875rem] font-medium text-gray-700 whitespace-nowrap"
-                style={{ fontFamily: 'Montserrat' }}
+                className="font-medium text-gray-700 whitespace-nowrap"
+                style={{ fontFamily: 'Montserrat', fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}
               >
                 Sort by
               </span>
@@ -64,13 +64,16 @@ const Report = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none px-3 pr-8 focus:outline-none w-full sm:w-[10rem]"
+                  className="appearance-none focus:outline-none w-full"
                   style={{
                     backgroundColor: '#EFF1F6',
-                    borderRadius: '0.5rem',
-                    height: '2.5rem',
+                    borderRadius: 'clamp(0.375rem, 0.5rem, 0.625rem)',
+                    height: 'clamp(2rem, 2.5rem, 3rem)',
+                    paddingLeft: 'clamp(0.5rem, 0.75rem, 1rem)',
+                    paddingRight: 'clamp(1.5rem, 2rem, 2.5rem)',
+                    minWidth: 'clamp(8rem, 10rem, 12rem)',
                     fontFamily: 'Montserrat',
-                    fontSize: '1rem',
+                    fontSize: 'clamp(0.875rem, 1rem, 1.125rem)',
                     color: '#313131',
                   }}
                 >
@@ -79,7 +82,7 @@ const Report = () => {
                   <option value="ipAddress">IP Address</option>
                   <option value="dateTime">Date & Time</option>
                 </select>
-                <HiChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-[1rem] h-[1rem] text-gray-500 pointer-events-none" />
+                <HiChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" style={{ width: 'clamp(0.875rem, 1rem, 1.25rem)', height: 'clamp(0.875rem, 1rem, 1.25rem)' }} />
               </div>
             </div>
 
@@ -90,43 +93,49 @@ const Report = () => {
                 placeholder="Search"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-[2.5rem] pr-3 focus:outline-none w-full sm:w-[10rem]"
+                className="focus:outline-none w-full"
                 style={{
                   backgroundColor: '#EFF1F6',
-                  borderRadius: '0.5rem',
-                  height: '2.5rem',
+                  borderRadius: 'clamp(0.375rem, 0.5rem, 0.625rem)',
+                  height: 'clamp(2rem, 2.5rem, 3rem)',
+                  paddingLeft: 'clamp(2rem, 2.5rem, 3rem)',
+                  paddingRight: 'clamp(0.5rem, 0.75rem, 1rem)',
+                  minWidth: 'clamp(8rem, 10rem, 12rem)',
                   fontFamily: 'Montserrat',
-                  fontSize: '1rem',
+                  fontSize: 'clamp(0.875rem, 1rem, 1.125rem)',
                   color: '#313131',
                 }}
               />
-              <HiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 w-[1rem] h-[1rem] text-gray-500" />
+              <HiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" style={{ width: 'clamp(0.875rem, 1rem, 1.25rem)', height: 'clamp(0.875rem, 1rem, 1.25rem)' }} />
             </div>
           </div>
         </div>
       </div>
 
       {/* Content Sections */}
-      <div className="flex-1 space-y-[1.5rem] overflow-y-auto pr-[1rem] min-h-0">
+      <div className="flex-1 overflow-y-auto min-h-0" style={{ paddingRight: 'clamp(0.5rem, 1rem, 1.5rem)' }}>
         {/* Table Headers */}
           <div
-            className="grid gap-[1rem] py-[1rem] border-b sticky top-0 z-10 bg-white"
+            className="grid border-b sticky top-0 z-10 bg-white"
             style={{ 
               gridTemplateColumns: '1fr 1.5fr 2fr 2fr',
+              gap: 'clamp(0.5rem, 1rem, 1.5rem)',
+              paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)',
+              paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)',
               borderBottomColor: '#616161',
               borderBottomWidth: '0.1875rem'
             }}
           >
-            <div style={{ fontSize: '0.75rem', color: '#8C8C8C', fontWeight: 'bold' }}>
+            <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold' }}>
               Sr. No.
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#8C8C8C', fontWeight: 'bold' }}>
+            <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold' }}>
               Username
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#8C8C8C', fontWeight: 'bold' }}>
+            <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold' }}>
               IP Address
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#8C8C8C', fontWeight: 'bold' }}>
+            <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold' }}>
               Date & Time
             </div>
           </div>
@@ -136,19 +145,24 @@ const Report = () => {
             {filteredData.map((report, index) => (
               <div
                 key={index}
-                className="grid gap-[1rem] py-[1.25rem] border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
-                style={{ gridTemplateColumns: '1fr 1.5fr 2fr 2fr' }}
+                className="grid border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
+                style={{ 
+                  gridTemplateColumns: '1fr 1.5fr 2fr 2fr',
+                  gap: 'clamp(0.5rem, 1rem, 1.5rem)',
+                  paddingTop: 'clamp(0.875rem, 1.25rem, 1.5rem)',
+                  paddingBottom: 'clamp(0.875rem, 1.25rem, 1.5rem)'
+                }}
               >
-                <div style={{ fontSize: '1rem', color: '#000000', fontWeight: '400' }}>
+                <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
                   {report.srNo}
                 </div>
-                <div style={{ fontSize: '1rem', color: '#000000', fontWeight: '400' }}>
+                <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
                   {report.username}
                 </div>
-                <div style={{ fontSize: '1rem', color: '#000000', fontWeight: '400' }}>
+                <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
                   {report.ipAddress}
                 </div>
-                <div style={{ fontSize: '1rem', color: '#000000', fontWeight: '400' }}>
+                <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
                   {report.dateTime}
                 </div>
               </div>
@@ -157,8 +171,8 @@ const Report = () => {
 
         {/* No Results Message */}
         {filteredData.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-gray-500 text-sm font-montserrat">No reports found matching your search criteria.</p>
+          <div className="text-center" style={{ paddingTop: 'clamp(1.5rem, 2rem, 2.5rem)', paddingBottom: 'clamp(1.5rem, 2rem, 2.5rem)' }}>
+            <p className="text-gray-500 font-montserrat" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>No reports found matching your search criteria.</p>
           </div>
         )}
       </div>

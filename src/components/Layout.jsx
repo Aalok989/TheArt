@@ -61,25 +61,25 @@ const Layout = ({
           key: "overview",
           label: "Overview",
           icon: flatDetailsIcon, // Using existing icon for now
-          width: "10.625rem",
+          width: "clamp(8.5rem, 10.625rem, 12rem)",
         },
         {
           key: "banking",
           label: "Banking",
           icon: currentDuesIcon, // Using existing icon for now
-          width: "10.625rem",
+          width: "clamp(8.5rem, 10.625rem, 12rem)",
         },
         {
           key: "projects",
           label: "Projects",
           icon: paymentIcon, // Using existing icon for now
-          width: "10.625rem",
+          width: "clamp(8.5rem, 10.625rem, 12rem)",
         },
         {
           key: "documents",
           label: "Documents",
           icon: documentsIcon,
-          width: "10.9375rem",
+          width: "clamp(8.75rem, 10.9375rem, 12.5rem)",
         },
       ];
     } else {
@@ -88,25 +88,25 @@ const Layout = ({
           key: "flatDetails",
           label: "Flat Details",
           icon: flatDetailsIcon,
-          width: "10.625rem",
+          width: "clamp(8.5rem, 10.625rem, 12rem)",
         },
         {
           key: "currentDues",
           label: "Current Dues",
           icon: currentDuesIcon,
-          width: "12rem",
+          width: "clamp(9.5rem, 12rem, 14rem)",
         },
         {
           key: "payment",
           label: "Payments",
           icon: paymentIcon,
-          width: "10.625rem",
+          width: "clamp(8.5rem, 10.625rem, 12rem)",
         },
         {
           key: "documents",
           label: "Documents",
           icon: documentsIcon,
-          width: "10.9375rem",
+          width: "clamp(8.75rem, 10.9375rem, 12.5rem)",
         },
       ];
     }
@@ -164,14 +164,15 @@ const Layout = ({
         case "overview":
           return (
             <div
-              className={`page-container h-full flex gap-6 ${
+              className={`page-container h-full flex ${
                 isAnimating ? "opacity-50" : ""
               }`}
+              style={{ gap: 'clamp(1rem, 1.5rem, 2rem)' }}
             >
-              <div className="basis-[60%] min-w-0 bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="basis-[60%] min-w-0 bg-white shadow-sm border border-gray-200" style={{ borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)', maxHeight: '100%', overflow: 'hidden' }}>
                 <FlatStatus key={`flatStatus-${animationKey}`} />
               </div>
-              <div className="basis-[40%] min-w-0 bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="basis-[40%] min-w-0 bg-white shadow-sm border border-gray-200" style={{ borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)', maxHeight: '100%', overflow: 'hidden' }}>
                 <Report key={`report-${animationKey}`} />
               </div>
             </div>
@@ -281,14 +282,14 @@ const Layout = ({
       <nav
         className="relative"
         style={{
-          height: "7.25rem",
+          height: "clamp(5rem, 7.25rem, 8rem)",
           position: "absolute",
           top: "0",
           left: "0",
           right: "0",
           zIndex: "40",
-          paddingLeft: "2.75rem",
-          paddingRight: "3.125rem",
+          paddingLeft: "clamp(1.5rem, 2.75rem, 3.5rem)",
+          paddingRight: "clamp(1.5rem, 3.125rem, 4rem)",
         }}
       >
         <div className="h-full flex items-center justify-between relative">
@@ -333,8 +334,9 @@ const Layout = ({
               <img
                 src={Proprite}
                 alt="The Art"
-                className="h-[3.5rem] w-auto"
                 style={{
+                  height: "clamp(2.5rem, 3.5rem, 4rem)",
+                  width: "auto",
                   filter: "drop-shadow(0 0 30px rgba(255, 255, 255, 1))",
                 }}
               />
@@ -345,7 +347,7 @@ const Layout = ({
           <div
             className="hidden lg:flex items-center justify-center absolute left-1/2 transform -translate-x-1/2"
             style={{
-              gap: "0.625rem",
+              gap: "clamp(0.375rem, 0.625rem, 0.875rem)",
               minWidth: "20rem",
             }}
           >
@@ -360,7 +362,8 @@ const Layout = ({
                 }`}
                 style={{
                   width: item.width,
-                  height: "2.8125rem",
+                  height: "clamp(2.25rem, 2.8125rem, 3.25rem)",
+                  fontSize: "clamp(0.75rem, 0.875rem, 1rem)",
                   background:
                     activePage === item.key
                       ? "linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)"
@@ -370,13 +373,15 @@ const Layout = ({
                 <img
                   src={item.icon}
                   alt={item.label}
-                  className="w-[1.25rem] h-[1.25rem] flex-shrink-0"
+                  className="flex-shrink-0"
                   style={{
-                    marginRight: "0.5625rem",
+                    width: "clamp(1rem, 1.25rem, 1.5rem)",
+                    height: "clamp(1rem, 1.25rem, 1.5rem)",
+                    marginRight: "clamp(0.375rem, 0.5625rem, 0.75rem)",
                     filter: activePage === item.key ? "invert(1)" : "none",
                   }}
                 />
-                <span className="font-medium text-sm font-montserrat">
+                <span className="font-medium font-montserrat" style={{ fontSize: "clamp(0.75rem, 0.875rem, 1rem)" }}>
                   {item.label}
                 </span>
               </button>
@@ -502,7 +507,7 @@ const Layout = ({
         </div>
       )}
 
-      <div className="overflow-hidden h-screen pt-[7.25rem] pb-[2.3125rem] px-11">
+      <div className="overflow-hidden h-screen" style={{ paddingTop: 'clamp(5rem, 7.25rem, 8rem)', paddingBottom: 'clamp(1.5rem, 2.3125rem, 3rem)', paddingLeft: 'clamp(1.5rem, 2.75rem, 3.5rem)', paddingRight: 'clamp(1.5rem, 2.75rem, 3.5rem)' }}>
         <div className="lg:hidden h-full flex flex-col space-y-3 relative">
           {userRole === "user" && !activePage && (
             <div className="flex-shrink-0 h-[calc(30vh-2.1875rem)]">
@@ -545,29 +550,34 @@ const Layout = ({
         <div className="hidden lg:flex h-full items-center justify-center">
           {userRole === "admin" ? (
             // Admin layout - only middle section with two components
-            <div className="flex gap-[0.9375rem] w-full max-w-[120rem]">
-              <div className="flex flex-col w-full h-[49.8125rem]">
+            <div className="flex w-full max-w-[120rem] mx-auto" style={{ gap: 'clamp(0.625rem, 0.9375rem, 1.25rem)' }}>
+              <div className="flex flex-col w-full" style={{ height: 'clamp(35rem, 49.8125rem, 55rem)', maxHeight: 'calc(100vh - 10rem)' }}>
                 {renderMiddlePanel()}
               </div>
             </div>
           ) : (
-            // User layout - three sections
-            <div className="flex gap-[0.9375rem]">
-              <div className="flex flex-col w-[29.875rem] gap-[0.9375rem]">
-                <div className="h-[16.125rem]">
+            // User layout - three sections with responsive sizing
+            <div className="flex w-full max-w-[120rem] mx-auto" style={{ gap: 'clamp(0.625rem, 0.9375rem, 1.25rem)' }}>
+              {/* Left Panel - User Profile & Detailed Info */}
+              <div className="flex flex-col flex-shrink-0" style={{ width: 'clamp(20rem, 26.5%, 32rem)', gap: 'clamp(0.625rem, 0.9375rem, 1.25rem)', maxHeight: 'calc(100vh - 10rem)' }}>
+                <div style={{ height: 'clamp(12rem, 32.5%, 18rem)', flex: '0 0 auto' }}>
                   <UserProfile />
                 </div>
-                <div className="h-[32.75rem]">
+                <div style={{ height: 'clamp(24rem, 65.5%, 36rem)', flex: '1 1 auto', minHeight: 0 }}>
                   <DetailedInformation />
                 </div>
               </div>
-              <div className="flex flex-col w-[52.75rem] h-[49.8125rem]">
-                <div className="bg-white shadow-sm border border-gray-200 h-full flex flex-col min-h-0 rounded-[1.75rem]">
+              
+              {/* Middle Panel - Main Content */}
+              <div className="flex flex-col flex-1" style={{ minWidth: 'clamp(35rem, 40rem, 45rem)', maxWidth: 'clamp(50rem, 60rem, 70rem)', height: 'clamp(35rem, 49.8125rem, 55rem)', maxHeight: 'calc(100vh - 10rem)' }}>
+                <div className="bg-white shadow-sm border border-gray-200 h-full flex flex-col min-h-0" style={{ borderRadius: 'clamp(1.25rem, 1.75rem, 2rem)' }}>
                   {renderMiddlePanel()}
                 </div>
               </div>
-              <div className="flex flex-col w-[29.875rem] h-[49.8125rem]">
-                <div className="bg-white shadow-sm border border-gray-200 h-full p-6 rounded-[1.75rem]">
+              
+              {/* Right Panel - Updates */}
+              <div className="flex flex-col flex-shrink-0" style={{ width: 'clamp(20rem, 26.5%, 32rem)', height: 'clamp(35rem, 49.8125rem, 55rem)', maxHeight: 'calc(100vh - 10rem)' }}>
+                <div className="bg-white shadow-sm border border-gray-200 h-full" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', borderRadius: 'clamp(1.25rem, 1.75rem, 2rem)' }}>
                   <Updates />
                 </div>
               </div>

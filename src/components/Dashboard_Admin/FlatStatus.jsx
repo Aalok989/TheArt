@@ -116,14 +116,14 @@ const FlatStatus = () => {
           display: none;
         }
       `}</style>
-    <div className="flex h-full bg-white rounded-2xl overflow-hidden shadow-md w-full">
+    <div className="flex h-full bg-white overflow-hidden shadow-md w-full" style={{ borderRadius: 'clamp(1rem, 1.5rem, 2rem)' }}>
       {/* LEFT SECTION — FLAT STATUS (55%) */}
       <div className="w-[55%] min-w-0 flex flex-col">
-        <div className="p-6 flex-shrink-0">
-          <h2 className="text-[1.25rem] sm:text-[1.5rem] font-bold text-gray-800 mb-[1rem]">Flat Status</h2>
+        <div className="flex-shrink-0" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
+          <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)', marginBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}>Flat Status</h2>
 
         {/* Filter Buttons */}
-          <div className="grid grid-cols-3 gap-4 mb-[1rem]">
+          <div className="grid grid-cols-3 mb-[1rem]" style={{ gap: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
           {['floor', 'block', 'size'].map((filter) => {
             const isExpanded = expandedFilters.has(filter);
             const isSelected =
@@ -147,9 +147,10 @@ const FlatStatus = () => {
               <button
                 key={filter}
                 onClick={toggleExpanded}
-                className={`h-10 px-3 rounded-full text-sm font-medium transition-all duration-300 flex items-center justify-between ${
+                className={`rounded-full font-medium transition-all duration-300 flex items-center justify-between ${
                   isSelected ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                 }`}
+                style={{ height: 'clamp(2rem, 2.5rem, 3rem)', paddingLeft: 'clamp(0.5rem, 0.75rem, 1rem)', paddingRight: 'clamp(0.5rem, 0.75rem, 1rem)', fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}
               >
                 <span>
                   {filter === 'floor'
@@ -158,19 +159,20 @@ const FlatStatus = () => {
                     ? 'Block Wise'
                     : 'Size Wise'}
                 </span>
-                <HiChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                <HiChevronDown className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`} style={{ width: 'clamp(0.875rem, 1rem, 1.25rem)', height: 'clamp(0.875rem, 1rem, 1.25rem)' }} />
               </button>
             );
           })}
         </div>
 
-          <div className="grid grid-cols-3 gap-4 mb-[1rem]">
-          <button className="h-10 px-3 rounded-full text-sm font-medium bg-gray-200 text-gray-600 hover:bg-gray-300 transition-all duration-300 col-span-1">
+          <div className="grid grid-cols-3 mb-[1rem]" style={{ gap: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
+          <button className="rounded-full font-medium bg-gray-200 text-gray-600 hover:bg-gray-300 transition-all duration-300 col-span-1" style={{ height: 'clamp(2rem, 2.5rem, 3rem)', paddingLeft: 'clamp(0.5rem, 0.75rem, 1rem)', paddingRight: 'clamp(0.5rem, 0.75rem, 1rem)', fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>
             Mortgaged
           </button>
             <button 
               onClick={handleViewAll}
-              className="h-10 px-3 rounded-full text-sm font-medium bg-gray-200 text-gray-600 hover:bg-gray-300 transition-all duration-300 col-span-1"
+              className="rounded-full font-medium bg-gray-200 text-gray-600 hover:bg-gray-300 transition-all duration-300 col-span-1"
+              style={{ height: 'clamp(2rem, 2.5rem, 3rem)', paddingLeft: 'clamp(0.5rem, 0.75rem, 1rem)', paddingRight: 'clamp(0.5rem, 0.75rem, 1rem)', fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}
             >
             View All
           </button>
@@ -179,47 +181,51 @@ const FlatStatus = () => {
         </div>
 
         {/* Filter Sections with Fixed Spacing */}
-        <div className="flex-1 overflow-y-auto px-6 min-h-0">
+        <div className="flex-1 overflow-y-auto min-h-0" style={{ paddingLeft: 'clamp(1rem, 1.5rem, 2rem)', paddingRight: 'clamp(1rem, 1.5rem, 2rem)' }}>
           {/* FLOOR WISE Section */}
-          <div className="mb-12">
+          <div style={{ marginBottom: 'clamp(2rem, 3rem, 4rem)' }}>
             <h3
-              className="font-bold mb-[1rem] border-b pb-[0.5rem]"
+              className="font-bold border-b"
               style={{
                 color: '#8C8C8C',
-                fontSize: '0.75rem',
+                fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)',
                 borderBottomColor: '#616161',
                 borderBottomWidth: '0.1875rem',
+                marginBottom: 'clamp(0.75rem, 1rem, 1.25rem)',
+                paddingBottom: 'clamp(0.375rem, 0.5rem, 0.625rem)',
               }}
             >
               FLOOR WISE
             </h3>
-            <div className="min-h-[2rem]">
+            <div style={{ minHeight: 'clamp(1.5rem, 2rem, 2.5rem)' }}>
               {expandedFilters.has('floor') && (
-                <div className="mt-2 relative flex items-center">
+                <div className="relative flex items-center" style={{ marginTop: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
                   {/* Left Arrow */}
                   <button
                     onClick={() => handleScroll(floorScrollRef, 'left')}
-                    className="absolute left-0 z-10 w-6 h-6 flex items-center justify-center rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 shadow-sm transition-all duration-200"
+                    className="absolute left-0 z-10 flex items-center justify-center rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 shadow-sm transition-all duration-200"
+                    style={{ width: 'clamp(1.25rem, 1.5rem, 1.75rem)', height: 'clamp(1.25rem, 1.5rem, 1.75rem)' }}
                   >
-                    <HiChevronLeft className="w-4 h-4" />
+                    <HiChevronLeft style={{ width: 'clamp(0.875rem, 1rem, 1.25rem)', height: 'clamp(0.875rem, 1rem, 1.25rem)' }} />
                   </button>
                   
                   {/* Scrollable Content */}
                   <div 
                     ref={floorScrollRef}
-                    className="overflow-x-scroll scrollbar-hide mx-8"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    className="overflow-x-scroll scrollbar-hide"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', marginLeft: 'clamp(1.5rem, 2rem, 2.5rem)', marginRight: 'clamp(1.5rem, 2rem, 2.5rem)' }}
                   >
-                    <div className="flex items-center gap-2 w-max">
+                    <div className="flex items-center w-max" style={{ gap: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
                       {floors.map((floor) => (
                         <button
                           key={floor}
                           onClick={() => setSelectedFloor(prev => (prev === floor ? null : floor))}
-                          className={`w-10 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-all duration-300 flex-shrink-0 ${
+                          className={`flex items-center justify-center rounded-md font-medium transition-all duration-300 flex-shrink-0 ${
                             selectedFloor === floor
                               ? 'bg-gray-800 text-white'
                               : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                           }`}
+                          style={{ width: 'clamp(2rem, 2.5rem, 3rem)', height: 'clamp(1.75rem, 2rem, 2.25rem)', fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}
                         >
                           {floor}
                         </button>
@@ -230,9 +236,10 @@ const FlatStatus = () => {
                   {/* Right Arrow */}
                   <button
                     onClick={() => handleScroll(floorScrollRef, 'right')}
-                    className="absolute right-0 z-10 w-6 h-6 flex items-center justify-center rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 shadow-sm transition-all duration-200"
+                    className="absolute right-0 z-10 flex items-center justify-center rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 shadow-sm transition-all duration-200"
+                    style={{ width: 'clamp(1.25rem, 1.5rem, 1.75rem)', height: 'clamp(1.25rem, 1.5rem, 1.75rem)' }}
                   >
-                    <HiChevronRight className="w-4 h-4" />
+                    <HiChevronRight style={{ width: 'clamp(0.875rem, 1rem, 1.25rem)', height: 'clamp(0.875rem, 1rem, 1.25rem)' }} />
                   </button>
                 </div>
               )}
@@ -240,45 +247,49 @@ const FlatStatus = () => {
           </div>
 
           {/* BLOCK WISE Section */}
-          <div className="mb-12">
+          <div style={{ marginBottom: 'clamp(2rem, 3rem, 4rem)' }}>
             <h3
-              className="font-bold mb-[1rem] border-b pb-[0.5rem]"
+              className="font-bold border-b"
               style={{
                 color: '#8C8C8C',
-                fontSize: '0.75rem',
+                fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)',
                 borderBottomColor: '#616161',
                 borderBottomWidth: '0.1875rem',
+                marginBottom: 'clamp(0.75rem, 1rem, 1.25rem)',
+                paddingBottom: 'clamp(0.375rem, 0.5rem, 0.625rem)',
               }}
             >
               BLOCK WISE
             </h3>
-            <div className="min-h-[2rem]">
+            <div style={{ minHeight: 'clamp(1.5rem, 2rem, 2.5rem)' }}>
               {expandedFilters.has('block') && (
-                <div className="mt-2 relative flex items-center">
+                <div className="relative flex items-center" style={{ marginTop: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
                   {/* Left Arrow */}
                   <button
                     onClick={() => handleScroll(blockScrollRef, 'left')}
-                    className="absolute left-0 z-10 w-6 h-6 flex items-center justify-center rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 shadow-sm transition-all duration-200"
+                    className="absolute left-0 z-10 flex items-center justify-center rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 shadow-sm transition-all duration-200"
+                    style={{ width: 'clamp(1.25rem, 1.5rem, 1.75rem)', height: 'clamp(1.25rem, 1.5rem, 1.75rem)' }}
                   >
-                    <HiChevronLeft className="w-4 h-4" />
+                    <HiChevronLeft style={{ width: 'clamp(0.875rem, 1rem, 1.25rem)', height: 'clamp(0.875rem, 1rem, 1.25rem)' }} />
                   </button>
                   
                   {/* Scrollable Content */}
                   <div 
                     ref={blockScrollRef}
-                    className="overflow-x-scroll scrollbar-hide mx-8"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    className="overflow-x-scroll scrollbar-hide"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', marginLeft: 'clamp(1.5rem, 2rem, 2.5rem)', marginRight: 'clamp(1.5rem, 2rem, 2.5rem)' }}
                   >
-                    <div className="flex items-center gap-2 w-max">
+                    <div className="flex items-center w-max" style={{ gap: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
                       {blocks.map((block) => (
                         <button
                           key={block}
                           onClick={() => setSelectedBlock(prev => (prev === block ? null : block))}
-                          className={`w-10 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-all duration-300 flex-shrink-0 ${
+                          className={`flex items-center justify-center rounded-md font-medium transition-all duration-300 flex-shrink-0 ${
                             selectedBlock === block
                               ? 'bg-gray-800 text-white'
                               : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                           }`}
+                          style={{ width: 'clamp(2rem, 2.5rem, 3rem)', height: 'clamp(1.75rem, 2rem, 2.25rem)', fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}
                         >
                           {block}
                         </button>
@@ -289,9 +300,10 @@ const FlatStatus = () => {
                   {/* Right Arrow */}
                   <button
                     onClick={() => handleScroll(blockScrollRef, 'right')}
-                    className="absolute right-0 z-10 w-6 h-6 flex items-center justify-center rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 shadow-sm transition-all duration-200"
+                    className="absolute right-0 z-10 flex items-center justify-center rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 shadow-sm transition-all duration-200"
+                    style={{ width: 'clamp(1.25rem, 1.5rem, 1.75rem)', height: 'clamp(1.25rem, 1.5rem, 1.75rem)' }}
                   >
-                    <HiChevronRight className="w-4 h-4" />
+                    <HiChevronRight style={{ width: 'clamp(0.875rem, 1rem, 1.25rem)', height: 'clamp(0.875rem, 1rem, 1.25rem)' }} />
                   </button>
                 </div>
               )}
@@ -299,45 +311,49 @@ const FlatStatus = () => {
           </div>
 
           {/* SIZE WISE Section */}
-          <div className="mb-12">
+          <div style={{ marginBottom: 'clamp(2rem, 3rem, 4rem)' }}>
             <h3
-              className="font-bold mb-[1rem] border-b pb-[0.5rem]"
+              className="font-bold border-b"
               style={{
                 color: '#8C8C8C',
-                fontSize: '0.75rem',
+                fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)',
                 borderBottomColor: '#616161',
                 borderBottomWidth: '0.1875rem',
+                marginBottom: 'clamp(0.75rem, 1rem, 1.25rem)',
+                paddingBottom: 'clamp(0.375rem, 0.5rem, 0.625rem)',
               }}
             >
               SIZE WISE
             </h3>
-            <div className="min-h-[2rem]">
+            <div style={{ minHeight: 'clamp(1.5rem, 2rem, 2.5rem)' }}>
               {expandedFilters.has('size') && (
-                <div className="mt-2 relative flex items-center">
+                <div className="relative flex items-center" style={{ marginTop: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
                   {/* Left Arrow */}
                   <button
                     onClick={() => handleScroll(sizeScrollRef, 'left')}
-                    className="absolute left-0 z-10 w-6 h-6 flex items-center justify-center rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 shadow-sm transition-all duration-200"
+                    className="absolute left-0 z-10 flex items-center justify-center rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 shadow-sm transition-all duration-200"
+                    style={{ width: 'clamp(1.25rem, 1.5rem, 1.75rem)', height: 'clamp(1.25rem, 1.5rem, 1.75rem)' }}
                   >
-                    <HiChevronLeft className="w-4 h-4" />
+                    <HiChevronLeft style={{ width: 'clamp(0.875rem, 1rem, 1.25rem)', height: 'clamp(0.875rem, 1rem, 1.25rem)' }} />
                   </button>
                   
                   {/* Scrollable Content */}
                   <div 
                     ref={sizeScrollRef}
-                    className="overflow-x-scroll scrollbar-hide mx-8"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    className="overflow-x-scroll scrollbar-hide"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', marginLeft: 'clamp(1.5rem, 2rem, 2.5rem)', marginRight: 'clamp(1.5rem, 2rem, 2.5rem)' }}
                   >
-                    <div className="flex items-center gap-2 w-max">
+                    <div className="flex items-center w-max" style={{ gap: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
                       {sizes.map((size) => (
                         <button
                           key={size}
                           onClick={() => setSelectedSize(prev => (prev === size ? null : size))}
-                          className={`px-4 h-8 rounded-md text-xs font-medium transition-all duration-300 whitespace-nowrap flex-shrink-0 ${
+                          className={`rounded-md font-medium transition-all duration-300 whitespace-nowrap flex-shrink-0 ${
                             selectedSize === size
                               ? 'bg-gray-800 text-white'
                               : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                           }`}
+                          style={{ paddingLeft: 'clamp(0.75rem, 1rem, 1.25rem)', paddingRight: 'clamp(0.75rem, 1rem, 1.25rem)', height: 'clamp(1.75rem, 2rem, 2.25rem)', fontSize: 'clamp(0.65rem, 0.75rem, 0.875rem)' }}
                         >
                           {size}
                         </button>
@@ -348,9 +364,10 @@ const FlatStatus = () => {
                   {/* Right Arrow */}
                   <button
                     onClick={() => handleScroll(sizeScrollRef, 'right')}
-                    className="absolute right-0 z-10 w-6 h-6 flex items-center justify-center rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 shadow-sm transition-all duration-200"
+                    className="absolute right-0 z-10 flex items-center justify-center rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 shadow-sm transition-all duration-200"
+                    style={{ width: 'clamp(1.25rem, 1.5rem, 1.75rem)', height: 'clamp(1.25rem, 1.5rem, 1.75rem)' }}
                   >
-                    <HiChevronRight className="w-4 h-4" />
+                    <HiChevronRight style={{ width: 'clamp(0.875rem, 1rem, 1.25rem)', height: 'clamp(0.875rem, 1rem, 1.25rem)' }} />
                   </button>
                 </div>
               )}
@@ -361,62 +378,66 @@ const FlatStatus = () => {
 
       {/* RIGHT SECTION — FLATS SUMMARY (45%) */}
       <div className="w-[45%] min-w-0 bg-[#F3F3F3FE] border-l border-gray-300 flex flex-col">
-        <div className="p-6 flex-shrink-0">
-        <h2 className="text-[1.25rem] sm:text-[1.5rem] font-bold text-gray-800 mb-[1rem]">Flats Summary</h2>
+        <div className="flex-shrink-0" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
+        <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)', marginBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}>Flats Summary</h2>
 
         {/* Legend */}
-        <div className="flex items-center gap-6 pb-[1rem]">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            <span className="text-sm text-gray-800 font-semibold font-montserrat">Booked</span>
+        <div className="flex items-center flex-wrap" style={{ gap: 'clamp(0.75rem, 1.5rem, 2rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
+          <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
+            <div className="bg-red-500 rounded-full" style={{ width: 'clamp(0.625rem, 0.75rem, 0.875rem)', height: 'clamp(0.625rem, 0.75rem, 0.875rem)' }}></div>
+            <span className="text-gray-800 font-semibold font-montserrat" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>Booked</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-            <span className="text-sm text-gray-800 font-semibold font-montserrat">Blocked</span>
+          <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
+            <div className="bg-yellow-500 rounded-full" style={{ width: 'clamp(0.625rem, 0.75rem, 0.875rem)', height: 'clamp(0.625rem, 0.75rem, 0.875rem)' }}></div>
+            <span className="text-gray-800 font-semibold font-montserrat" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>Blocked</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span className="text-sm text-gray-800 font-semibold font-montserrat">Vacant</span>
+          <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
+            <div className="bg-green-500 rounded-full" style={{ width: 'clamp(0.625rem, 0.75rem, 0.875rem)', height: 'clamp(0.625rem, 0.75rem, 0.875rem)' }}></div>
+            <span className="text-gray-800 font-semibold font-montserrat" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>Vacant</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-            <span className="text-sm text-gray-800 font-semibold font-montserrat">BBA Signed</span>
+          <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
+            <div className="bg-blue-500 rounded-full" style={{ width: 'clamp(0.625rem, 0.75rem, 0.875rem)', height: 'clamp(0.625rem, 0.75rem, 0.875rem)' }}></div>
+            <span className="text-gray-800 font-semibold font-montserrat" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>BBA Signed</span>
           </div>
           </div>
         </div>
 
         {/* Scrollable content starting from table header */}
-        <div className="flex-1 overflow-y-auto px-6 min-h-0" style={{ scrollbarGutter: 'stable' }}>
+        <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarGutter: 'stable', paddingLeft: 'clamp(1rem, 1.5rem, 2rem)', paddingRight: 'clamp(1rem, 1.5rem, 2rem)' }}>
           {/* Sticky header */}
           <div
-            className="grid gap-[8rem] py-[1rem] border-b sticky top-0 z-10"
+            className="grid border-b sticky top-0 z-10"
             style={{
               gridTemplateColumns: '1fr 3fr',
+              gap: 'clamp(4rem, 8rem, 10rem)',
+              paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)',
+              paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)',
               borderBottomColor: '#616161',
               borderBottomWidth: '0.1875rem',
               backgroundColor: '#F3F3F3FE'
             }}
           >
-            <div style={{ fontSize: '0.75rem', color: '#8C8C8C', fontWeight: 'bold' }}>Flat No.</div>
-            <div style={{ fontSize: '0.75rem', color: '#8C8C8C', fontWeight: 'bold' }}>Status</div>
+            <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold' }}>Flat No.</div>
+            <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold' }}>Status</div>
           </div>
 
           {/* Rows */}
-          <div className="space-y-0 mt-[1rem]">
+          <div className="space-y-0" style={{ marginTop: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
             {filteredFlatsData.length > 0 ? (
               filteredFlatsData.map((flat, index) => (
               <div
                 key={index}
-                className="grid gap-[8rem] py-[1.25rem] border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
-                style={{ gridTemplateColumns: '1fr 3fr' }}
+                className="grid border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
+                style={{ gridTemplateColumns: '1fr 3fr', gap: 'clamp(4rem, 8rem, 10rem)', paddingTop: 'clamp(0.875rem, 1.25rem, 1.5rem)', paddingBottom: 'clamp(0.875rem, 1.25rem, 1.5rem)' }}
               >
                   <button
                     onClick={() => handleFlatClick(flat)}
-                    className={`text-base font-medium ${flat.color} font-montserrat text-left hover:underline cursor-pointer transition-all duration-200`}
+                    className={`font-medium ${flat.color} font-montserrat text-left hover:underline cursor-pointer transition-all duration-200`}
+                    style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}
                   >
                   {flat.flatNo}
                   </button>
-                  <div className="text-base text-gray-700 font-montserrat">{flat.status}</div>
+                  <div className="text-gray-700 font-montserrat" style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}>{flat.status}</div>
                 </div>
               ))
             ) : (

@@ -5,10 +5,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Root font size adjustment for better zoom scaling */
+html {
+  font-size: 16px; /* Base font size */
+  -webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape */
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Ensure body scales properly with browser zoom */
 body {
   font-family: 'Lora', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden; /* Prevent horizontal scroll at different zoom levels */
+  min-width: 320px; /* Minimum width to prevent layout breaking */
+}
+
+/* Container max-width constraints for different zoom levels */
+@media screen and (min-width: 1920px) {
+  :root {
+    --max-content-width: 1920px;
+  }
+}
+
+@media screen and (max-width: 1919px) and (min-width: 1024px) {
+  :root {
+    --max-content-width: 100vw;
+  }
 }
 
 /* Responsive Typography */
@@ -399,6 +423,80 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   }
+  
+  /* Ensure content doesn't overflow at different zoom levels */
+  body {
+    overflow-x: hidden;
+  }
+}
+
+/* Zoom level adjustments - prevent layout breaking */
+@media screen and (min-resolution: 120dpi) {
+  /* High DPI displays - ensure consistent rendering */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Responsive viewport units for consistent scaling */
+.responsive-container {
+  width: 100%;
+  max-width: min(100vw, 1920px);
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* Prevent layout breaking at extreme zoom levels */
+@supports (zoom: 1) {
+  /* For browsers that support the zoom property */
+  body {
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
+  }
+}
+
+/* Flexible grid for different zoom levels */
+@media (min-width: 1024px) and (max-width: 1366px) {
+  /* Smaller desktop screens or zoomed in displays */
+  :root {
+    --content-scale: 0.9;
+  }
+}
+
+@media (min-width: 1367px) and (max-width: 1600px) {
+  /* Medium desktop screens */
+  :root {
+    --content-scale: 1;
+  }
+}
+
+@media (min-width: 1601px) {
+  /* Large desktop screens or zoomed out displays */
+  :root {
+    --content-scale: 1;
+  }
+}
+
+/* Ensure smooth scrolling doesn't break layout at different zooms */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Fix for flexbox at different zoom levels */
+.flex {
+  display: flex;
+  flex-wrap: nowrap;
+  min-width: 0; /* Prevent flex items from overflowing */
+}
+
+.flex > * {
+  min-width: 0; /* Prevent flex children from overflowing */
 }
 
 /* Typography Classes */
