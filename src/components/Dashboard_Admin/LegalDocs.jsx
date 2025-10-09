@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { HiUpload, HiEye, HiDownload } from 'react-icons/hi';
 import { fetchLegalDocuments } from '../../api/mockData';
+import UploadDocumentPopup from './UploadDocumentPopup';
 
 const LegalDocs = () => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isUploadPopupOpen, setIsUploadPopupOpen] = useState(false);
 
   useEffect(() => {
     const getDocuments = async () => {
@@ -25,7 +27,7 @@ const LegalDocs = () => {
   }, []);
 
   const handleUpload = () => {
-    console.log('Upload Legal Document');
+    setIsUploadPopupOpen(true);
   };
 
   const handleView = (doc) => {
@@ -175,6 +177,13 @@ const LegalDocs = () => {
           </div>
         )}
       </div>
+
+      {/* Upload Document Popup */}
+      <UploadDocumentPopup 
+        isOpen={isUploadPopupOpen}
+        onClose={() => setIsUploadPopupOpen(false)}
+        documentType="Legal Document"
+      />
     </div>
   );
 };

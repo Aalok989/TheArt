@@ -73,19 +73,21 @@ const UserProfile = () => {
 
   return (
     <div
-      className="relative bg-white shadow-sm border border-gray-200 h-full flex flex-col overflow-hidden"
-      style={{ borderRadius: '1.75rem' }}
+      className="relative bg-white shadow-sm border border-gray-200 h-full flex flex-col overflow-hidden w-full"
+      style={{ borderRadius: 'clamp(1.25rem, 1.75rem, 2rem)' }}
     >
-      <div className="h-full flex flex-col justify-between min-h-0 p-5">
+      <div className="h-full flex flex-col justify-between min-h-0" style={{ padding: 'clamp(1.25rem, 1.5rem, 2rem)' }}>
         {/* Profile Section */}
         <div
-          className={`flex items-center space-x-4 mb-0 lg:mb-2 animate-fade-in-up ${
+          className={`flex items-center mb-0 lg:mb-2 animate-fade-in-up ${
             isLoaded ? 'animate-delay-100' : ''
           }`}
+          style={{ gap: 'clamp(1rem, 1.25rem, 1.5rem)' }}
         >
-          {/* Profile Image - Responsive sizing */}
+          {/* Profile Image - Larger for mobile */}
           <div
-            className="bg-gray-300 rounded-full flex items-center justify-center overflow-hidden shadow-sm flex-shrink-0 animate-scale-in w-[5rem] h-[5rem] lg:w-[6.25rem] lg:h-[6.25rem]"
+            className="bg-gray-300 rounded-full flex items-center justify-center overflow-hidden shadow-sm flex-shrink-0 animate-scale-in"
+            style={{ width: 'clamp(5rem, 6rem, 6.25rem)', height: 'clamp(5rem, 6rem, 6.25rem)' }}
           >
             <img 
               src={userData.profileImage || userImageBig} 
@@ -98,7 +100,8 @@ const UserProfile = () => {
           {/* Name and Flat Info - Responsive layout */}
           <div className="animate-fade-in-right flex-1 min-w-0">
             <h2
-              className="mb-1 text-[1.125rem] sm:text-[1.25rem] lg:text-[1.78125rem] leading-tight"
+              className="leading-tight"
+              style={{ marginBottom: 'clamp(0.5rem, 0.75rem, 0.75rem)', fontSize: 'clamp(1.25rem, 1.5rem, 1.78125rem)' }}
             >
               <span style={{ color: '#690A7D' }}>Hi, </span>
               <span style={{ color: '#690A7D', fontWeight: '700' }}>
@@ -106,27 +109,30 @@ const UserProfile = () => {
               </span>
             </h2>
             <p
-              className="font-lora text-[0.875rem] sm:text-[1rem] lg:text-[1.1625rem]"
-              style={{ color: '#FF6B9D', fontWeight: '600' }}
+              className="font-lora"
+              style={{ color: '#FF6B9D', fontWeight: '600', fontSize: 'clamp(1rem, 1.125rem, 1.1625rem)' }}
             >
               Flat No. :- {userData.flatNo}
             </p>
           </div>
         </div>
 
-        {/* Contact Icons - Responsive layout */}
+        {/* Contact Icons - Larger for mobile */}
         <div
-          className={`flex items-center justify-start gap-[0.9375rem] animate-fade-in-up ${
+          className={`flex items-center justify-start animate-fade-in-up ${
             isLoaded ? 'animate-delay-200' : ''
           }`}
+          style={{ gap: 'clamp(1rem, 1.25rem, 1.25rem)' }}
         >
           {/* Email Icon */}
           <div
-            className={`cursor-pointer hover:opacity-80 transition-all duration-200 relative w-[2.5rem] h-[2.5rem] lg:w-[3.125rem] lg:h-[3.125rem] ${
+            className={`cursor-pointer hover:opacity-80 transition-all duration-200 relative ${
               activeContact === 'email' ? 'rounded-full' : ''
             }`}
             style={{
-              backgroundColor: activeContact === 'email' ? '#000000' : 'transparent'
+              backgroundColor: activeContact === 'email' ? '#000000' : 'transparent',
+              width: 'clamp(2.5rem, 3rem, 3.125rem)',
+              height: 'clamp(2.5rem, 3rem, 3.125rem)'
             }}
             onClick={() => handleContactClick('email')}
           >
@@ -140,18 +146,21 @@ const UserProfile = () => {
               <img
                 src={arrowIcon}
                 alt="Arrow"
-                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-[1rem] h-[1rem] lg:w-[1rem] lg:h-[1rem]"
+                className="absolute left-1/2 transform -translate-x-1/2"
+                style={{ bottom: 'clamp(-0.5rem, -0.625rem, -0.625rem)', width: 'clamp(1rem, 1.25rem, 1.25rem)', height: 'clamp(1rem, 1.25rem, 1.25rem)' }}
               />
             )}
           </div>
 
           {/* Phone Icon */}
           <div
-            className={`cursor-pointer hover:opacity-80 transition-all duration-200 relative w-[2.5rem] h-[2.5rem] lg:w-[3.125rem] lg:h-[3.125rem] ${
+            className={`cursor-pointer hover:opacity-80 transition-all duration-200 relative ${
               activeContact === 'phone' ? 'rounded-full' : ''
             }`}
             style={{
-              backgroundColor: activeContact === 'phone' ? '#000000' : 'transparent'
+              backgroundColor: activeContact === 'phone' ? '#000000' : 'transparent',
+              width: 'clamp(2.5rem, 3rem, 3.125rem)',
+              height: 'clamp(2.5rem, 3rem, 3.125rem)'
             }}
             onClick={() => handleContactClick('phone')}
           >
@@ -165,18 +174,21 @@ const UserProfile = () => {
               <img
                 src={arrowIcon}
                 alt="Arrow"
-                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-[1rem] h-[1rem] lg:w-[1rem] lg:h-[1rem]"
+                className="absolute left-1/2 transform -translate-x-1/2"
+                style={{ bottom: 'clamp(-0.5rem, -0.625rem, -0.625rem)', width: 'clamp(1rem, 1.25rem, 1.25rem)', height: 'clamp(1rem, 1.25rem, 1.25rem)' }}
               />
             )}
           </div>
 
           {/* WhatsApp Icon */}
           <div
-            className={`cursor-pointer hover:opacity-80 transition-all duration-200 relative w-[2.5rem] h-[2.5rem] lg:w-[3.125rem] lg:h-[3.125rem] ${
+            className={`cursor-pointer hover:opacity-80 transition-all duration-200 relative ${
               activeContact === 'whatsapp' ? 'rounded-full' : ''
             }`}
             style={{
-              backgroundColor: activeContact === 'whatsapp' ? '#000000' : 'transparent'
+              backgroundColor: activeContact === 'whatsapp' ? '#000000' : 'transparent',
+              width: 'clamp(2.5rem, 3rem, 3.125rem)',
+              height: 'clamp(2.5rem, 3rem, 3.125rem)'
             }}
             onClick={() => handleContactClick('whatsapp')}
           >
@@ -190,23 +202,24 @@ const UserProfile = () => {
               <img
                 src={arrowIcon}
                 alt="Arrow"
-                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-[1rem] h-[1rem] lg:w-[1rem] lg:h-[1rem]"
+                className="absolute left-1/2 transform -translate-x-1/2"
+                style={{ bottom: 'clamp(-0.5rem, -0.625rem, -0.625rem)', width: 'clamp(1rem, 1.25rem, 1.25rem)', height: 'clamp(1rem, 1.25rem, 1.25rem)' }}
               />
             )}
           </div>
         </div>
 
-        {/* Contact Info Box - Responsive */}
+        {/* Contact Info Box - Larger for mobile */}
         <div
-          className="rounded-full flex items-center justify-center px-4 animate-fade-in-up mt-2 w-full h-[2.5rem] lg:h-[2.5rem]"
-          style={{ backgroundColor: 'rgba(240, 220, 211, 0.5)' }}
+          className="rounded-full flex items-center justify-center w-full animate-fade-in-up"
+          style={{ backgroundColor: 'rgba(240, 220, 211, 0.5)', paddingLeft: 'clamp(1rem, 1.25rem, 1.25rem)', paddingRight: 'clamp(1rem, 1.25rem, 1.25rem)', marginTop: 'clamp(0.5rem, 0.75rem, 0.625rem)', height: 'clamp(2.5rem, 3rem, 3rem)' }}
         >
           <img
             src={contactData[activeContact].icon}
             alt={activeContact}
-            className="w-[1rem] h-[1rem] mr-3"
+            style={{ width: 'clamp(1rem, 1.125rem, 1.125rem)', height: 'clamp(1rem, 1.125rem, 1.125rem)', marginRight: 'clamp(0.75rem, 1rem, 1rem)' }}
           />
-          <span className="text-black text-[1rem] truncate">
+          <span className="text-black truncate" style={{ fontSize: 'clamp(1rem, 1.125rem, 1.125rem)' }}>
             {contactData[activeContact].label}
           </span>
         </div>
@@ -214,5 +227,7 @@ const UserProfile = () => {
     </div>
   );
 };
+
+
 
 export default UserProfile;

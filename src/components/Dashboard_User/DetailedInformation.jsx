@@ -51,35 +51,36 @@ const DetailedInformation = () => {
 
   return (
     <div
-      className="bg-white shadow-sm border border-gray-200 h-full hover-lift section-animate"
-      style={{ borderRadius: '1.75rem' }}
+      className="bg-white shadow-sm border border-gray-200 h-full hover-lift section-animate w-full"
+      style={{ borderRadius: 'clamp(1.25rem, 1.75rem, 2rem)' }}
     >
-      <div className="h-full flex flex-col p-[1rem] sm:p-[1.25rem] lg:p-[1.5rem]">
+      <div className="h-full flex flex-col" style={{ padding: 'clamp(0.875rem, 1.25rem, 1.5rem)' }}>
         {/* Header Section */}
-        <div className="mb-[1rem] sm:mb-[1.25rem] lg:mb-[1.5rem]">
-          <h3 className="text-[1rem] sm:text-[1.125rem] font-bold text-gray-800">
+        <div style={{ marginBottom: 'clamp(0.875rem, 1.25rem, 1.5rem)' }}>
+          <h3 className="font-bold text-gray-800" style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}>
             Detailed Information
           </h3>
         </div>
 
         {/* Content Section */}
-        <div className="flex-1 min-h-0 space-y-2 sm:space-y-2 lg:space-y-[0.625rem] overflow-y-auto">
+        <div className="flex-1 min-h-0 overflow-y-auto" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
           {/* Full Name */}
           <div
-            className="p-[0.75rem] sm:p-[1rem] rounded-[0.9375rem] border border-[rgba(240,220,211,0.5)] h-[4rem] sm:h-[4.375rem] lg:h-[4.75rem] flex items-center"
+            className="border border-[rgba(240,220,211,0.5)] flex items-center"
+            style={{ padding: 'clamp(0.625rem, 1rem, 1.25rem)', borderRadius: 'clamp(0.75rem, 0.9375rem, 1.125rem)', height: 'clamp(3.5rem, 4.375rem, 5rem)' }}
           >
             <div className="flex items-center justify-between w-full">
-              <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="flex items-center" style={{ gap: 'clamp(0.625rem, 1rem, 1.25rem)' }}>
                 <img
                   src={circleIcon}
                   alt="Circle"
-                  className="w-[1.5rem] h-[1.5rem] sm:w-[2rem] sm:h-[2rem] lg:w-[2.17375rem] lg:h-[2.17375rem]"
+                  style={{ width: 'clamp(1.5rem, 2rem, 2.17375rem)', height: 'clamp(1.5rem, 2rem, 2.17375rem)' }}
                 />
                 <div>
-                  <div className="text-gray-600 mb-1 text-[0.75rem] sm:text-[0.875rem] lg:text-[0.875rem] font-montserrat">
+                  <div className="text-gray-600 font-montserrat" style={{ marginBottom: 'clamp(0.125rem, 0.25rem, 0.375rem)', fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)' }}>
                     Full Name
                   </div>
-                  <div className="font-medium text-gray-800 text-[0.875rem] sm:text-[1rem] lg:text-[1.1875rem]">
+                  <div className="font-medium text-gray-800" style={{ fontSize: 'clamp(0.875rem, 1rem, 1.1875rem)' }}>
                     {detailData.fullName}
                   </div>
                 </div>
@@ -87,27 +88,28 @@ const DetailedInformation = () => {
               <img
                 src={userIcon}
                 alt="User"
-                className="w-[1.5rem] h-[1.5rem] sm:w-[2rem] sm:h-[2rem] lg:w-[2.17375rem] lg:h-[2.17375rem]"
+                style={{ width: 'clamp(1.5rem, 2rem, 2.17375rem)', height: 'clamp(1.5rem, 2rem, 2.17375rem)' }}
               />
             </div>
           </div>
 
           {/* Father / Husband Name */}
           <div
-            className="p-[0.75rem] sm:p-[1rem] rounded-[0.9375rem] border border-[rgba(240,220,211,0.5)] h-[4rem] sm:h-[4.375rem] lg:h-[4.75rem] flex items-center"
+            className="border border-[rgba(240,220,211,0.5)] flex items-center"
+            style={{ padding: 'clamp(0.625rem, 1rem, 1.25rem)', borderRadius: 'clamp(0.75rem, 0.9375rem, 1.125rem)', height: 'clamp(3.5rem, 4.375rem, 5rem)' }}
           >
             <div className="flex items-center justify-between w-full">
-              <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="flex items-center" style={{ gap: 'clamp(0.625rem, 1rem, 1.25rem)' }}>
                 <img
                   src={circleIcon}
                   alt="Circle"
-                  className="w-[1.5rem] h-[1.5rem] sm:w-[2rem] sm:h-[2rem] lg:w-[2.17375rem] lg:h-[2.17375rem]"
+                  style={{ width: 'clamp(1.5rem, 2rem, 2.17375rem)', height: 'clamp(1.5rem, 2rem, 2.17375rem)' }}
                 />
                 <div>
-                  <div className="text-gray-600 mb-1 text-[0.75rem] sm:text-[0.875rem] lg:text-[0.875rem] font-montserrat">
+                  <div className="text-gray-600 font-montserrat" style={{ marginBottom: 'clamp(0.125rem, 0.25rem, 0.375rem)', fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)' }}>
                     Father / Husband Name
                   </div>
-                  <div className="font-medium text-gray-800 text-[0.875rem] sm:text-[1rem] lg:text-[1.1875rem]">
+                  <div className="font-medium text-gray-800" style={{ fontSize: 'clamp(0.875rem, 1rem, 1.1875rem)' }}>
                     {detailData.fatherHusbandName}
                   </div>
                 </div>
@@ -115,27 +117,28 @@ const DetailedInformation = () => {
               <img
                 src={user2Icon}
                 alt="User"
-                className="w-[1.5rem] h-[1.5rem] sm:w-[2rem] sm:h-[2rem] lg:w-[2.17375rem] lg:h-[2.17375rem]"
+                style={{ width: 'clamp(1.5rem, 2rem, 2.17375rem)', height: 'clamp(1.5rem, 2rem, 2.17375rem)' }}
               />
             </div>
           </div>
 
           {/* PAN No. */}
           <div
-            className="p-[0.75rem] sm:p-[1rem] rounded-[0.9375rem] border border-[rgba(240,220,211,0.5)] h-[4rem] sm:h-[4.375rem] lg:h-[4.75rem] flex items-center"
+            className="border border-[rgba(240,220,211,0.5)] flex items-center"
+            style={{ padding: 'clamp(0.625rem, 1rem, 1.25rem)', borderRadius: 'clamp(0.75rem, 0.9375rem, 1.125rem)', height: 'clamp(3.5rem, 4.375rem, 5rem)' }}
           >
             <div className="flex items-center justify-between w-full">
-              <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="flex items-center" style={{ gap: 'clamp(0.625rem, 1rem, 1.25rem)' }}>
                 <img
                   src={circleIcon}
                   alt="Circle"
-                  className="w-[1.5rem] h-[1.5rem] sm:w-[2rem] sm:h-[2rem] lg:w-[2.17375rem] lg:h-[2.17375rem]"
+                  style={{ width: 'clamp(1.5rem, 2rem, 2.17375rem)', height: 'clamp(1.5rem, 2rem, 2.17375rem)' }}
                 />
                 <div>
-                  <div className="text-gray-600 mb-1 text-[0.75rem] sm:text-[0.875rem] lg:text-[0.875rem] font-montserrat">
+                  <div className="text-gray-600 font-montserrat" style={{ marginBottom: 'clamp(0.125rem, 0.25rem, 0.375rem)', fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)' }}>
                     PAN No.
                   </div>
-                  <div className="font-medium text-gray-800 text-[0.875rem] sm:text-[1rem] lg:text-[1.1875rem]">
+                  <div className="font-medium text-gray-800" style={{ fontSize: 'clamp(0.875rem, 1rem, 1.1875rem)' }}>
                     {detailData.panNo}
                   </div>
                 </div>
@@ -143,27 +146,28 @@ const DetailedInformation = () => {
               <img
                 src={userIcon}
                 alt="User2"
-                className="w-[1.5rem] h-[1.5rem] sm:w-[2rem] sm:h-[2rem] lg:w-[2.17375rem] lg:h-[2.17375rem]"
+                style={{ width: 'clamp(1.5rem, 2rem, 2.17375rem)', height: 'clamp(1.5rem, 2rem, 2.17375rem)' }}
               />
             </div>
           </div>
 
           {/* DOB */}
           <div
-            className="p-[0.75rem] sm:p-[1rem] rounded-[0.9375rem] border border-[rgba(240,220,211,0.5)] h-[4rem] sm:h-[4.375rem] lg:h-[4.75rem] flex items-center"
+            className="border border-[rgba(240,220,211,0.5)] flex items-center"
+            style={{ padding: 'clamp(0.625rem, 1rem, 1.25rem)', borderRadius: 'clamp(0.75rem, 0.9375rem, 1.125rem)', height: 'clamp(3.5rem, 4.375rem, 5rem)' }}
           >
             <div className="flex items-center justify-between w-full">
-              <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="flex items-center" style={{ gap: 'clamp(0.625rem, 1rem, 1.25rem)' }}>
                 <img
                   src={circleIcon}
                   alt="Circle"
-                  className="w-[1.5rem] h-[1.5rem] sm:w-[2rem] sm:h-[2rem] lg:w-[2.17375rem] lg:h-[2.17375rem]"
+                  style={{ width: 'clamp(1.5rem, 2rem, 2.17375rem)', height: 'clamp(1.5rem, 2rem, 2.17375rem)' }}
                 />
                 <div>
-                  <div className="text-gray-600 mb-1 text-[0.75rem] sm:text-[0.875rem] lg:text-[0.875rem] font-montserrat">
+                  <div className="text-gray-600 font-montserrat" style={{ marginBottom: 'clamp(0.125rem, 0.25rem, 0.375rem)', fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)' }}>
                     DOB
                   </div>
-                  <div className="font-medium text-gray-800 text-[0.875rem] sm:text-[1rem] lg:text-[1.1875rem]">
+                  <div className="font-medium text-gray-800" style={{ fontSize: 'clamp(0.875rem, 1rem, 1.1875rem)' }}>
                     {detailData.dob}
                   </div>
                 </div>
@@ -171,27 +175,28 @@ const DetailedInformation = () => {
               <img
                 src={calIcon}
                 alt="Calendar"
-                className="w-[1.5rem] h-[1.5rem] sm:w-[2rem] sm:h-[2rem] lg:w-[2.17375rem] lg:h-[2.17375rem]"
+                style={{ width: 'clamp(1.5rem, 2rem, 2.17375rem)', height: 'clamp(1.5rem, 2rem, 2.17375rem)' }}
               />
             </div>
           </div>
 
           {/* Address */}
           <div
-            className="p-[0.75rem] sm:p-[1rem] rounded-[0.9375rem] border border-[rgba(240,220,211,0.5)] h-[4rem] sm:h-[4.375rem] lg:h-[4.75rem] flex items-center"
+            className="border border-[rgba(240,220,211,0.5)] flex items-center"
+            style={{ padding: 'clamp(0.625rem, 1rem, 1.25rem)', borderRadius: 'clamp(0.75rem, 0.9375rem, 1.125rem)', height: 'clamp(3.5rem, 4.375rem, 5rem)' }}
           >
             <div className="flex items-center justify-between w-full">
-              <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="flex items-center" style={{ gap: 'clamp(0.625rem, 1rem, 1.25rem)' }}>
                 <img
                   src={circleIcon}
                   alt="Circle"
-                  className="w-[1.5rem] h-[1.5rem] sm:w-[2rem] sm:h-[2rem] lg:w-[2.17375rem] lg:h-[2.17375rem]"
+                  style={{ width: 'clamp(1.5rem, 2rem, 2.17375rem)', height: 'clamp(1.5rem, 2rem, 2.17375rem)' }}
                 />
                 <div>
-                  <div className="text-gray-600 mb-1 text-[0.75rem] sm:text-[0.875rem] lg:text-[0.875rem] font-montserrat">
+                  <div className="text-gray-600 font-montserrat" style={{ marginBottom: 'clamp(0.125rem, 0.25rem, 0.375rem)', fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)' }}>
                     Address
                   </div>
-                  <div className="font-medium text-gray-800 text-[0.875rem] sm:text-[1rem] lg:text-[1.1875rem]">
+                  <div className="font-medium text-gray-800" style={{ fontSize: 'clamp(0.875rem, 1rem, 1.1875rem)' }}>
                     {detailData.address}
                   </div>
                 </div>
@@ -199,7 +204,7 @@ const DetailedInformation = () => {
               <img
                 src={addressIcon}
                 alt="Address"
-                className="w-[1.5rem] h-[1.5rem] sm:w-[2rem] sm:h-[2rem] lg:w-[2.17375rem] lg:h-[2.17375rem]"
+                style={{ width: 'clamp(1.5rem, 2rem, 2.17375rem)', height: 'clamp(1.5rem, 2rem, 2.17375rem)' }}
               />
             </div>
           </div>

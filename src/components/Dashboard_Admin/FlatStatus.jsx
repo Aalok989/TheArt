@@ -116,14 +116,14 @@ const FlatStatus = () => {
           display: none;
         }
       `}</style>
-    <div className="flex h-full bg-white overflow-hidden shadow-md w-full" style={{ borderRadius: 'clamp(1rem, 1.5rem, 2rem)' }}>
-      {/* LEFT SECTION — FLAT STATUS (55%) */}
-      <div className="w-[55%] min-w-0 flex flex-col">
-        <div className="flex-shrink-0" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
+    <div className="flex flex-col lg:flex-row h-full bg-white overflow-hidden w-full shadow-sm lg:shadow-md border lg:border-gray-200" style={{ borderRadius: 'clamp(1rem, 1.5rem, 2rem)' }}>
+      {/* LEFT SECTION — FLAT STATUS */}
+      <div className="w-full lg:w-[55%] min-w-0 flex flex-col max-h-[50%] lg:max-h-none">
+        <div className="flex-shrink-0" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
           <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)', marginBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}>Flat Status</h2>
 
         {/* Filter Buttons */}
-          <div className="grid grid-cols-3 mb-[1rem]" style={{ gap: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
+          <div className="grid grid-cols-3 mb-[0.75rem] lg:mb-[1rem]" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
           {['floor', 'block', 'size'].map((filter) => {
             const isExpanded = expandedFilters.has(filter);
             const isSelected =
@@ -165,7 +165,7 @@ const FlatStatus = () => {
           })}
         </div>
 
-          <div className="grid grid-cols-3 mb-[1rem]" style={{ gap: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
+          <div className="grid grid-cols-3 mb-[0.75rem] lg:mb-[1rem]" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
           <button className="rounded-full font-medium bg-gray-200 text-gray-600 hover:bg-gray-300 transition-all duration-300 col-span-1" style={{ height: 'clamp(2rem, 2.5rem, 3rem)', paddingLeft: 'clamp(0.5rem, 0.75rem, 1rem)', paddingRight: 'clamp(0.5rem, 0.75rem, 1rem)', fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>
             Mortgaged
           </button>
@@ -181,9 +181,9 @@ const FlatStatus = () => {
         </div>
 
         {/* Filter Sections with Fixed Spacing */}
-        <div className="flex-1 overflow-y-auto min-h-0" style={{ paddingLeft: 'clamp(1rem, 1.5rem, 2rem)', paddingRight: 'clamp(1rem, 1.5rem, 2rem)' }}>
+        <div className="flex-1 overflow-y-auto min-h-0" style={{ paddingLeft: 'clamp(1rem, 1.5rem, 2rem)', paddingRight: 'clamp(1rem, 1.5rem, 2rem)', paddingBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
           {/* FLOOR WISE Section */}
-          <div style={{ marginBottom: 'clamp(2rem, 3rem, 4rem)' }}>
+          <div style={{ marginBottom: 'clamp(1.5rem, 2rem, 3rem)' }}>
             <h3
               className="font-bold border-b"
               style={{
@@ -247,7 +247,7 @@ const FlatStatus = () => {
           </div>
 
           {/* BLOCK WISE Section */}
-          <div style={{ marginBottom: 'clamp(2rem, 3rem, 4rem)' }}>
+          <div style={{ marginBottom: 'clamp(1.5rem, 2rem, 3rem)' }}>
             <h3
               className="font-bold border-b"
               style={{
@@ -311,7 +311,7 @@ const FlatStatus = () => {
           </div>
 
           {/* SIZE WISE Section */}
-          <div style={{ marginBottom: 'clamp(2rem, 3rem, 4rem)' }}>
+          <div style={{ marginBottom: 'clamp(1.5rem, 2rem, 3rem)' }}>
             <h3
               className="font-bold border-b"
               style={{
@@ -376,13 +376,13 @@ const FlatStatus = () => {
         </div>
       </div>
 
-      {/* RIGHT SECTION — FLATS SUMMARY (45%) */}
-      <div className="w-[45%] min-w-0 bg-[#F3F3F3FE] border-l border-gray-300 flex flex-col">
-        <div className="flex-shrink-0" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
+      {/* RIGHT SECTION — FLATS SUMMARY */}
+      <div className="w-full lg:w-[45%] min-w-0 bg-[#F3F3F3FE] border-t lg:border-t-0 lg:border-l border-gray-300 flex flex-col flex-1 lg:flex-none overflow-hidden">
+        <div className="flex-shrink-0" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
         <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)', marginBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}>Flats Summary</h2>
 
         {/* Legend */}
-        <div className="flex items-center flex-wrap" style={{ gap: 'clamp(0.75rem, 1.5rem, 2rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
+        <div className="flex items-center flex-wrap" style={{ gap: 'clamp(0.5rem, 1rem, 1.5rem)', paddingBottom: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
           <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
             <div className="bg-red-500 rounded-full" style={{ width: 'clamp(0.625rem, 0.75rem, 0.875rem)', height: 'clamp(0.625rem, 0.75rem, 0.875rem)' }}></div>
             <span className="text-gray-800 font-semibold font-montserrat" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>Booked</span>
@@ -403,15 +403,15 @@ const FlatStatus = () => {
         </div>
 
         {/* Scrollable content starting from table header */}
-        <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarGutter: 'stable', paddingLeft: 'clamp(1rem, 1.5rem, 2rem)', paddingRight: 'clamp(1rem, 1.5rem, 2rem)' }}>
+        <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarGutter: 'stable', paddingLeft: 'clamp(1rem, 1.5rem, 2rem)', paddingRight: 'clamp(1rem, 1.5rem, 2rem)', paddingBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
           {/* Sticky header */}
           <div
             className="grid border-b sticky top-0 z-10"
             style={{
-              gridTemplateColumns: '1fr 3fr',
-              gap: 'clamp(4rem, 8rem, 10rem)',
-              paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)',
-              paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)',
+              gridTemplateColumns: '1fr 2fr',
+              gap: 'clamp(1rem, 2rem, 4rem)',
+              paddingTop: 'clamp(0.5rem, 0.75rem, 1rem)',
+              paddingBottom: 'clamp(0.5rem, 0.75rem, 1rem)',
               borderBottomColor: '#616161',
               borderBottomWidth: '0.1875rem',
               backgroundColor: '#F3F3F3FE'
@@ -422,13 +422,13 @@ const FlatStatus = () => {
           </div>
 
           {/* Rows */}
-          <div className="space-y-0" style={{ marginTop: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
+          <div className="space-y-0" style={{ marginTop: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
             {filteredFlatsData.length > 0 ? (
               filteredFlatsData.map((flat, index) => (
               <div
                 key={index}
                 className="grid border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
-                style={{ gridTemplateColumns: '1fr 3fr', gap: 'clamp(4rem, 8rem, 10rem)', paddingTop: 'clamp(0.875rem, 1.25rem, 1.5rem)', paddingBottom: 'clamp(0.875rem, 1.25rem, 1.5rem)' }}
+                style={{ gridTemplateColumns: '1fr 2fr', gap: 'clamp(1rem, 2rem, 4rem)', paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}
               >
                   <button
                     onClick={() => handleFlatClick(flat)}

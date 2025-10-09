@@ -47,6 +47,13 @@ const flatDetailsData = {
     { label: "Maintenance for 1st year", value: "40/- Sq. Ft." },
     { label: "Maintenance for 2nd year", value: "40/- Sq. Ft." },
     { label: "Single Car Parking", value: "150000" },
+    { label: "Double Car Parking", value: "250000" },
+    { label: "Extra Car Parking", value: "50000" },
+    { label: "Water Charges", value: "1000" },
+    { label: "Electricity Charges", value: "1000" },
+    { label: "Security Deposit", value: "10000" },
+    { label: "Advance Payment", value: "10000" },
+    { label: "Total Amount", value: "6848100" },
   ],
 };
 
@@ -629,6 +636,48 @@ export const fetchLegalDocuments = async () => {
   };
 };
 
+// ==================== ADMIN: UPLOAD LOAN DOCUMENT LISTS ====================
+const loanDocumentLists = {
+  salariedDocuments: [
+    "6 Photos",
+    "Address Proof (Voter Id Card/Passport/electricity bill/bank statement/Aadhar Card)",
+    "ID Proof (PAN card mandatory/Company Id Card)",
+    "Last 3 Years ITR",
+    "Form 16 of 3 years",
+    "Bank Statement (12 months current)",
+    "Salary Slip (6 months for salaried)",
+    "Utility Bill (electricity bill, telephone bill, gas connection)",
+    "LIC detail/Prop. Details",
+    "Credit Card Statement",
+    "Rent Agreement/Owner Electricity bill",
+    "Visiting Card",
+  ],
+  selfEmployedDocuments: [
+    "6 Photos",
+    "Address Proof (Voter Id Card/Passport/electricity bill/bank statement/Aadhar Card)",
+    "ID Proof (PAN card mandatory/Company Id Card)",
+    "ITR (3 years with balance sheet, computation P&L)",
+    "Bank Statement (12 months current)",
+    "Utility Bill (electricity bill, telephone bill, gas connection)",
+    "LIC detail/Prop. Details",
+    "Credit Card Statement",
+    "Rent Agreement/Owner Electricity bill",
+    "Builder Buyer Agreement",
+    "Receipt/ Payment Schedule CLP",
+    "Asset/Liabilities",
+    "Visiting Card",
+    "Tin No. PhotoCopy",
+    "Bill of Firm",
+  ],
+};
+
+export const fetchLoanDocumentLists = async () => {
+  return {
+    success: true,
+    data: loanDocumentLists
+  };
+};
+
 // ==================== ADMIN: FLAT LEGAL DOCUMENTS DATA ====================
 const flatLegalDocumentsData = [
   { srNo: 1, flatNo: 'A101', documentName: 'Sale Deed', legalType: 'Registration', uploadDate: '2024-10-01', status: 'Approved' },
@@ -667,5 +716,6 @@ export default {
   fetchFlatDocuments,
   fetchLegalDocuments,
   fetchFlatLegalDocuments,
+  fetchLoanDocumentLists,
 };
 

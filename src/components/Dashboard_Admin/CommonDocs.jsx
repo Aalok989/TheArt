@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { HiUpload, HiEye, HiDownload } from 'react-icons/hi';
 import { fetchCommonDocuments } from '../../api/mockData';
+import UploadDocumentPopup from './UploadDocumentPopup';
 
 const CommonDocs = () => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isUploadPopupOpen, setIsUploadPopupOpen] = useState(false);
 
   useEffect(() => {
     const getDocuments = async () => {
@@ -25,7 +27,7 @@ const CommonDocs = () => {
   }, []);
 
   const handleUpload = () => {
-    console.log('Upload Common Document');
+    setIsUploadPopupOpen(true);
   };
 
   const handleView = (doc) => {
@@ -50,10 +52,10 @@ const CommonDocs = () => {
   return (
     <div className="h-full flex flex-col">
       {/* Header with Upload Button */}
-      <div className="flex justify-end" style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
+      <div className="flex justify-end" style={{ marginBottom: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
         <button 
           onClick={handleUpload}
-          className="bg-green-500 text-white font-medium hover:bg-green-600 transition-colors duration-200 flex items-center"
+          className="bg-green-500 text-white font-medium hover:bg-green-600 transition-colors duration-200 flex items-center justify-center w-full sm:w-auto"
           style={{ 
             paddingLeft: 'clamp(0.75rem, 1rem, 1.25rem)', 
             paddingRight: 'clamp(0.75rem, 1rem, 1.25rem)', 
@@ -65,15 +67,16 @@ const CommonDocs = () => {
           }}
         >
           <HiUpload style={{ width: 'clamp(0.875rem, 1rem, 1.25rem)', height: 'clamp(0.875rem, 1rem, 1.25rem)' }} />
-          Upload Document
+          <span className="hidden sm:inline">Upload Document</span>
+          <span className="sm:hidden">Upload</span>
         </button>
       </div>
 
       {/* Table Section */}
-      <div className="flex-1 overflow-y-auto min-h-0" style={{ paddingRight: 'clamp(0.5rem, 1rem, 1.5rem)' }}>
-        {/* Table Headers */}
+      <div className="flex-1 overflow-y-auto min-h-0" style={{ paddingRight: 'clamp(0.25rem, 0.5rem, 1rem)' }}>
+        {/* Table Headers - Hide on mobile */}
         <div
-          className="grid border-b sticky top-0 z-10 bg-white"
+          className="hidden md:grid border-b sticky top-0 z-10 bg-white"
           style={{ 
             gridTemplateColumns: '0.5fr 2fr 1fr 1fr 1fr 1fr 1fr',
             gap: 'clamp(0.5rem, 1rem, 1.5rem)',
@@ -107,62 +110,115 @@ const CommonDocs = () => {
         </div>
 
         {/* Table Rows */}
-        <div className="space-y-0">
+        <div className="space-y-0 md:space-y-0">
           {documents.map((doc, index) => (
-            <div
-              key={index}
-              className="grid border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
-              style={{ 
-                gridTemplateColumns: '0.5fr 2fr 1fr 1fr 1fr 1fr 1fr',
-                gap: 'clamp(0.5rem, 1rem, 1.5rem)',
-                paddingTop: 'clamp(0.875rem, 1.25rem, 1.5rem)',
-                paddingBottom: 'clamp(0.875rem, 1.25rem, 1.5rem)'
-              }}
-            >
-              <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                {doc.srNo}
+            <div key={index}>
+              {/* Desktop Table View */}
+              <div
+                className="hidden md:grid border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
+                style={{ 
+                  gridTemplateColumns: '0.5fr 2fr 1fr 1fr 1fr 1fr 1fr',
+                  gap: 'clamp(0.5rem, 1rem, 1.5rem)',
+                  paddingTop: 'clamp(0.875rem, 1.25rem, 1.5rem)',
+                  paddingBottom: 'clamp(0.875rem, 1.25rem, 1.5rem)'
+                }}
+              >
+                <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
+                  {doc.srNo}
+                </div>
+                <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
+                  {doc.documentName}
+                </div>
+                <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
+                  {doc.type}
+                </div>
+                <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
+                  {doc.uploadDate}
+                </div>
+                <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
+                  {doc.size}
+                </div>
+                <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
+                  <span
+                    style={{
+                      backgroundColor: doc.status === 'Approved' ? '#E4FFE5' : '#FFF8D4',
+                      color: doc.status === 'Approved' ? '#16A34A' : '#D97706',
+                      padding: 'clamp(0.125rem, 0.25rem, 0.375rem) clamp(0.5rem, 0.75rem, 1rem)',
+                      borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)',
+                      fontSize: 'clamp(0.75rem, 0.875rem, 1rem)',
+                      fontWeight: '500',
+                    }}
+                  >
+                    {doc.status}
+                  </span>
+                </div>
+                <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
+                  <button
+                    onClick={() => handleView(doc)}
+                    className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                    title="View Document"
+                  >
+                    <HiEye style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} />
+                  </button>
+                  <button
+                    onClick={() => handleDownload(doc)}
+                    className="text-green-600 hover:text-green-800 transition-colors duration-200"
+                    title="Download Document"
+                  >
+                    <HiDownload style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} />
+                  </button>
+                </div>
               </div>
-              <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                {doc.documentName}
-              </div>
-              <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                {doc.type}
-              </div>
-              <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                {doc.uploadDate}
-              </div>
-              <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                {doc.size}
-              </div>
-              <div style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                <span
-                  style={{
-                    backgroundColor: doc.status === 'Approved' ? '#E4FFE5' : '#FFF8D4',
-                    color: doc.status === 'Approved' ? '#16A34A' : '#D97706',
-                    padding: 'clamp(0.125rem, 0.25rem, 0.375rem) clamp(0.5rem, 0.75rem, 1rem)',
-                    borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)',
-                    fontSize: 'clamp(0.75rem, 0.875rem, 1rem)',
-                    fontWeight: '500',
-                  }}
-                >
-                  {doc.status}
-                </span>
-              </div>
-              <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
-                <button
-                  onClick={() => handleView(doc)}
-                  className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
-                  title="View Document"
-                >
-                  <HiEye style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} />
-                </button>
-                <button
-                  onClick={() => handleDownload(doc)}
-                  className="text-green-600 hover:text-green-800 transition-colors duration-200"
-                  title="Download Document"
-                >
-                  <HiDownload style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} />
-                </button>
+
+              {/* Mobile Card View */}
+              <div className="md:hidden bg-white border border-gray-200 rounded-lg p-4 mb-3 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">{doc.documentName}</h3>
+                    <p className="text-xs text-gray-500">#{doc.srNo}</p>
+                  </div>
+                  <span
+                    className="text-xs font-medium px-2 py-1 rounded-full"
+                    style={{
+                      backgroundColor: doc.status === 'Approved' ? '#E4FFE5' : '#FFF8D4',
+                      color: doc.status === 'Approved' ? '#16A34A' : '#D97706',
+                    }}
+                  >
+                    {doc.status}
+                  </span>
+                </div>
+                
+                <div className="space-y-2 mb-3">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-600">Type:</span>
+                    <span className="font-medium text-gray-900">{doc.type}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-600">Date:</span>
+                    <span className="font-medium text-gray-900">{doc.uploadDate}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-600">Size:</span>
+                    <span className="font-medium text-gray-900">{doc.size}</span>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-3 border-t border-gray-200">
+                  <button
+                    onClick={() => handleView(doc)}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium"
+                  >
+                    <HiEye className="w-4 h-4" />
+                    View
+                  </button>
+                  <button
+                    onClick={() => handleDownload(doc)}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors text-sm font-medium"
+                  >
+                    <HiDownload className="w-4 h-4" />
+                    Download
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -175,6 +231,13 @@ const CommonDocs = () => {
           </div>
         )}
       </div>
+
+      {/* Upload Document Popup */}
+      <UploadDocumentPopup 
+        isOpen={isUploadPopupOpen}
+        onClose={() => setIsUploadPopupOpen(false)}
+        documentType="Common Document"
+      />
     </div>
   );
 };

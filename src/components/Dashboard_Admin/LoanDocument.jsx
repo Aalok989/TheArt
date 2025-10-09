@@ -48,7 +48,7 @@ const LoanDocument = ({ onPageChange }) => {
   }
 
   return (
-    <div className="h-full flex flex-col" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
+    <div className="h-full flex flex-col lg:p-0 bg-white lg:bg-transparent shadow-sm lg:shadow-none border lg:border-0 border-gray-200" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', borderRadius: 'clamp(1rem, 1.5rem, 1.75rem)' }}>
       {/* Header Section */}
       <div style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0" style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>

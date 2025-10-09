@@ -15,32 +15,29 @@ const DocAdmin = () => {
   ];
 
   return (
-    <div className="h-full flex flex-col" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
+    <div className="h-full flex flex-col" style={{ padding: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
       {/* Header Section */}
-      <div style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
-        <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)', marginBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
+      <div style={{ marginBottom: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
+        <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.125rem, 1.5rem)', marginBottom: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
           Documents Management
         </h2>
 
         {/* Navigation Buttons */}
-        <div className="flex items-center justify-center" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
+        <div className="grid grid-cols-2 md:flex md:flex-row items-center justify-center gap-2 sm:gap-3 md:gap-4">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center justify-center transition-all duration-300 ease-out whitespace-nowrap shadow-sm rounded-full font-medium font-montserrat ${
+              className={`rounded-full font-medium transition-all duration-300 flex items-center justify-center whitespace-nowrap ${
                 activeTab === tab.key
-                  ? "text-white transform scale-105"
-                  : "text-gray-600 hover:text-gray-800 bg-white hover:bg-gray-50 hover:shadow-lg"
+                  ? 'bg-gray-800 text-white'
+                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
               }`}
               style={{
-                width: 'clamp(7rem, 9rem, 11rem)',
-                height: 'clamp(2.25rem, 2.8125rem, 3.25rem)',
-                fontSize: 'clamp(0.75rem, 0.875rem, 1rem)',
-                background:
-                  activeTab === tab.key
-                    ? 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)'
-                    : undefined,
+                height: 'clamp(2rem, 2.5rem, 3rem)',
+                paddingLeft: 'clamp(0.5rem, 0.75rem, 1rem)',
+                paddingRight: 'clamp(0.5rem, 0.75rem, 1rem)',
+                fontSize: 'clamp(0.6875rem, 0.75rem, 0.875rem)',
               }}
             >
               {tab.label}
@@ -50,8 +47,8 @@ const DocAdmin = () => {
       </div>
 
       {/* Content Container */}
-      <div className="flex-1 overflow-y-auto min-h-0" style={{ paddingRight: 'clamp(0.5rem, 1rem, 1.5rem)' }}>
-        <div className="bg-white border border-gray-200 h-full" style={{ borderRadius: 'clamp(0.5rem, 0.75rem, 1rem)', padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
+      <div className="flex-1 overflow-y-auto min-h-0" style={{ paddingRight: 'clamp(0.25rem, 0.5rem, 1rem)' }}>
+        <div className="bg-white border border-gray-200 h-full" style={{ borderRadius: 'clamp(0.5rem, 0.75rem, 1rem)', padding: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
           {/* Render content based on active tab */}
           {activeTab === 'common' && <CommonDocs />}
           {activeTab === 'flats' && <FlatDocs />}

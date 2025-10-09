@@ -165,15 +165,48 @@ const Layout = ({
         case "overview":
           return (
             <div
-              className={`page-container h-full flex ${
+              className={`page-container h-full ${
                 isAnimating ? "opacity-50" : ""
               }`}
-              style={{ gap: 'clamp(1rem, 1.5rem, 2rem)' }}
             >
-              <div className="basis-[60%] min-w-0 bg-white shadow-sm border border-gray-200" style={{ borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)', maxHeight: '100%', overflow: 'hidden' }}>
+              {/* Desktop: Show both FlatStatus and Report side by side */}
+              <div className="hidden lg:flex h-full" style={{ gap: 'clamp(1rem, 1.5rem, 2rem)' }}>
+                <div className="basis-[60%] min-w-0 bg-white shadow-sm border border-gray-200" style={{ borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)', maxHeight: '100%', overflow: 'hidden' }}>
+                  <FlatStatus key={`flatStatus-${animationKey}`} />
+                </div>
+                <div className="basis-[40%] min-w-0 bg-white shadow-sm border border-gray-200" style={{ borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)', maxHeight: '100%', overflow: 'hidden' }}>
+                  <Report key={`report-${animationKey}`} />
+                </div>
+              </div>
+              {/* Mobile/Tablet: Show message to select sub-item */}
+              <div className="lg:hidden h-full flex items-center justify-center">
+                <div className="text-center text-gray-500 p-8">
+                  <p className="text-lg font-medium mb-2">Overview</p>
+                  <p className="text-sm">Please select Flat Status or Report from the sidebar</p>
+                </div>
+              </div>
+            </div>
+          );
+        case "flatStatus":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
                 <FlatStatus key={`flatStatus-${animationKey}`} />
               </div>
-              <div className="basis-[40%] min-w-0 bg-white shadow-sm border border-gray-200" style={{ borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)', maxHeight: '100%', overflow: 'hidden' }}>
+            </div>
+          );
+        case "report":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
                 <Report key={`report-${animationKey}`} />
               </div>
             </div>
@@ -293,9 +326,9 @@ const Layout = ({
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Integrated Navbar */}
+      {/* Integrated Navbar - Hidden on Mobile/Tablet */}
       <nav
-        className="relative"
+        className="relative hidden lg:block"
         style={{
           height: "clamp(5rem, 7.25rem, 8rem)",
           position: "absolute",
@@ -501,6 +534,106 @@ const Layout = ({
         </div>
       </nav>
 
+      {/* Mobile/Tablet Header - Shown only on small screens */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm" style={{ height: 'clamp(3.5rem, 4rem, 4.5rem)', paddingLeft: 'clamp(1rem, 1.5rem, 2rem)', paddingRight: 'clamp(1rem, 1.5rem, 2rem)' }}>
+        <div className="h-full flex items-center justify-between">
+          {/* Hamburger Menu Button */}
+          <button
+            onClick={onSidebarToggle}
+            className="flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
+            style={{ width: 'clamp(2.25rem, 2.5rem, 2.75rem)', height: 'clamp(2.25rem, 2.5rem, 2.75rem)' }}
+          >
+            <div className="flex flex-col items-center justify-center space-y-1">
+              <span className="block bg-gray-600 transition-all duration-300" style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: '2px' }}></span>
+              <span className="block bg-gray-600 transition-all duration-300" style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: '2px' }}></span>
+              <span className="block bg-gray-600 transition-all duration-300" style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: '2px' }}></span>
+            </div>
+          </button>
+
+          {/* Logo - Centered */}
+          <div className="absolute left-1/2 transform -translate-x-1/2">
+            <img
+              src={Proprite}
+              alt="The Art"
+              style={{
+                height: "clamp(2rem, 2.5rem, 3rem)",
+                width: "auto",
+                filter: "drop-shadow(0 0 10px rgba(0, 0, 0, 0.1))",
+              }}
+            />
+          </div>
+
+          {/* Profile Icon */}
+          <button
+            onClick={handleProfileClick}
+            className="flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-gray-50 transition-all duration-300 overflow-hidden border border-gray-200"
+            style={{ width: 'clamp(2.25rem, 2.5rem, 2.75rem)', height: 'clamp(2.25rem, 2.5rem, 2.75rem)' }}
+          >
+            <img
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
+              alt="Profile"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.style.display = "none";
+                e.target.nextSibling.style.display = "flex";
+              }}
+            />
+            <div
+              className="w-full h-full bg-gray-300 rounded-full flex items-center justify-center"
+              style={{ display: "none" }}
+            >
+              <HiUser style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} className="text-gray-600" />
+            </div>
+          </button>
+
+          {/* Profile Dropdown - Mobile Version */}
+          {isProfileDropdownOpen && (
+            <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animate-fade-in-up" style={{ marginRight: 'clamp(1rem, 1.5rem, 2rem)' }}>
+              <button
+                onClick={handleSettingsClick}
+                className="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200"
+                style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}
+              >
+                <HiCog style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} className="text-gray-600" />
+                <span className="font-medium text-gray-700 font-montserrat" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>
+                  Settings
+                </span>
+              </button>
+              <button
+                onClick={handleNotificationsClick}
+                className="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200"
+                style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}
+              >
+                <HiBell style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} className="text-gray-600" />
+                <span className="font-medium text-gray-700 font-montserrat" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>
+                  Updates
+                </span>
+              </button>
+              <button
+                onClick={handleMyDocumentsClick}
+                className="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200"
+                style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}
+              >
+                <HiDocumentText style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} className="text-gray-600" />
+                <span className="font-medium text-gray-700 font-montserrat" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>
+                  My Documents
+                </span>
+              </button>
+              <button
+                onClick={handleLogoutClick}
+                className="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200"
+                style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}
+              >
+                <HiLogout style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} className="text-gray-600" />
+                <span className="font-medium text-gray-700 font-montserrat" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>
+                  Logout
+                </span>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
       <MobileSidebar
         isOpen={isSidebarOpen}
         onClose={() => onSidebarToggle()}
@@ -508,6 +641,7 @@ const Layout = ({
         setActivePage={onPageChange}
         onLogout={onLogout}
         onCustomerCareOpen={() => {}} // Will be handled by parent
+        userRole={userRole}
       />
 
       {/* Temporary Role Toggle Button for Testing */}
@@ -522,19 +656,23 @@ const Layout = ({
         </div>
       )}
 
-      <div className="overflow-hidden h-screen" style={{ paddingTop: 'clamp(5rem, 7.25rem, 8rem)', paddingBottom: 'clamp(1.5rem, 2.3125rem, 3rem)', paddingLeft: 'clamp(1.5rem, 2.75rem, 3.5rem)', paddingRight: 'clamp(1.5rem, 2.75rem, 3.5rem)' }}>
-        <div className="lg:hidden h-full flex flex-col space-y-3 relative">
-          {userRole === "user" && !activePage && (
-            <div className="flex-shrink-0 h-[calc(30vh-2.1875rem)]">
-              <UserProfile />
-            </div>
+      <div className="overflow-hidden h-screen">
+        {/* Mobile/Tablet Layout */}
+        <div className="lg:hidden h-full flex flex-col relative" style={{ paddingTop: 'clamp(4.5rem, 5rem, 5.5rem)', paddingBottom: 'clamp(1rem, 1.5rem, 2rem)', paddingLeft: 'clamp(1rem, 1.5rem, 2rem)', paddingRight: 'clamp(1rem, 1.5rem, 2rem)', gap: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
+          {/* User Role - Home View (No active page) */}
+          {userRole === "user" && (!activePage || activePage === "null") && (
+            <>
+              <div className="flex-shrink-0" style={{ height: 'clamp(12rem, 30vh, 18rem)' }}>
+                <UserProfile />
+              </div>
+              <div className="flex-1 min-h-0">
+                <DetailedInformation />
+              </div>
+            </>
           )}
-          {userRole === "user" && !activePage && (
-            <div className="flex-1 min-h-0">
-              <DetailedInformation />
-            </div>
-          )}
-          {(activePage || userRole === "admin") && (
+          
+          {/* Active Page View (User navigates to a specific page or Admin) */}
+          {((activePage && activePage !== "null") || userRole === "admin") && (
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
               {renderMiddlePanel()}
             </div>
@@ -562,7 +700,8 @@ const Layout = ({
           )}
         </div>
 
-        <div className="hidden lg:flex h-full items-center justify-center">
+        {/* Desktop Layout */}
+        <div className="hidden lg:flex h-full items-center justify-center" style={{ paddingTop: 'clamp(5rem, 7.25rem, 8rem)', paddingBottom: 'clamp(1.5rem, 2.3125rem, 3rem)', paddingLeft: 'clamp(1.5rem, 2.75rem, 3.5rem)', paddingRight: 'clamp(1.5rem, 2.75rem, 3.5rem)' }}>
           {userRole === "admin" ? (
             // Admin layout - only middle section with two components
             <div className="flex w-full max-w-[120rem] mx-auto" style={{ gap: 'clamp(0.625rem, 0.9375rem, 1.25rem)' }}>
@@ -572,9 +711,9 @@ const Layout = ({
             </div>
           ) : (
             // User layout - three sections with responsive sizing
-            <div className="flex w-full max-w-[120rem] mx-auto" style={{ gap: 'clamp(0.625rem, 0.9375rem, 1.25rem)' }}>
+            <div className="flex w-full mx-auto" style={{ gap: 'clamp(0.5rem, 0.9375rem, 1.25rem)', maxWidth: 'min(120rem, 100%)' }}>
               {/* Left Panel - User Profile & Detailed Info */}
-              <div className="flex flex-col flex-shrink-0" style={{ width: 'clamp(20rem, 26.5%, 32rem)', gap: 'clamp(0.625rem, 0.9375rem, 1.25rem)', maxHeight: 'calc(100vh - 10rem)' }}>
+              <div className="flex flex-col flex-shrink-0" style={{ width: 'clamp(18rem, 24%, 30rem)', gap: 'clamp(0.625rem, 0.9375rem, 1.25rem)', maxHeight: 'calc(100vh - 10rem)', minWidth: 0 }}>
                 <div style={{ height: 'clamp(12rem, 32.5%, 18rem)', flex: '0 0 auto' }}>
                   <UserProfile />
                 </div>
@@ -584,14 +723,14 @@ const Layout = ({
               </div>
               
               {/* Middle Panel - Main Content */}
-              <div className="flex flex-col flex-1" style={{ minWidth: 'clamp(35rem, 40rem, 45rem)', maxWidth: 'clamp(50rem, 60rem, 70rem)', height: 'clamp(35rem, 49.8125rem, 55rem)', maxHeight: 'calc(100vh - 10rem)' }}>
+              <div className="flex flex-col flex-1" style={{ minWidth: 0, maxWidth: '100%', height: 'clamp(35rem, 49.8125rem, 55rem)', maxHeight: 'calc(100vh - 10rem)' }}>
                 <div className="bg-white shadow-sm border border-gray-200 h-full flex flex-col min-h-0" style={{ borderRadius: 'clamp(1.25rem, 1.75rem, 2rem)' }}>
                   {renderMiddlePanel()}
                 </div>
               </div>
               
               {/* Right Panel - Updates */}
-              <div className="flex flex-col flex-shrink-0" style={{ width: 'clamp(20rem, 26.5%, 32rem)', height: 'clamp(35rem, 49.8125rem, 55rem)', maxHeight: 'calc(100vh - 10rem)' }}>
+              <div className="flex flex-col flex-shrink-0" style={{ width: 'clamp(18rem, 24%, 30rem)', height: 'clamp(35rem, 49.8125rem, 55rem)', maxHeight: 'calc(100vh - 10rem)', minWidth: 0 }}>
                 <div className="bg-white shadow-sm border border-gray-200 h-full" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', borderRadius: 'clamp(1.25rem, 1.75rem, 2rem)' }}>
                   <Updates />
                 </div>

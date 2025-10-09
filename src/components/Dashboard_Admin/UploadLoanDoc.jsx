@@ -1,53 +1,79 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { HiArrowLeft } from "react-icons/hi";
+import { fetchLoanDocumentLists } from "../../api/mockData";
 
 const UploadLoanDoc = ({ onPageChange }) => {
   const [kycId, setKycId] = useState("TA76967SKV");
   const [employmentType, setEmploymentType] = useState("");
+  const [documentLists, setDocumentLists] = useState({
+    salariedDocuments: [],
+    selfEmployedDocuments: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [checkedDocuments, setCheckedDocuments] = useState({
+    salaried: {},
+    selfEmployed: {}
+  });
 
-  // Document lists based on employment type
-  const salariedDocuments = [
-    "6 Photos",
-    "Address Proof (Voter Id Card/Passport/electricity bill/bank statement/Aadhar Card)",
-    "ID Proof (PAN card mandatory/Company Id Card)",
-    "Last 3 Years ITR",
-    "Form 16 of 3 years",
-    "Bank Statement (12 months current)",
-    "Salary Slip (6 months for salaried)",
-    "Utility Bill (electricity bill, telephone bill, gas connection)",
-    "LIC detail/Prop. Details",
-    "Credit Card Statement",
-    "Rent Agreement/Owner Electricity bill",
-    "Visiting Card",
-  ];
+  useEffect(() => {
+    const getDocumentLists = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchLoanDocumentLists();
+        if (response.success) {
+          setDocumentLists(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching loan document lists:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const selfEmployedDocuments = [
-    "6 Photos",
-    "Address Proof (Voter Id Card/Passport/electricity bill/bank statement/Aadhar Card)",
-    "ID Proof (PAN card mandatory/Company Id Card)",
-    "ITR (3 years with balance sheet, computation P&L)",
-    "Bank Statement (12 months current)",
-    "Utility Bill (electricity bill, telephone bill, gas connection)",
-    "LIC detail/Prop. Details",
-    "Credit Card Statement",
-    "Rent Agreement/Owner Electricity bill",
-    "Builder Buyer Agreement",
-    "Receipt/ Payment Schedule CLP",
-    "Asset/Liabilities",
-    "Visiting Card",
-    "Tin No. PhotoCopy",
-    "Bill of Firm",
-  ];
+    getDocumentLists();
+  }, []);
+
+  // Clear checked documents when employment type changes
+  useEffect(() => {
+    if (employmentType) {
+      setCheckedDocuments({
+        salaried: {},
+        selfEmployed: {}
+      });
+    }
+  }, [employmentType]);
+
+  const handleCheckboxChange = (index, type) => {
+    setCheckedDocuments(prev => ({
+      ...prev,
+      [type]: {
+        ...prev[type],
+        [index]: !prev[type][index]
+      }
+    }));
+  };
 
   const handleSubmit = () => {
     // Handle form submission
     console.log("KYC ID:", kycId);
     console.log("Employment Type:", employmentType);
+    console.log("Checked Documents:", checkedDocuments);
     // Add submission logic here
   };
 
+  if (loading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+          <p className="text-gray-600">Loading document lists...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="h-full flex flex-col" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
+    <div className="h-full flex flex-col lg:p-0 bg-white lg:bg-transparent shadow-sm lg:shadow-none border lg:border-0 border-gray-200" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', borderRadius: 'clamp(1rem, 1.5rem, 1.75rem)' }}>
       {/* Header Section with Back Button */}
       <div className="flex items-center" style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)', gap: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
         <button
@@ -130,28 +156,33 @@ const UploadLoanDoc = ({ onPageChange }) => {
               <div className="bg-gray-50 border border-gray-200 overflow-y-auto" style={{ borderRadius: 'clamp(0.5rem, 0.75rem, 1rem)', padding: 'clamp(0.75rem, 1rem, 1.25rem)', maxHeight: 'clamp(18rem, 20rem, 22rem)' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
                   {(employmentType === "salaried"
-                    ? salariedDocuments
-                    : selfEmployedDocuments
-                  ).map((doc, index) => (
-                    <div key={index} className="flex items-center" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
-                      <span className="font-medium text-gray-600 text-right" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)', width: 'clamp(1.25rem, 1.5rem, 1.75rem)' }}>
-                        {index + 1}.
-                      </span>
-                      <input
-                        type="checkbox"
-                        id={`doc-${index}`}
-                        className="text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        style={{ width: 'clamp(0.875rem, 1rem, 1.125rem)', height: 'clamp(0.875rem, 1rem, 1.125rem)' }}
-                      />
-                      <label
-                        htmlFor={`doc-${index}`}
-                        className="text-gray-700 cursor-pointer flex-1"
-                        style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}
-                      >
-                        {doc}
-                      </label>
-                    </div>
-                  ))}
+                    ? documentLists.salariedDocuments
+                    : documentLists.selfEmployedDocuments
+                  ).map((doc, index) => {
+                    const currentType = employmentType === "salaried" ? "salaried" : "selfEmployed";
+                    return (
+                      <div key={index} className="flex items-center" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
+                        <span className="font-medium text-gray-600 text-right" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)', width: 'clamp(1.25rem, 1.5rem, 1.75rem)' }}>
+                          {index + 1}.
+                        </span>
+                        <input
+                          type="checkbox"
+                          id={`doc-${currentType}-${index}`}
+                          checked={checkedDocuments[currentType][index] || false}
+                          onChange={() => handleCheckboxChange(index, currentType)}
+                          className="text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          style={{ width: 'clamp(0.875rem, 1rem, 1.125rem)', height: 'clamp(0.875rem, 1rem, 1.125rem)' }}
+                        />
+                        <label
+                          htmlFor={`doc-${currentType}-${index}`}
+                          className="text-gray-700 cursor-pointer flex-1"
+                          style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}
+                        >
+                          {doc}
+                        </label>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>

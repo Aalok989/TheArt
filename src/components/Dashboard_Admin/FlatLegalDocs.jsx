@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { HiUpload, HiEye, HiDownload } from 'react-icons/hi';
 import { fetchFlatLegalDocuments } from '../../api/mockData';
+import FlatSelectionPopup from './FlatSelectionPopup';
+import UploadDocumentPopup from './UploadDocumentPopup';
 
 const FlatLegalDocs = () => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isFlatSelectionOpen, setIsFlatSelectionOpen] = useState(false);
+  const [isUploadPopupOpen, setIsUploadPopupOpen] = useState(false);
+  const [selectedFlatInfo, setSelectedFlatInfo] = useState(null);
 
   useEffect(() => {
     const getDocuments = async () => {
@@ -25,7 +30,13 @@ const FlatLegalDocs = () => {
   }, []);
 
   const handleUpload = () => {
-    console.log('Upload Flat Legal Document');
+    setIsFlatSelectionOpen(true);
+  };
+
+  const handleFlatSelect = (flatInfo) => {
+    setSelectedFlatInfo(flatInfo);
+    setIsFlatSelectionOpen(false);
+    setIsUploadPopupOpen(true);
   };
 
   const handleView = (doc) => {
@@ -175,6 +186,23 @@ const FlatLegalDocs = () => {
           </div>
         )}
       </div>
+
+      {/* Flat Selection Popup */}
+      <FlatSelectionPopup 
+        isOpen={isFlatSelectionOpen}
+        onClose={() => setIsFlatSelectionOpen(false)}
+        onSelect={handleFlatSelect}
+      />
+
+      {/* Upload Document Popup */}
+      <UploadDocumentPopup 
+        isOpen={isUploadPopupOpen}
+        onClose={() => {
+          setIsUploadPopupOpen(false);
+          setSelectedFlatInfo(null);
+        }}
+        documentType={`Flat Legal Document - ${selectedFlatInfo?.flatNo || ''}`}
+      />
     </div>
   );
 };
