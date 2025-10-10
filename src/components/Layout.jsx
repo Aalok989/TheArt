@@ -26,6 +26,8 @@ import LoanDetails from "./Dashboard_Admin/LoanDetails";
 import LoanDocument from "./Dashboard_Admin/LoanDocument";
 import UploadLoanDoc from "./Dashboard_Admin/UploadLoanDoc";
 import AdminDocuments from "./Dashboard_Admin/docadmin.jsx";
+import Flat from "./Dashboard_Admin/Flat";
+import Projects from "./Dashboard_Admin/Projects";
 import Proprite from "../assets/proprite.png";
 import Hamburger from "../assets/Hamburger.png";
 import flatDetailsIcon from "../assets/flat details.png";
@@ -172,7 +174,7 @@ const Layout = ({
               {/* Desktop: Show both FlatStatus and Report side by side */}
               <div className="hidden lg:flex h-full" style={{ gap: 'clamp(1rem, 1.5rem, 2rem)' }}>
                 <div className="basis-[60%] min-w-0 bg-white shadow-sm border border-gray-200" style={{ borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)', maxHeight: '100%', overflow: 'hidden' }}>
-                  <FlatStatus key={`flatStatus-${animationKey}`} />
+                  <FlatStatus key={`flatStatus-${animationKey}`} onPageChange={onPageChange} />
                 </div>
                 <div className="basis-[40%] min-w-0 bg-white shadow-sm border border-gray-200" style={{ borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)', maxHeight: '100%', overflow: 'hidden' }}>
                   <Report key={`report-${animationKey}`} />
@@ -195,7 +197,31 @@ const Layout = ({
               }`}
             >
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <FlatStatus key={`flatStatus-${animationKey}`} />
+                <FlatStatus key={`flatStatus-${animationKey}`} onPageChange={onPageChange} />
+              </div>
+            </div>
+          );
+        case "flat":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <Flat key={`flat-${animationKey}`} onPageChange={onPageChange} />
+              </div>
+            </div>
+          );
+        case "projects":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <Projects key={`projects-${animationKey}`} onPageChange={onPageChange} />
               </div>
             </div>
           );
@@ -267,18 +293,6 @@ const Layout = ({
                 <AdminDocuments
                   key={`docadmin-${animationKey}`}
                 />
-              </div>
-            </div>
-          );
-        case "projects":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <div className="text-center py-8 text-gray-500">
-                Projects component coming soon...
               </div>
             </div>
           );

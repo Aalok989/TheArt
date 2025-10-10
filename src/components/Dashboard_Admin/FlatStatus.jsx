@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { HiChevronDown, HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import { fetchFlatStatus } from '../../api/mockData';
 
-const FlatStatus = () => {
+const FlatStatus = ({ onPageChange }) => {
   const [expandedFilters, setExpandedFilters] = useState(new Set());
   const [selectedFloor, setSelectedFloor] = useState(null);
   const [selectedBlock, setSelectedBlock] = useState(null);
@@ -58,10 +58,14 @@ const FlatStatus = () => {
     setSelectedSize(null);
   };
 
-  // Handle flat number click - open details popup
+  // Handle flat number click - navigate to flat details page
   const handleFlatClick = (flat) => {
-    setSelectedFlatDetails(flat);
-    setIsFlatDetailsOpen(true);
+    // Store flat data in sessionStorage for the Flat page
+    sessionStorage.setItem('selectedFlat', JSON.stringify(flat));
+    // Navigate to the flat page
+    if (onPageChange) {
+      onPageChange('flat');
+    }
   };
 
   // Close flat details popup
