@@ -5,7 +5,7 @@ import phoneIcon from '../../assets/phone.png';
 import whatsappIcon from '../../assets/whatsapp..png';
 import EmailIcon from '../../assets/email.png';
 import arrowIcon from '../../assets/arrow.png';
-import { fetchUserProfile } from '../../api/mockData';
+import { customerAPI } from '../../api/api';
 
 const UserProfile = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -18,12 +18,13 @@ const UserProfile = () => {
     const getUserProfile = async () => {
       try {
         setLoading(true);
-        const response = await fetchUserProfile();
+        const response = await customerAPI.getProfile();
         if (response.success) {
           setUserData(response.data);
         }
       } catch (error) {
         console.error('Error fetching user profile:', error);
+        // If API fails, you could set fallback data or show error message
       } finally {
         setLoading(false);
         // Trigger animations after data is loaded

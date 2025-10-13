@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HiStar } from 'react-icons/hi';
-import { fetchUpdates } from '../../api/mockData';
+import { customerAPI } from '../../api/api';
 
 const Updates = () => {
   const [loading, setLoading] = useState(true);
@@ -14,12 +14,13 @@ const Updates = () => {
     const getUpdates = async () => {
       try {
         setLoading(true);
-        const response = await fetchUpdates();
+        const response = await customerAPI.getUpdates();
         if (response.success) {
           setUpdates(response.data);
         }
       } catch (error) {
         console.error('Error fetching updates:', error);
+        // If API fails, you could set fallback data or show error message
       } finally {
         setLoading(false);
       }

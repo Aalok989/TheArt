@@ -82,17 +82,25 @@ export const authAPI = {
     if (response.auth_token) {
       localStorage.setItem('authToken', response.auth_token);
       
-      // Fetch user details to determine role
-      try {
-        const userDetails = await api.get('/auth/users/me/');
-        const role = userDetails.is_staff || userDetails.is_superuser ? 'admin' : 'user';
-        localStorage.setItem('userRole', role);
-      } catch (error) {
-        console.warn('Could not fetch user details, defaulting to user role');
-        localStorage.setItem('userRole', 'user');
-      }
+      // Determine role based on user_type or role.type from the response
+      const userType = response.role?.type || response.user_type;
+      const role = userType === 'staff' ? 'admin' : 'user';
+      localStorage.setItem('userRole', role);
       
-      return { success: true, token: response.auth_token };
+      // Store additional user info for future use
+      localStorage.setItem('userId', response.user_id);
+      localStorage.setItem('username', response.username);
+      localStorage.setItem('userEmail', response.email);
+      localStorage.setItem('firstName', response.first_name || '');
+      localStorage.setItem('lastName', response.last_name || '');
+      localStorage.setItem('builderInfo', JSON.stringify(response.builder || {}));
+      
+      return { 
+        success: true, 
+        token: response.auth_token,
+        role: role,
+        userInfo: response
+      };
     }
     
     throw new Error('Login failed');
@@ -105,15 +113,33 @@ export const authAPI = {
     } catch (error) {
       console.warn('Logout API call failed:', error);
     } finally {
-      // Always remove local storage items
+      // Always remove all local storage items
       localStorage.removeItem('authToken');
       localStorage.removeItem('userRole');
       localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('username');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('firstName');
+      localStorage.removeItem('lastName');
+      localStorage.removeItem('builderInfo');
     }
   },
 
   isAuthenticated() {
     return !!localStorage.getItem('authToken');
+  },
+
+  getUserInfo() {
+    return {
+      userId: localStorage.getItem('userId'),
+      username: localStorage.getItem('username'),
+      email: localStorage.getItem('userEmail'),
+      firstName: localStorage.getItem('firstName'),
+      lastName: localStorage.getItem('lastName'),
+      role: localStorage.getItem('userRole'),
+      builder: JSON.parse(localStorage.getItem('builderInfo') || '{}')
+    };
   }
 };
 
@@ -129,6 +155,25 @@ export const contentAPI = {
 
   async getDocuments() {
     return api.get('/documents/');
+  }
+};
+
+// Customer API methods
+export const customerAPI = {
+  async getProfile() {
+    return api.get('/customer/profile/');
+  },
+
+  async getDetailedInformation() {
+    return api.get('/customer/detailed-information/');
+  },
+
+  async getFlatDetails() {
+    return api.get('/customer/flat-details-formatted/');
+  },
+
+  async getUpdates() {
+    return api.get('/customer/updates/');
   }
 };
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HiChevronDown, HiSearch } from 'react-icons/hi';
-import { fetchFlatDetails } from '../../api/mockData';
+import { customerAPI } from '../../api/api';
 
 const FlatDetails = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -14,12 +14,13 @@ const FlatDetails = () => {
     const getFlatDetails = async () => {
       try {
         setLoading(true);
-        const response = await fetchFlatDetails();
+        const response = await customerAPI.getFlatDetails();
         if (response.success) {
           setFlatData(response.data);
         }
       } catch (error) {
         console.error('Error fetching flat details:', error);
+        // If API fails, you could set fallback data or show error message
       } finally {
         setLoading(false);
         setTimeout(() => {

@@ -48,7 +48,6 @@ const Layout = ({
   isAnimating,
   animationKey,
   userRole = "user", // Default to 'user' role
-  onRoleToggle, // Temporary prop for testing
 }) => {
   // Navbar state
   const [isPasswordPopupOpen, setIsPasswordPopupOpen] = useState(false);
@@ -657,18 +656,6 @@ const Layout = ({
         onCustomerCareOpen={() => {}} // Will be handled by parent
         userRole={userRole}
       />
-
-      {/* Temporary Role Toggle Button for Testing */}
-      {onRoleToggle && (
-        <div className="fixed top-20 right-4 z-50">
-          <button
-            onClick={onRoleToggle}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm font-medium"
-          >
-            Switch to {userRole === "user" ? "Admin" : "User"} ({userRole})
-          </button>
-        </div>
-      )}
 
       <div className="overflow-hidden h-screen">
         {/* Mobile/Tablet Layout */}

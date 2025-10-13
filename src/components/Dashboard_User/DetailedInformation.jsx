@@ -5,7 +5,7 @@ import userIcon from '../../assets/user.png';
 import user2Icon from '../../assets/user 2.png';
 import calIcon from '../../assets/cal.png';
 import addressIcon from '../../assets/address.png';
-import { fetchDetailedInformation } from '../../api/mockData';
+import { customerAPI } from '../../api/api';
 
 const DetailedInformation = () => {
   const [detailInfoLoaded, setDetailInfoLoaded] = useState(false);
@@ -17,12 +17,13 @@ const DetailedInformation = () => {
     const getDetailedInformation = async () => {
       try {
         setLoading(true);
-        const response = await fetchDetailedInformation();
+        const response = await customerAPI.getDetailedInformation();
         if (response.success) {
           setDetailData(response.data);
         }
       } catch (error) {
         console.error('Error fetching detailed information:', error);
+        // If API fails, you could set fallback data or show error message
       } finally {
         setLoading(false);
         setTimeout(() => {

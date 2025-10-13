@@ -161,30 +161,39 @@ function App() {
   }, [isLoggedIn, location.pathname, navigate]);
 
   const handleLogin = (token) => {
-    setIsLoggedIn(true);
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('authToken', token);
-    // Navigate to default page based on role and device
-    const role = localStorage.getItem('userRole') || 'user';
-    const isMobileDevice = window.innerWidth < 1024;
-    
-    if (isMobileDevice && role === 'user') {
-      // On mobile/tablet, users start with no active page (shows UserProfile + DetailedInfo)
-      setActivePage(null);
-      navigate('/dashboard', { replace: true });
-    } else if (isMobileDevice && role === 'admin') {
-      // On mobile/tablet, admin starts with flatStatus
-      setActivePage('flatStatus');
-      navigate('/dashboard/flatStatus', { replace: true });
-    } else if (!isMobileDevice && role === 'user') {
-      // On desktop, user starts with flatDetails
-      setActivePage('flatDetails');
-      navigate('/dashboard/flatDetails', { replace: true });
-    } else if (!isMobileDevice && role === 'admin') {
-      // On desktop, admin starts with overview
-      setActivePage('overview');
-      navigate('/dashboard/overview', { replace: true });
-    }
+    // Defer state updates to avoid updating during render
+    setTimeout(() => {
+      setIsLoggedIn(true);
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('authToken', token);
+      
+      // Get role from localStorage (set by API during login)
+      const role = localStorage.getItem('userRole') || 'user';
+      setUserRole(role); // Update userRole state
+      
+      const isMobileDevice = window.innerWidth < 1024;
+      
+      // Navigate based on role and device
+      if (role === 'admin') {
+        // Admin (staff) users
+        if (isMobileDevice) {
+          setActivePage('flatStatus');
+          navigate('/dashboard/flatStatus', { replace: true });
+        } else {
+          setActivePage('overview');
+          navigate('/dashboard/overview', { replace: true });
+        }
+      } else {
+        // Regular (customer) users
+        if (isMobileDevice) {
+          setActivePage(null);
+          navigate('/dashboard', { replace: true });
+        } else {
+          setActivePage('flatDetails');
+          navigate('/dashboard/flatDetails', { replace: true });
+        }
+      }
+    }, 0);
   };
 
 
@@ -208,9 +217,8 @@ function App() {
       console.error('Logout error:', error);
     } finally {
       setIsLoggedIn(false);
-      const userRole = localStorage.getItem('userRole') || 'user';
-      const defaultPage = userRole === 'admin' ? 'overview' : 'flatDetails';
-      setActivePage(defaultPage);
+      setUserRole('user'); // Reset to default user role
+      setActivePage('flatDetails'); // Reset to default page
       setIsSidebarOpen(false);
       setIsUpdatesOpen(false);
       navigate('/');
@@ -230,18 +238,6 @@ function App() {
   const handleCustomerCareOpen = () => {
     setIsCustomerCarePopupOpen(true);
   };
-
-  // Temporary function to test role switching
-  const toggleUserRole = () => {
-    const newRole = userRole === 'user' ? 'admin' : 'user';
-    setUserRole(newRole);
-    localStorage.setItem('userRole', newRole);
-    // Switch to the default page for the new role
-    const defaultPage = newRole === 'admin' ? 'overview' : 'flatDetails';
-    setActivePage(defaultPage);
-    navigate(`/dashboard/${defaultPage}`, { replace: true });
-  };
-
 
   return (
     <Routes>
@@ -269,7 +265,6 @@ function App() {
               isAnimating={isAnimating}
               animationKey={animationKey}
               userRole={userRole}
-              onRoleToggle={toggleUserRole}
             />
           ) : (
             <Landing onLogin={handleLogin} />
@@ -293,7 +288,6 @@ function App() {
               isAnimating={isAnimating}
               animationKey={animationKey}
               userRole={userRole}
-              onRoleToggle={toggleUserRole}
             />
           ) : (
             <Landing onLogin={handleLogin} />
