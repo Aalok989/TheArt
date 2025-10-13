@@ -1,69 +1,68 @@
 import React, { useState, useEffect } from 'react';
-import { HiX, HiCalendar, HiLocationMarker, HiClock, HiCheckCircle, HiExclamationCircle, HiInformationCircle, HiEye } from 'react-icons/hi';
-import { fetchConstructionUpdates } from '../../api/mockData';
+import { HiX, HiCalendar, HiLocationMarker, HiClock, HiCheckCircle, HiExclamationCircle, HiInformationCircle, HiEye, HiBell } from 'react-icons/hi';
+import { customerAPI } from '../../api/api';
 
 const ConstructionUpdatesPopup = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState(true);
   const [updates, setUpdates] = useState([]);
 
-  // Fetch construction updates when modal opens
+  // Fetch notifications when modal opens
   useEffect(() => {
     if (isOpen) {
-      const getConstructionUpdates = async () => {
+      const getNotifications = async () => {
         try {
           setLoading(true);
-          const response = await fetchConstructionUpdates();
-          if (response.success) {
-            setUpdates(response.data);
+          const response = await customerAPI.getNotifications();
+          // API returns array directly, no success wrapper
+          if (Array.isArray(response)) {
+            setUpdates(response);
           }
         } catch (error) {
-          console.error('Error fetching construction updates:', error);
+          console.error('Error fetching notifications:', error);
         } finally {
           setLoading(false);
         }
       };
 
-      getConstructionUpdates();
+      getNotifications();
     }
   }, [isOpen]);
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'completed':
-        return <HiCheckCircle className="w-[1.25rem] h-[1.25rem] text-green-500" />;
-      case 'in-progress':
-        return <HiClock className="w-[1.25rem] h-[1.25rem] text-blue-500" />;
-      case 'scheduled':
-        return <HiCalendar className="w-[1.25rem] h-[1.25rem] text-orange-500" />;
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case 'CONSTRUCTION_UPDATE':
+        return <HiExclamationCircle className="w-[1.25rem] h-[1.25rem] text-orange-500" />;
+      case 'PAYMENT_DUE':
+        return <HiClock className="w-[1.25rem] h-[1.25rem] text-red-500" />;
+      case 'GENERAL':
+        return <HiBell className="w-[1.25rem] h-[1.25rem] text-blue-500" />;
       default:
         return <HiInformationCircle className="w-[1.25rem] h-[1.25rem] text-gray-500" />;
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'completed':
-        return 'bg-green-100 text-green-800';
-      case 'in-progress':
-        return 'bg-blue-100 text-blue-800';
-      case 'scheduled':
+  const getNotificationTypeColor = (type) => {
+    switch (type) {
+      case 'CONSTRUCTION_UPDATE':
         return 'bg-orange-100 text-orange-800';
+      case 'PAYMENT_DUE':
+        return 'bg-red-100 text-red-800';
+      case 'GENERAL':
+        return 'bg-blue-100 text-blue-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'high':
-        return 'bg-red-100 text-red-800';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'low':
-        return 'bg-gray-100 text-gray-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   if (!isOpen) return null;
@@ -75,9 +74,9 @@ const ConstructionUpdatesPopup = ({ isOpen, onClose }) => {
         <div className="flex items-center justify-between mb-[1.5rem]">
           <div className="flex items-center space-x-[0.75rem]">
             <div className="w-[2.5rem] h-[2.5rem] bg-orange-100 rounded-full flex items-center justify-center">
-              <HiExclamationCircle className="w-[1.25rem] h-[1.25rem] text-orange-600" />
+              <HiBell className="w-[1.25rem] h-[1.25rem] text-orange-600" />
             </div>
-            <h2 className="text-[1.25rem] font-bold text-gray-800">Construction Updates</h2>
+            <h2 className="text-[1.25rem] font-bold text-gray-800">Notifications</h2>
           </div>
           <button
             onClick={onClose}
@@ -93,71 +92,60 @@ const ConstructionUpdatesPopup = ({ isOpen, onClose }) => {
             <div className="flex items-center justify-center py-12">
               <div className="flex items-center gap-3">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
-                <p className="text-gray-600">Loading construction updates...</p>
+                <p className="text-gray-600">Loading notifications...</p>
               </div>
             </div>
           ) : updates.length === 0 ? (
             <div className="flex items-center justify-center py-12">
-              <p className="text-gray-600">No construction updates available.</p>
+              <p className="text-gray-600">No notifications available.</p>
             </div>
           ) : (
             <div className="space-y-[1rem]">
-              {updates.map((update, index) => (
+              {updates.map((notification, index) => (
               <div 
-                key={update.id}
-                className="bg-white rounded-xl p-[1.5rem] shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200 animate-fade-in-up"
+                key={notification.id}
+                className={`bg-white rounded-xl p-[1.5rem] shadow-sm border ${
+                  notification.is_read ? 'border-gray-200' : 'border-orange-300 bg-orange-50'
+                } hover:shadow-md transition-shadow duration-200 animate-fade-in-up`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="flex items-start justify-between mb-[0.75rem]">
-                  <div className="flex items-start space-x-[0.75rem]">
-                    {getStatusIcon(update.status)}
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-[0.5rem]">
-                        <h4 className="text-[0.875rem] font-medium text-blue-600 bg-blue-50 px-[0.75rem] py-[0.25rem] rounded-full">
-                          {update.albumName}
-                        </h4>
-                        <div className="flex items-center space-x-[0.25rem] text-gray-500 text-[0.875rem]">
-                          <HiEye className="w-[1rem] h-[1rem]" />
-                          <span>{update.viewCount} views</span>
-                        </div>
-                      </div>
-                      <h3 className="text-[1.125rem] font-semibold text-gray-800 mb-[0.5rem]">
-                        {update.title}
+                <div className="flex items-start space-x-[0.75rem]">
+                  {getNotificationIcon(notification.notification_type)}
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-[0.5rem]">
+                      <h3 className="text-[1.125rem] font-semibold text-gray-800">
+                        {notification.title}
                       </h3>
-                      <p className="text-gray-600 text-[0.875rem] leading-relaxed">
-                        {update.description}
-                      </p>
+                      {notification.is_important && (
+                        <span className="px-[0.75rem] py-[0.25rem] rounded-full text-[0.75rem] font-medium bg-red-100 text-red-800">
+                          IMPORTANT
+                        </span>
+                      )}
                     </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-[1rem]">
-                    {/* Date & Time */}
-                    <div className="flex items-center space-x-[0.5rem] text-[0.875rem] text-gray-500">
-                      <HiCalendar className="w-[1rem] h-[1rem]" />
-                      <span>{update.date}</span>
-                      <HiClock className="w-[1rem] h-[1rem] ml-[0.5rem]" />
-                      <span>{update.time}</span>
+                    <p className="text-gray-600 text-[0.875rem] leading-relaxed mb-[0.75rem]">
+                      {notification.message}
+                    </p>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-[0.5rem] text-[0.875rem] text-gray-500">
+                        <HiClock className="w-[1rem] h-[1rem]" />
+                        <span>{formatDate(notification.created_at)}</span>
+                      </div>
+                      
+                      <div className="flex items-center space-x-[0.5rem]">
+                        {/* Notification Type Badge */}
+                        <span className={`px-[0.75rem] py-[0.25rem] rounded-full text-[0.75rem] font-medium ${getNotificationTypeColor(notification.notification_type)}`}>
+                          {notification.notification_type.replace('_', ' ')}
+                        </span>
+                        
+                        {/* Read/Unread Badge */}
+                        {!notification.is_read && (
+                          <span className="px-[0.75rem] py-[0.25rem] rounded-full text-[0.75rem] font-medium bg-blue-100 text-blue-800">
+                            NEW
+                          </span>
+                        )}
+                      </div>
                     </div>
-
-                    {/* Location */}
-                    <div className="flex items-center space-x-[0.5rem] text-[0.875rem] text-gray-500">
-                      <HiLocationMarker className="w-[1rem] h-[1rem]" />
-                      <span>{update.location}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-[0.5rem]">
-                    {/* Status Badge */}
-                    <span className={`px-[0.75rem] py-[0.25rem] rounded-full text-[0.75rem] font-medium ${getStatusColor(update.status)}`}>
-                      {update.status.replace('-', ' ').toUpperCase()}
-                    </span>
-
-                    {/* Priority Badge */}
-                    <span className={`px-[0.75rem] py-[0.25rem] rounded-full text-[0.75rem] font-medium ${getPriorityColor(update.priority)}`}>
-                      {update.priority.toUpperCase()} PRIORITY
-                    </span>
                   </div>
                 </div>
               </div>

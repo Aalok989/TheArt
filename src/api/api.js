@@ -174,6 +174,22 @@ export const customerAPI = {
 
   async getUpdates() {
     return api.get('/customer/updates/');
+  },
+
+  async getNotifications() {
+    return api.get('/customer/notifications/');
+  },
+
+  async getCurrentDues() {
+    return api.get('/customer/current-dues/');
+  },
+
+  async getPaymentSchedule() {
+    return api.get('/customer/payment-schedule/');
+  },
+
+  async getDocuments() {
+    return api.get('/customer/documents/');
   }
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   HiBell,
   HiPhone,
@@ -7,6 +7,7 @@ import {
   HiCog,
   HiDocumentText,
 } from "react-icons/hi";
+import { customerAPI } from "../api/api";
 import UserProfile from "./Dashboard_User/UserProfile";
 import FlatDetails from "./Dashboard_User/FlatDetails.jsx";
 import PaymentSchedule from "./Dashboard_User/Payment.jsx";
@@ -54,6 +55,27 @@ const Layout = ({
   const [isUpdatesPopupOpen, setIsUpdatesPopupOpen] = useState(false);
   const [isMyDocumentsPopupOpen, setIsMyDocumentsPopupOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
+
+  // Fetch notification count (only for customer users)
+  useEffect(() => {
+    if (userRole === 'user') {
+      const fetchNotificationCount = async () => {
+        try {
+          const response = await customerAPI.getNotifications();
+          // API returns array of notifications directly
+          if (Array.isArray(response)) {
+            // Show total count of all notifications
+            setNotificationCount(response.length);
+          }
+        } catch (error) {
+          console.error('Error fetching notification count:', error);
+        }
+      };
+
+      fetchNotificationCount();
+    }
+  }, [userRole]);
 
   // Role-based navigation configuration
   const getNavigationItems = () => {
@@ -461,18 +483,28 @@ const Layout = ({
               </button>
               <button
                 onClick={handleNotificationsClick}
-                className="w-[2.5rem] h-[2.5rem] flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-gray-50 transition-all duration-300 hover-lift btn-animate"
+                className="w-[2.5rem] h-[2.5rem] flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-gray-50 transition-all duration-300 hover-lift btn-animate relative"
               >
                 <HiBell className="w-[1.25rem] h-[1.25rem] text-gray-600 transition-transform duration-300 hover:scale-110" />
+                {userRole === 'user' && notificationCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {notificationCount > 99 ? '99+' : notificationCount}
+                  </span>
+                )}
               </button>
             </div>
 
             {/* Mobile Updates Toggle Button */}
             <button
               onClick={handleMobileUpdatesToggle}
-              className="lg:hidden w-[2.5rem] h-[2.5rem] flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-gray-50 transition-all duration-300 hover-lift btn-animate"
+              className="lg:hidden w-[2.5rem] h-[2.5rem] flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-gray-50 transition-all duration-300 hover-lift btn-animate relative"
             >
               <HiBell className="w-[1.25rem] h-[1.25rem] text-gray-600 transition-transform duration-300 hover:scale-110" />
+              {userRole === 'user' && notificationCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {notificationCount > 99 ? '99+' : notificationCount}
+                </span>
+              )}
             </button>
             <div className="relative">
               <button
@@ -614,10 +646,17 @@ const Layout = ({
               </button>
               <button
                 onClick={handleNotificationsClick}
-                className="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200"
+                className="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 relative"
                 style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}
               >
-                <HiBell style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} className="text-gray-600" />
+                <div className="relative">
+                  <HiBell style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} className="text-gray-600" />
+                  {userRole === 'user' && notificationCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[0.5rem] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                      {notificationCount > 9 ? '9+' : notificationCount}
+                    </span>
+                  )}
+                </div>
                 <span className="font-medium text-gray-700 font-montserrat" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>
                   Updates
                 </span>
