@@ -6,6 +6,11 @@ import {
   HiLogout,
   HiCog,
   HiDocumentText,
+  HiMenu,
+  HiUserAdd,
+  HiUserGroup,
+  HiClipboardList,
+  HiBriefcase,
 } from "react-icons/hi";
 import { customerAPI } from "../api/api";
 import UserProfile from "./Dashboard_User/UserProfile";
@@ -56,24 +61,33 @@ const Layout = ({
   const [isMyDocumentsPopupOpen, setIsMyDocumentsPopupOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [profileImage, setProfileImage] = useState(null);
+  
+  // Admin Quick Tools state
+  const [isQuickToolsOpen, setIsQuickToolsOpen] = useState(false);
 
-  // Fetch notification count (only for customer users)
+  // Fetch notification count and profile image (only for customer users)
   useEffect(() => {
     if (userRole === 'user') {
-      const fetchNotificationCount = async () => {
+      const fetchUserData = async () => {
         try {
-          const response = await customerAPI.getNotifications();
-          // API returns array of notifications directly
-          if (Array.isArray(response)) {
-            // Show total count of all notifications
-            setNotificationCount(response.length);
+          // Fetch notifications
+          const notificationsResponse = await customerAPI.getNotifications();
+          if (Array.isArray(notificationsResponse)) {
+            setNotificationCount(notificationsResponse.length);
+          }
+
+          // Fetch profile for profile image
+          const profileResponse = await customerAPI.getProfile();
+          if (profileResponse.success && profileResponse.data) {
+            setProfileImage(profileResponse.data.profileImage);
           }
         } catch (error) {
-          console.error('Error fetching notification count:', error);
+          console.error('Error fetching user data:', error);
         }
       };
 
-      fetchNotificationCount();
+      fetchUserData();
     }
   }, [userRole]);
 
@@ -176,6 +190,17 @@ const Layout = ({
   const handleMobileUpdatesToggle = () => {
     onUpdatesToggle();
     setIsProfileDropdownOpen(false);
+  };
+
+  // Quick Tools handlers
+  const handleQuickToolsToggle = () => {
+    setIsQuickToolsOpen(!isQuickToolsOpen);
+  };
+
+  const handleQuickToolClick = (tool) => {
+    console.log(`Quick tool clicked: ${tool}`);
+    // Here you can add navigation or popup logic for each tool
+    setIsQuickToolsOpen(false);
   };
   const renderMiddlePanel = () => {
     if (!activePage) {
@@ -511,21 +536,17 @@ const Layout = ({
                 onClick={handleProfileClick}
                 className="w-[2.5rem] h-[2.5rem] flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-gray-50 transition-all duration-300 hover-lift btn-animate overflow-hidden"
               >
-                <img
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
-                  alt="Aman Bhutani"
-                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                    e.target.nextSibling.style.display = "flex";
-                  }}
-                />
-                <div
-                  className="w-full h-full bg-gray-300 rounded-full flex items-center justify-center"
-                  style={{ display: "none" }}
-                >
-                  <HiUser className="w-[1.25rem] h-[1.25rem] text-gray-600" />
-                </div>
+                {profileImage ? (
+                  <img
+                    src={profileImage}
+                    alt="Profile"
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-300 rounded-full flex items-center justify-center">
+                    <HiUser className="w-[1.25rem] h-[1.25rem] text-gray-600" />
+                  </div>
+                )}
               </button>
 
               {/* Profile Dropdown */}
@@ -614,21 +635,17 @@ const Layout = ({
             className="flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-gray-50 transition-all duration-300 overflow-hidden border border-gray-200"
             style={{ width: 'clamp(2.25rem, 2.5rem, 2.75rem)', height: 'clamp(2.25rem, 2.5rem, 2.75rem)' }}
           >
-            <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
-              alt="Profile"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.style.display = "none";
-                e.target.nextSibling.style.display = "flex";
-              }}
-            />
-            <div
-              className="w-full h-full bg-gray-300 rounded-full flex items-center justify-center"
-              style={{ display: "none" }}
-            >
-              <HiUser style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} className="text-gray-600" />
-            </div>
+            {profileImage ? (
+              <img
+                src={profileImage}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-300 rounded-full flex items-center justify-center">
+                <HiUser style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} className="text-gray-600" />
+              </div>
+            )}
           </button>
 
           {/* Profile Dropdown - Mobile Version */}
@@ -741,14 +758,126 @@ const Layout = ({
         </div>
 
         {/* Desktop Layout */}
-        <div className="hidden lg:flex h-full items-center justify-center" style={{ paddingTop: 'clamp(5rem, 7.25rem, 8rem)', paddingBottom: 'clamp(1.5rem, 2.3125rem, 3rem)', paddingLeft: 'clamp(1.5rem, 2.75rem, 3.5rem)', paddingRight: 'clamp(1.5rem, 2.75rem, 3.5rem)' }}>
+        <div className="hidden lg:flex h-full items-center justify-center relative" style={{ paddingTop: 'clamp(5rem, 7.25rem, 8rem)', paddingBottom: 'clamp(1.5rem, 2.3125rem, 3rem)', paddingLeft: 'clamp(1.5rem, 2.75rem, 3.5rem)', paddingRight: 'clamp(1.5rem, 2.75rem, 3.5rem)' }}>
           {userRole === "admin" ? (
             // Admin layout - only middle section with two components
-            <div className="flex w-full max-w-[120rem] mx-auto" style={{ gap: 'clamp(0.625rem, 0.9375rem, 1.25rem)' }}>
-              <div className="flex flex-col w-full" style={{ height: 'clamp(35rem, 49.8125rem, 55rem)', maxHeight: 'calc(100vh - 10rem)' }}>
-                {renderMiddlePanel()}
+            <>
+              <div className="flex w-full max-w-[120rem] mx-auto" style={{ gap: 'clamp(0.625rem, 0.9375rem, 1.25rem)' }}>
+                <div className="flex flex-col w-full" style={{ height: 'clamp(35rem, 49.8125rem, 55rem)', maxHeight: 'calc(100vh - 10rem)' }}>
+                  {renderMiddlePanel()}
+                </div>
               </div>
-            </div>
+              
+              {/* Admin Quick Tools Hamburger Button - Bottom Left */}
+              <div className="fixed left-8 bottom-8 z-50">
+                <button
+                  onClick={handleQuickToolsToggle}
+                  className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  title="Quick Tools"
+                >
+                  {/* Hamburger to Cross Animation */}
+                  <div className="relative w-6 h-6 flex flex-col items-center justify-center">
+                    <span className={`absolute w-5 h-0.5 bg-white transition-all duration-300 ease-in-out ${isQuickToolsOpen ? 'rotate-45' : '-translate-y-1.5'}`}></span>
+                    <span className={`absolute w-5 h-0.5 bg-white transition-all duration-300 ease-in-out ${isQuickToolsOpen ? 'opacity-0 scale-0' : 'opacity-100'}`}></span>
+                    <span className={`absolute w-5 h-0.5 bg-white transition-all duration-300 ease-in-out ${isQuickToolsOpen ? '-rotate-45' : 'translate-y-1.5'}`}></span>
+                  </div>
+                </button>
+
+                {/* Quick Tools Tiles */}
+                {isQuickToolsOpen && (
+                  <>
+                    {/* Backdrop */}
+                    <div 
+                      className="fixed inset-0 z-40"
+                      onClick={() => setIsQuickToolsOpen(false)}
+                    />
+                    
+                    {/* Tiles Grid with Scale Animation */}
+                    <div className="absolute bottom-16 left-0 flex flex-col gap-2 z-50 origin-bottom-left animate-scale-in">
+                      {/* New Bookings Tile */}
+                      <button
+                        onClick={() => handleQuickToolClick('new-bookings')}
+                        className="bg-gray-100 rounded-lg shadow-xl border border-gray-300 px-4 py-2 hover:shadow-2xl transition-all duration-300 hover:scale-105 whitespace-nowrap group"
+                        style={{
+                          background: 'rgb(243, 244, 246)',
+                          borderColor: 'rgb(209, 213, 219)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)';
+                          e.currentTarget.style.borderColor = '#FC7117';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgb(243, 244, 246)';
+                          e.currentTarget.style.borderColor = 'rgb(209, 213, 219)';
+                        }}
+                      >
+                        <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">New Bookings</span>
+                      </button>
+
+                      {/* New Customer Tile */}
+                      <button
+                        onClick={() => handleQuickToolClick('new-customer')}
+                        className="bg-gray-100 rounded-lg shadow-xl border border-gray-300 px-4 py-2 hover:shadow-2xl transition-all duration-300 hover:scale-105 whitespace-nowrap group"
+                        style={{
+                          background: 'rgb(243, 244, 246)',
+                          borderColor: 'rgb(209, 213, 219)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)';
+                          e.currentTarget.style.borderColor = '#FC7117';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgb(243, 244, 246)';
+                          e.currentTarget.style.borderColor = 'rgb(209, 213, 219)';
+                        }}
+                      >
+                        <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">New Customer</span>
+                      </button>
+
+                      {/* New Staff Tile */}
+                      <button
+                        onClick={() => handleQuickToolClick('new-staff')}
+                        className="bg-gray-100 rounded-lg shadow-xl border border-gray-300 px-4 py-2 hover:shadow-2xl transition-all duration-300 hover:scale-105 whitespace-nowrap group"
+                        style={{
+                          background: 'rgb(243, 244, 246)',
+                          borderColor: 'rgb(209, 213, 219)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)';
+                          e.currentTarget.style.borderColor = '#FC7117';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgb(243, 244, 246)';
+                          e.currentTarget.style.borderColor = 'rgb(209, 213, 219)';
+                        }}
+                      >
+                        <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">New Staff</span>
+                      </button>
+
+                      {/* New Projects Tile */}
+                      <button
+                        onClick={() => handleQuickToolClick('new-projects')}
+                        className="bg-gray-100 rounded-lg shadow-xl border border-gray-300 px-4 py-2 hover:shadow-2xl transition-all duration-300 hover:scale-105 whitespace-nowrap group"
+                        style={{
+                          background: 'rgb(243, 244, 246)',
+                          borderColor: 'rgb(209, 213, 219)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)';
+                          e.currentTarget.style.borderColor = '#FC7117';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgb(243, 244, 246)';
+                          e.currentTarget.style.borderColor = 'rgb(209, 213, 219)';
+                        }}
+                      >
+                        <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">New Projects</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
           ) : (
             // User layout - three sections with responsive sizing
             <div className="flex w-full mx-auto" style={{ gap: 'clamp(0.5rem, 0.9375rem, 1.25rem)', maxWidth: 'min(120rem, 100%)' }}>

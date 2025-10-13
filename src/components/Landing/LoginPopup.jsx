@@ -74,6 +74,7 @@ const LoginPopup = ({ isOpen, onClose, onLoginSuccess }) => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
+                autoComplete="username"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent pr-12"
                 disabled={loading}
                 required
@@ -95,6 +96,7 @@ const LoginPopup = ({ isOpen, onClose, onLoginSuccess }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
+                autoComplete="current-password"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent pr-12"
                 disabled={loading}
                 required

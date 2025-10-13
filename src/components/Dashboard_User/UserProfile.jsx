@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import userImageBig from '../../assets/user Image big.png';
+import { HiUser } from 'react-icons/hi';
 import emailIcon from '../../assets/Mail.png';
 import phoneIcon from '../../assets/phone.png';
 import whatsappIcon from '../../assets/whatsapp..png';
@@ -90,12 +90,15 @@ const UserProfile = () => {
             className="bg-gray-300 rounded-full flex items-center justify-center overflow-hidden shadow-sm flex-shrink-0 animate-scale-in"
             style={{ width: 'clamp(5rem, 6rem, 6.25rem)', height: 'clamp(5rem, 6rem, 6.25rem)' }}
           >
-            <img 
-              src={userData.profileImage || userImageBig} 
-              alt={userData.fullName} 
-              className="w-full h-full object-cover" 
-              onError={(e) => { e.target.src = userImageBig; }} 
-            />
+            {userData.profileImage ? (
+              <img 
+                src={userData.profileImage} 
+                alt={userData.fullName} 
+                className="w-full h-full object-cover" 
+              />
+            ) : (
+              <HiUser className="text-gray-500" style={{ width: 'clamp(2.5rem, 3rem, 3.5rem)', height: 'clamp(2.5rem, 3rem, 3.5rem)' }} />
+            )}
           </div>
 
           {/* Name and Flat Info - Responsive layout */}

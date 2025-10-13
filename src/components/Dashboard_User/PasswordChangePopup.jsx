@@ -52,7 +52,7 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in-up" style={{ padding: 'clamp(0.5rem, 1rem, 1.5rem)' }}>
-      <div className="bg-[#E8F3EB] shadow-2xl w-full animate-scale-in" style={{ borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)', padding: 'clamp(1.25rem, 2rem, 2.5rem)', maxWidth: 'clamp(24rem, 28rem, 32rem)' }}>
+      <div className="bg-orange-400 shadow-2xl w-full animate-scale-in" style={{ borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)', padding: 'clamp(1.25rem, 2rem, 2.5rem)', maxWidth: 'clamp(24rem, 28rem, 32rem)' }}>
         {/* Header */}
         <div className="flex items-center justify-between" style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)', gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
           <div className="flex items-center" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
@@ -74,7 +74,7 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
           {/* Current Password */}
           <div>
-            <label className="block font-medium text-gray-700" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)', marginBottom: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
+            <label className="block font-medium text-gray-900" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)', marginBottom: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
               Current Password
             </label>
             <div className="relative">
@@ -82,6 +82,7 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
                 type={showCurrentPassword ? 'text' : 'password'}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
+                autoComplete="current-password"
                 className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 style={{ paddingLeft: 'clamp(0.75rem, 1rem, 1.25rem)', paddingRight: 'clamp(2.25rem, 3rem, 3.5rem)', paddingTop: 'clamp(0.5rem, 0.75rem, 1rem)', paddingBottom: 'clamp(0.5rem, 0.75rem, 1rem)', borderRadius: 'clamp(0.5rem, 0.75rem, 1rem)', fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}
                 placeholder="Enter current password"
@@ -99,7 +100,7 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
 
           {/* New Password */}
           <div>
-            <label className="block font-medium text-gray-700" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)', marginBottom: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
+            <label className="block font-medium text-gray-900" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)', marginBottom: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
               New Password
             </label>
             <div className="relative">
@@ -107,6 +108,7 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
                 type={showNewPassword ? 'text' : 'password'}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
+                autoComplete="new-password"
                 className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 style={{ paddingLeft: 'clamp(0.75rem, 1rem, 1.25rem)', paddingRight: 'clamp(2.25rem, 3rem, 3.5rem)', paddingTop: 'clamp(0.5rem, 0.75rem, 1rem)', paddingBottom: 'clamp(0.5rem, 0.75rem, 1rem)', borderRadius: 'clamp(0.5rem, 0.75rem, 1rem)', fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}
                 placeholder="Enter new password"
@@ -124,7 +126,7 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
 
           {/* Confirm Password */}
           <div>
-            <label className="block font-medium text-gray-700" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)', marginBottom: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
+            <label className="block font-medium text-gray-900" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)', marginBottom: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
               Confirm New Password
             </label>
             <div className="relative">
@@ -132,6 +134,7 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
                 className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 style={{ paddingLeft: 'clamp(0.75rem, 1rem, 1.25rem)', paddingRight: 'clamp(2.25rem, 3rem, 3.5rem)', paddingTop: 'clamp(0.5rem, 0.75rem, 1rem)', paddingBottom: 'clamp(0.5rem, 0.75rem, 1rem)', borderRadius: 'clamp(0.5rem, 0.75rem, 1rem)', fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}
                 placeholder="Confirm new password"

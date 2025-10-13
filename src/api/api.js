@@ -189,7 +189,7 @@ export const customerAPI = {
   },
 
   async getDocuments() {
-    return api.get('/customer/documents/');
+    return api.get('/customer/booking-documents/');
   }
 };
 
