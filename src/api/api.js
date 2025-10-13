@@ -77,10 +77,21 @@ const api = new SimpleApiClient();
 // Authentication methods
 export const authAPI = {
   async login(username, password) {
-    const response = await api.post('/auth/token/login', { username, password });
+    const response = await api.post('/auth/token/login/', { username, password });
     
     if (response.auth_token) {
       localStorage.setItem('authToken', response.auth_token);
+      
+      // Fetch user details to determine role
+      try {
+        const userDetails = await api.get('/auth/users/me/');
+        const role = userDetails.is_staff || userDetails.is_superuser ? 'admin' : 'user';
+        localStorage.setItem('userRole', role);
+      } catch (error) {
+        console.warn('Could not fetch user details, defaulting to user role');
+        localStorage.setItem('userRole', 'user');
+      }
+      
       return { success: true, token: response.auth_token };
     }
     
@@ -88,7 +99,17 @@ export const authAPI = {
   },
 
   async logout() {
-    localStorage.removeItem('authToken');
+    try {
+      // Call logout endpoint to invalidate token on server
+      await api.post('/auth/token/logout/');
+    } catch (error) {
+      console.warn('Logout API call failed:', error);
+    } finally {
+      // Always remove local storage items
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('isLoggedIn');
+    }
   },
 
   isAuthenticated() {

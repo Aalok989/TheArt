@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
 import Landing from './components/Landing/Landing';
+import { authAPI } from './api/api';
 
 function App() {
   const navigate = useNavigate();
@@ -200,16 +201,20 @@ function App() {
     }
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('authToken');
-    const userRole = localStorage.getItem('userRole') || 'user';
-    const defaultPage = userRole === 'admin' ? 'overview' : 'flatDetails';
-    setActivePage(defaultPage);
-    setIsSidebarOpen(false);
-    setIsUpdatesOpen(false);
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await authAPI.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setIsLoggedIn(false);
+      const userRole = localStorage.getItem('userRole') || 'user';
+      const defaultPage = userRole === 'admin' ? 'overview' : 'flatDetails';
+      setActivePage(defaultPage);
+      setIsSidebarOpen(false);
+      setIsUpdatesOpen(false);
+      navigate('/');
+    }
   };
 
   const handleSidebarToggle = () => {

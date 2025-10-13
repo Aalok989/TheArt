@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HiChevronLeft, HiPlus, HiMinus, HiDotsVertical, HiTrash, HiPencil, HiCheckCircle, HiReceiptTax, HiCog, HiMenu, HiX, HiLightningBolt, HiBell, HiFolder, HiEye, HiRefresh, HiDocumentText, HiCurrencyRupee, HiPrinter, HiShare, HiInformationCircle, HiDocument, HiKey, HiArrowUp, HiArrowDown, HiXCircle, HiArrowRight, HiDeviceMobile } from 'react-icons/hi';
+import { fetchFlatDetailsAdmin } from '../../api/mockData';
 
 const Flat = ({ onPageChange }) => {
   const [loading, setLoading] = useState(true);
@@ -12,24 +13,22 @@ const Flat = ({ onPageChange }) => {
   const [isQuickAccessOpen, setIsQuickAccessOpen] = useState(false);
 
   useEffect(() => {
-    // Load flat data from sessionStorage
+    // Load flat data from sessionStorage or API
     const loadFlatData = async () => {
       try {
         setLoading(true);
         const storedFlatData = sessionStorage.getItem('selectedFlat');
+        let flatNo = 'A-101'; // Default flat number
         
         if (storedFlatData) {
           const parsedData = JSON.parse(storedFlatData);
-          setFlatData(parsedData);
-        } else {
-          // Fallback data if no selection
-          setFlatData({
-            flatNo: 'A-101',
-            status: 'Booked',
-            floor: '1st Floor',
-            block: 'A',
-            size: '2 BHK',
-          });
+          flatNo = parsedData.flatNo;
+        }
+
+        // Fetch detailed flat data from API
+        const response = await fetchFlatDetailsAdmin(flatNo);
+        if (response.success) {
+          setFlatData(response.data);
         }
         setLoading(false);
       } catch (error) {
@@ -74,31 +73,33 @@ const Flat = ({ onPageChange }) => {
     <div className="h-full flex flex-col bg-white lg:bg-transparent shadow-sm lg:shadow-none border lg:border-0 border-gray-200" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', borderRadius: 'clamp(1rem, 1.5rem, 1.75rem)' }}>
       {/* Header Section */}
       <div style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
-        <div className="flex items-center relative" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
-          <button
-            onClick={() => onPageChange && onPageChange('overview')}
-            className="flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-all duration-300"
-            style={{ width: 'clamp(2rem, 2.5rem, 3rem)', height: 'clamp(2rem, 2.5rem, 3rem)' }}
-          >
-            <HiChevronLeft style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} className="text-gray-600" />
-          </button>
-          <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)' }}>
-            Booking Statement For Flat {flatData.flatNo}
-          </h2>
+        <div className="flex flex-col lg:flex-row lg:items-center lg:relative space-y-4 lg:space-y-0" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
+          <div className="flex items-center" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
+            <button
+              onClick={() => onPageChange && onPageChange('overview')}
+              className="flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-all duration-300"
+              style={{ width: 'clamp(2rem, 2.5rem, 3rem)', height: 'clamp(2rem, 2.5rem, 3rem)' }}
+            >
+              <HiChevronLeft style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} className="text-gray-600" />
+            </button>
+            <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)' }}>
+              Booking Statement For Flat {flatData.flatNo}
+            </h2>
+          </div>
           
-          {/* Centered buttons across full page width */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
-            <button className="px-4 py-2 rounded-lg text-white font-medium bg-green-600 hover:bg-green-700 transition-colors" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>
+          {/* Centered buttons - Responsive */}
+          <div className="flex lg:absolute lg:left-1/2 lg:transform lg:-translate-x-1/2 items-center justify-center lg:justify-start" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
+            <button className="px-4 py-2 rounded-lg text-white font-medium bg-green-600 hover:bg-green-700 transition-colors w-full lg:w-auto" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>
               Verified Flats
             </button>
-            <button className="px-4 py-2 rounded-lg text-white font-medium bg-orange-600 hover:bg-orange-700 transition-colors" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>
+            <button className="px-4 py-2 rounded-lg text-white font-medium bg-orange-600 hover:bg-orange-700 transition-colors w-full lg:w-auto" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>
               Revert BBA
             </button>
           </div>
         </div>
         
-        {/* Top right corner icons */}
-        <div className="absolute top-0 right-0 flex items-center" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)', padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
+        {/* Top right corner icons - Hidden on mobile */}
+        <div className="hidden lg:flex absolute top-0 right-0 items-center" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)', padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
             {/* Quick Access Tool Icon */}
             <button 
               onClick={() => setIsQuickAccessOpen(!isQuickAccessOpen)}
@@ -231,7 +232,7 @@ const Flat = ({ onPageChange }) => {
             </div>
             
             {isApplicantDetailsExpanded && (
-              <div className="grid grid-cols-1 lg:grid-cols-2" style={{ gap: 'clamp(1rem, 1.5rem, 2rem)' }}>
+              <div className="grid grid-cols-1 xl:grid-cols-2" style={{ gap: 'clamp(1rem, 1.5rem, 2rem)' }}>
                 {/* CUSTOMER INFORMATION */}
                 <div className="border border-gray-200 bg-gray-50" style={{ borderRadius: 'clamp(0.5rem, 0.75rem, 1rem)', padding: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
                   <div className="flex justify-between items-center font-bold border-b" style={{
@@ -249,23 +250,23 @@ const Flat = ({ onPageChange }) => {
                   </div>
                   <div className="space-y-0">
                     {[
-                      { label: 'Name', value: 'V.REVATHI' },
-                      { label: 'Contact No.', value: '9966801523' },
-                      { label: 'PAN No', value: 'BBEPV4857L' },
-                      { label: 'Address', value: 'Flat No-16-104 Near Saibaba Temple, Huzusnagar, at Suryapet.' },
-                      { label: 'Father/Husband', value: 'V.RAMA MOHAN RAO' },
-                      { label: 'Email', value: 'vure.rama.mohan.rao@gmail.com' },
-                      { label: 'DOB', value: '05-06-1955' },
+                      { label: 'Name', value: flatData.customerInfo.name },
+                      { label: 'Contact No.', value: flatData.customerInfo.contactNo },
+                      { label: 'PAN No', value: flatData.customerInfo.panNo },
+                      { label: 'Address', value: flatData.customerInfo.address },
+                      { label: 'Father/Husband', value: flatData.customerInfo.fatherHusband },
+                      { label: 'Email', value: flatData.customerInfo.email },
+                      { label: 'DOB', value: flatData.customerInfo.dob },
                     ].map((item, index) => (
                       <div
                         key={index}
-                        className="flex justify-between items-center border-b border-gray-200 last:border-b-0"
-                        style={{ paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}
+                        className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-200 last:border-b-0"
+                        style={{ paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)', gap: 'clamp(0.25rem, 0.5rem, 0.75rem)' }}
                       >
                         <span style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '500' }}>
                           {item.label}:
                         </span>
-                        <span style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
+                        <span style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400', wordBreak: 'break-word' }}>
                           {item.value}
                         </span>
                       </div>
@@ -295,23 +296,23 @@ const Flat = ({ onPageChange }) => {
                   </div>
                   <div className="space-y-0">
                     {[
-                      { label: 'Co-Applicant Name', value: 'V.RAMA MOHAN RAO' },
-                      { label: 'Contact No.', value: '' },
-                      { label: 'PAN No', value: '' },
-                      { label: 'Address', value: '' },
-                      { label: 'Father/Husband', value: 'V.NARAYANA RAO' },
-                      { label: 'Email', value: '' },
-                      { label: 'DOB', value: '07-06-1946' },
+                      { label: 'Co-Applicant Name', value: flatData.coApplicantInfo.name },
+                      { label: 'Contact No.', value: flatData.coApplicantInfo.contactNo },
+                      { label: 'PAN No', value: flatData.coApplicantInfo.panNo },
+                      { label: 'Address', value: flatData.coApplicantInfo.address },
+                      { label: 'Father/Husband', value: flatData.coApplicantInfo.fatherHusband },
+                      { label: 'Email', value: flatData.coApplicantInfo.email },
+                      { label: 'DOB', value: flatData.coApplicantInfo.dob },
                     ].map((item, index) => (
                       <div
                         key={index}
-                        className="flex justify-between items-center border-b border-gray-200 last:border-b-0"
-                        style={{ paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}
+                        className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-200 last:border-b-0"
+                        style={{ paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)', gap: 'clamp(0.25rem, 0.5rem, 0.75rem)' }}
                       >
                         <span style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '500' }}>
                           {item.label}:
                         </span>
-                        <span style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
+                        <span style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400', wordBreak: 'break-word' }}>
                           {item.value || '-'}
                         </span>
                       </div>
@@ -351,7 +352,7 @@ const Flat = ({ onPageChange }) => {
             </div>
             
             {isFlatDetailsExpanded && (
-              <div className="grid grid-cols-1 lg:grid-cols-2" style={{ gap: 'clamp(1rem, 1.5rem, 2rem)' }}>
+              <div className="grid grid-cols-1 xl:grid-cols-2" style={{ gap: 'clamp(1rem, 1.5rem, 2rem)' }}>
                 {/* FLAT INFORMATION */}
                 <div className="border border-gray-200 bg-gray-50" style={{ borderRadius: 'clamp(0.5rem, 0.75rem, 1rem)', padding: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
                   <div className="flex justify-between items-center font-bold border-b" style={{
@@ -369,17 +370,17 @@ const Flat = ({ onPageChange }) => {
                   </div>
                   <div className="space-y-0">
                     {[
-                      { label: 'Area', value: '1386 Sq.ft' },
-                      { label: 'Booking Date', value: '11-10-2021' },
-                      { label: 'Payment Plan', value: 'CLP' },
-                      { label: 'Channel Partner', value: 'GHPL (Change)', isLink: true },
-                      { label: 'Total Cost', value: '8396700' },
-                      { label: 'Total Booking Amount', value: '300000' },
+                      { label: 'Area', value: flatData.flatInfo.area },
+                      { label: 'Booking Date', value: flatData.flatInfo.bookingDate },
+                      { label: 'Payment Plan', value: flatData.flatInfo.paymentPlan },
+                      { label: 'Channel Partner', value: flatData.flatInfo.channelPartner, isLink: true },
+                      { label: 'Total Cost', value: flatData.flatInfo.totalCost },
+                      { label: 'Total Booking Amount', value: flatData.flatInfo.totalBookingAmount },
                     ].map((item, index) => (
                       <div
                         key={index}
-                        className="flex justify-between items-center border-b border-gray-200 last:border-b-0"
-                        style={{ paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}
+                        className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-200 last:border-b-0"
+                        style={{ paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)', gap: 'clamp(0.25rem, 0.5rem, 0.75rem)' }}
                       >
                         <span style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '500' }}>
                           {item.label}:
@@ -389,7 +390,8 @@ const Flat = ({ onPageChange }) => {
                             fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', 
                             color: item.isLink ? '#2563eb' : '#000000', 
                             fontWeight: '400',
-                            cursor: item.isLink ? 'pointer' : 'default'
+                            cursor: item.isLink ? 'pointer' : 'default',
+                            wordBreak: 'break-word'
                           }}
                           className={item.isLink ? 'hover:underline' : ''}
                         >
@@ -417,19 +419,19 @@ const Flat = ({ onPageChange }) => {
                   </div>
                   <div className="space-y-0">
                     {[
-                      { label: 'Extra Charges', value: 'View Applicable Charges', isLink: true },
-                      { label: 'Due Amount', value: '6037650' },
-                      { label: 'Paid Amount', value: '8219625' },
-                      { label: 'Pending Amount', value: '0' },
-                      { label: 'Due Tax', value: '301884' },
-                      { label: 'Paid Tax', value: '0' },
-                      { label: 'Cleared Tax', value: '0' },
-                      { label: 'Pending Tax', value: '301884' },
+                      { label: 'Extra Charges', value: flatData.charges.extraCharges, isLink: true },
+                      { label: 'Due Amount', value: flatData.charges.dueAmount },
+                      { label: 'Paid Amount', value: flatData.charges.paidAmount },
+                      { label: 'Pending Amount', value: flatData.charges.pendingAmount },
+                      { label: 'Due Tax', value: flatData.charges.dueTax },
+                      { label: 'Paid Tax', value: flatData.charges.paidTax },
+                      { label: 'Cleared Tax', value: flatData.charges.clearedTax },
+                      { label: 'Pending Tax', value: flatData.charges.pendingTax },
                     ].map((item, index) => (
                       <div
                         key={index}
-                        className="flex justify-between items-center border-b border-gray-200 last:border-b-0"
-                        style={{ paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}
+                        className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-200 last:border-b-0"
+                        style={{ paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)', gap: 'clamp(0.25rem, 0.5rem, 0.75rem)' }}
                       >
                         <span style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '500' }}>
                           {item.label}:
@@ -439,7 +441,8 @@ const Flat = ({ onPageChange }) => {
                             fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', 
                             color: item.isLink ? '#2563eb' : '#000000', 
                             fontWeight: '400',
-                            cursor: item.isLink ? 'pointer' : 'default'
+                            cursor: item.isLink ? 'pointer' : 'default',
+                            wordBreak: 'break-word'
                           }}
                           className={item.isLink ? 'hover:underline' : ''}
                         >
@@ -483,9 +486,9 @@ const Flat = ({ onPageChange }) => {
             
             {isPaymentInfoExpanded && (
               <div className="border border-gray-200 bg-gray-50" style={{ borderRadius: 'clamp(0.5rem, 0.75rem, 1rem)', padding: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
-                {/* Table Headers */}
+                {/* Desktop Table Headers - Hidden on mobile */}
                 <div
-                  className="grid border-b sticky top-0 z-10 bg-gray-100"
+                  className="hidden lg:grid border-b sticky top-0 z-10 bg-gray-100"
                   style={{ 
                     gridTemplateColumns: '0.5fr 0.8fr 1fr 1fr 1.2fr 0.8fr 1fr 1fr 1fr 1fr 0.6fr 0.8fr 1.8fr',
                     gap: 'clamp(0.25rem, 0.5rem, 0.75rem)',
@@ -536,52 +539,9 @@ const Flat = ({ onPageChange }) => {
                   </div>
                 </div>
 
-                {/* Table Rows */}
-                <div className="space-y-0">
-                  {[
-                    {
-                      srNo: 1,
-                      chequeCount: 2,
-                      chequeNo: '811778',
-                      amount: '447000',
-                      onAccountOf: 'Flat Cost (ORCHID)',
-                      bank: 'HDFC',
-                      chequeDate: '15-11-2021',
-                      chequeStatus: 'CLEARED',
-                      clearingDate: '15-11-2021',
-                      remarks: '',
-                      account: 7,
-                      updatedBy: 'bhavani'
-                    },
-                    {
-                      srNo: 2,
-                      chequeCount: 14,
-                      chequeNo: '000001',
-                      amount: '753000',
-                      onAccountOf: 'Flat Cost (GHPL)',
-                      bank: 'HDFC',
-                      chequeDate: '20-11-2021',
-                      chequeStatus: 'CLEARED',
-                      clearingDate: '20-11-2021',
-                      remarks: '',
-                      account: 5,
-                      updatedBy: 'bhavani'
-                    },
-                    {
-                      srNo: 3,
-                      chequeCount: 18,
-                      chequeNo: '000002',
-                      amount: '500000',
-                      onAccountOf: 'Flat Cost (ORCHID)',
-                      bank: 'HDFC',
-                      chequeDate: '25-11-2021',
-                      chequeStatus: 'CLEARED',
-                      clearingDate: '25-11-2021',
-                      remarks: '',
-                      account: 7,
-                      updatedBy: 'bhavani'
-                    }
-                  ].map((payment, index) => (
+                {/* Desktop Table Rows */}
+                <div className="hidden lg:block space-y-0">
+                  {flatData.paymentInfo.map((payment, index) => (
                     <div
                       key={index}
                       className="grid border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
@@ -668,6 +628,73 @@ const Flat = ({ onPageChange }) => {
                             Receipt
                           </div>
                         </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Mobile Payment Cards */}
+                <div className="lg:hidden space-y-3">
+                  {flatData.paymentInfo.map((payment, index) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="font-semibold text-gray-900" style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}>
+                            Payment #{payment.srNo}
+                          </h3>
+                          <p className="text-gray-600" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>
+                            Cheque: {payment.chequeNo}
+                          </p>
+                        </div>
+                        <span
+                          style={{
+                            backgroundColor: payment.chequeStatus === 'CLEARED' ? '#E4FFE5' : '#FFEBEB',
+                            color: payment.chequeStatus === 'CLEARED' ? '#16A34A' : '#DC2626',
+                            padding: 'clamp(0.125rem, 0.25rem, 0.375rem) clamp(0.5rem, 0.75rem, 1rem)',
+                            borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)',
+                            fontSize: 'clamp(0.75rem, 0.875rem, 1rem)',
+                            fontWeight: '500',
+                          }}
+                        >
+                          {payment.chequeStatus}
+                        </span>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-gray-500" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>Amount:</span>
+                          <span className="text-gray-900 font-medium" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>₹{payment.amount}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>Account:</span>
+                          <span className="text-gray-900" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>{payment.onAccountOf}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>Bank:</span>
+                          <span className="text-gray-900" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>{payment.bank}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>Date:</span>
+                          <span className="text-gray-900" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>{payment.chequeDate}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>Updated By:</span>
+                          <span className="text-gray-900" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>{payment.updatedBy}</span>
+                        </div>
+                      </div>
+                      {/* Action Buttons */}
+                      <div className="flex items-center justify-center gap-2 mt-3 pt-3 border-t border-gray-200">
+                        <button className="flex items-center justify-center rounded-full bg-red-100 hover:bg-red-200 transition-colors" style={{ width: 'clamp(1.5rem, 2rem, 2.5rem)', height: 'clamp(1.5rem, 2rem, 2.5rem)' }}>
+                          <HiTrash style={{ width: 'clamp(0.75rem, 1rem, 1.25rem)', height: 'clamp(0.75rem, 1rem, 1.25rem)' }} className="text-red-600" />
+                        </button>
+                        <button className="flex items-center justify-center rounded-full bg-blue-100 hover:bg-blue-200 transition-colors" style={{ width: 'clamp(1.5rem, 2rem, 2.5rem)', height: 'clamp(1.5rem, 2rem, 2.5rem)' }}>
+                          <HiPencil style={{ width: 'clamp(0.75rem, 1rem, 1.25rem)', height: 'clamp(0.75rem, 1rem, 1.25rem)' }} className="text-blue-600" />
+                        </button>
+                        <button className="flex items-center justify-center rounded-full bg-green-100 hover:bg-green-200 transition-colors" style={{ width: 'clamp(1.5rem, 2rem, 2.5rem)', height: 'clamp(1.5rem, 2rem, 2.5rem)' }}>
+                          <HiCheckCircle style={{ width: 'clamp(0.75rem, 1rem, 1.25rem)', height: 'clamp(0.75rem, 1rem, 1.25rem)' }} className="text-green-600" />
+                        </button>
+                        <button className="flex items-center justify-center rounded-full bg-purple-100 hover:bg-purple-200 transition-colors" style={{ width: 'clamp(1.5rem, 2rem, 2.5rem)', height: 'clamp(1.5rem, 2rem, 2.5rem)' }}>
+                          <HiReceiptTax style={{ width: 'clamp(0.75rem, 1rem, 1.25rem)', height: 'clamp(0.75rem, 1rem, 1.25rem)' }} className="text-purple-600" />
+                        </button>
                       </div>
                     </div>
                   ))}

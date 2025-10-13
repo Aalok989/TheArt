@@ -697,6 +697,294 @@ export const fetchFlatLegalDocuments = async () => {
 };
 
 // ==================== EXPORT ALL ====================
+// ==================== ADMIN: PROJECTS DATA ====================
+const projectsData = [
+  {
+    id: 1,
+    name: 'The Art Residency',
+    builder: 'GHPL Constructions',
+    location: 'Hyderabad, Telangana',
+    description: 'Premium residential project with modern amenities',
+    startDate: '2021-01-15',
+    endDate: '2024-12-31',
+    isActive: true,
+    createdAt: '15-01-2021',
+    blocks: [
+      { id: 1, name: 'Block A', description: 'East facing premium apartments' },
+      { id: 2, name: 'Block B', description: 'West facing luxury flats' },
+      { id: 3, name: 'Block C', description: 'North facing spacious units' }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Orchid Heights',
+    builder: 'Orchid Developers',
+    location: 'Bangalore, Karnataka',
+    description: 'Luxury high-rise apartments with world-class facilities',
+    startDate: '2021-03-22',
+    endDate: '2025-06-30',
+    isActive: true,
+    createdAt: '22-03-2021',
+    blocks: [
+      { id: 1, name: 'Tower 1', description: 'Premium tower with 25 floors' },
+      { id: 2, name: 'Tower 2', description: 'Luxury tower with 30 floors' }
+    ]
+  },
+  {
+    id: 3,
+    name: 'Green Valley',
+    builder: 'Green Homes',
+    location: 'Chennai, Tamil Nadu',
+    description: 'Eco-friendly residential complex with green spaces',
+    startDate: '2020-06-10',
+    endDate: '2023-12-31',
+    isActive: false,
+    createdAt: '10-06-2020',
+    blocks: [
+      { id: 1, name: 'Phase 1', description: 'Completed residential phase' },
+      { id: 2, name: 'Phase 2', description: 'Completed commercial phase' }
+    ]
+  },
+  {
+    id: 4,
+    name: 'Sunrise Towers',
+    builder: 'GHPL Constructions',
+    location: 'Mumbai, Maharashtra',
+    description: 'Modern residential towers with sea view',
+    startDate: '2021-08-05',
+    endDate: '2025-12-31',
+    isActive: true,
+    createdAt: '05-08-2021',
+    blocks: [
+      { id: 1, name: 'Tower A', description: 'Sea-facing premium apartments' },
+      { id: 2, name: 'Tower B', description: 'City-view luxury flats' },
+      { id: 3, name: 'Tower C', description: 'Garden-facing spacious units' }
+    ]
+  },
+  {
+    id: 5,
+    name: 'Pine Garden',
+    builder: 'Orchid Developers',
+    location: 'Pune, Maharashtra',
+    description: 'Gated community with extensive greenery',
+    startDate: '2020-04-12',
+    endDate: '2023-06-30',
+    isActive: false,
+    createdAt: '12-04-2020',
+    blocks: [
+      { id: 1, name: 'Sector A', description: 'Villa plots' },
+      { id: 2, name: 'Sector B', description: 'Apartment complex' }
+    ]
+  },
+  {
+    id: 6,
+    name: 'Silver Springs',
+    builder: 'Silver Estates',
+    location: 'Gurgaon, Haryana',
+    description: 'Ultra-luxury residential project',
+    startDate: '2022-01-20',
+    endDate: '2026-03-31',
+    isActive: true,
+    createdAt: '20-01-2022',
+    blocks: [
+      { id: 1, name: 'Block 1', description: 'Premium penthouses' },
+      { id: 2, name: 'Block 2', description: 'Luxury apartments' }
+    ]
+  },
+  {
+    id: 7,
+    name: 'Royal Enclave',
+    builder: 'GHPL Constructions',
+    location: 'Kolkata, West Bengal',
+    description: 'Heritage-style luxury apartments',
+    startDate: '2021-11-15',
+    endDate: '2025-09-30',
+    isActive: true,
+    createdAt: '15-11-2021',
+    blocks: [
+      { id: 1, name: 'Heritage Block', description: 'Classic architecture units' },
+      { id: 2, name: 'Modern Block', description: 'Contemporary design flats' }
+    ]
+  },
+  {
+    id: 8,
+    name: 'Lake View Residency',
+    builder: 'Green Homes',
+    location: 'Coimbatore, Tamil Nadu',
+    description: 'Lakeside residential community',
+    startDate: '2020-09-08',
+    endDate: '2023-08-31',
+    isActive: false,
+    createdAt: '08-09-2020',
+    blocks: [
+      { id: 1, name: 'Lakefront', description: 'Direct lake view apartments' },
+      { id: 2, name: 'Garden View', description: 'Garden-facing units' }
+    ]
+  },
+  {
+    id: 9,
+    name: 'Skyline Towers',
+    builder: 'Orchid Developers',
+    location: 'Noida, Uttar Pradesh',
+    description: 'High-rise residential complex',
+    startDate: '2022-05-10',
+    endDate: '2026-12-31',
+    isActive: true,
+    createdAt: '10-05-2022',
+    blocks: [
+      { id: 1, name: 'Tower 1', description: '40-floor residential tower' },
+      { id: 2, name: 'Tower 2', description: '35-floor residential tower' },
+      { id: 3, name: 'Tower 3', description: '30-floor residential tower' }
+    ]
+  },
+  {
+    id: 10,
+    name: 'Paradise Homes',
+    builder: 'Paradise Builders',
+    location: 'Jaipur, Rajasthan',
+    description: 'Affordable housing project',
+    startDate: '2021-07-01',
+    endDate: '2024-06-30',
+    isActive: true,
+    createdAt: '01-07-2021',
+    blocks: [
+      { id: 1, name: 'Block A', description: '2BHK apartments' },
+      { id: 2, name: 'Block B', description: '3BHK apartments' }
+    ]
+  }
+];
+
+export const fetchProjects = async () => {
+  return {
+    success: true,
+    data: projectsData
+  };
+};
+
+// ==================== ADMIN: FLAT DETAILS DATA ====================
+const flatDetailsAdminData = {
+  flatNo: 'A-101',
+  status: 'Booked',
+  floor: '1st Floor',
+  block: 'A',
+  size: '2 BHK',
+  customerInfo: {
+    name: 'V.REVATHI',
+    contactNo: '9966801523',
+    panNo: 'BBEPV4857L',
+    address: 'Flat No-16-104 Near Saibaba Temple, Huzusnagar, at Suryapet.',
+    fatherHusband: 'V.RAMA MOHAN RAO',
+    email: 'vure.rama.mohan.rao@gmail.com',
+    dob: '05-06-1955'
+  },
+  coApplicantInfo: {
+    name: 'V.RAMA MOHAN RAO',
+    contactNo: '',
+    panNo: '',
+    address: '',
+    fatherHusband: 'V.NARAYANA RAO',
+    email: '',
+    dob: '07-06-1946'
+  },
+  flatInfo: {
+    area: '1386 Sq.ft',
+    bookingDate: '11-10-2021',
+    paymentPlan: 'CLP',
+    channelPartner: 'GHPL (Change)',
+    totalCost: '8396700',
+    totalBookingAmount: '300000'
+  },
+  charges: {
+    extraCharges: 'View Applicable Charges',
+    dueAmount: '6037650',
+    paidAmount: '8219625',
+    pendingAmount: '0',
+    dueTax: '301884',
+    paidTax: '0',
+    clearedTax: '0',
+    pendingTax: '301884'
+  },
+  paymentInfo: [
+    {
+      srNo: 1,
+      chequeCount: 2,
+      chequeNo: '811778',
+      amount: '447000',
+      onAccountOf: 'Flat Cost (ORCHID)',
+      bank: 'HDFC',
+      chequeDate: '15-11-2021',
+      chequeStatus: 'CLEARED',
+      clearingDate: '15-11-2021',
+      remarks: '',
+      account: 7,
+      updatedBy: 'bhavani'
+    },
+    {
+      srNo: 2,
+      chequeCount: 14,
+      chequeNo: '000001',
+      amount: '753000',
+      onAccountOf: 'Flat Cost (GHPL)',
+      bank: 'HDFC',
+      chequeDate: '20-11-2021',
+      chequeStatus: 'CLEARED',
+      clearingDate: '20-11-2021',
+      remarks: '',
+      account: 5,
+      updatedBy: 'bhavani'
+    },
+    {
+      srNo: 3,
+      chequeCount: 18,
+      chequeNo: '000002',
+      amount: '500000',
+      onAccountOf: 'Flat Cost (ORCHID)',
+      bank: 'HDFC',
+      chequeDate: '25-11-2021',
+      chequeStatus: 'CLEARED',
+      clearingDate: '25-11-2021',
+      remarks: '',
+      account: 7,
+      updatedBy: 'bhavani'
+    },
+    {
+      srNo: 4,
+      chequeCount: 20,
+      chequeNo: '000003',
+      amount: '350000',
+      onAccountOf: 'Flat Cost (GHPL)',
+      bank: 'ICICI',
+      chequeDate: '01-12-2021',
+      chequeStatus: 'CLEARED',
+      clearingDate: '02-12-2021',
+      remarks: 'Partial payment',
+      account: 5,
+      updatedBy: 'bhavani'
+    },
+    {
+      srNo: 5,
+      chequeCount: 25,
+      chequeNo: '000004',
+      amount: '600000',
+      onAccountOf: 'Flat Cost (ORCHID)',
+      bank: 'SBI',
+      chequeDate: '10-12-2021',
+      chequeStatus: 'PENDING',
+      clearingDate: '',
+      remarks: 'Under process',
+      account: 7,
+      updatedBy: 'admin'
+    }
+  ]
+};
+
+export const fetchFlatDetailsAdmin = async (flatNo) => {
+  return {
+    success: true,
+    data: flatDetailsAdminData
+  };
+};
+
 export default {
   fetchUserProfile,
   fetchDetailedInformation,
@@ -717,5 +1005,7 @@ export default {
   fetchLegalDocuments,
   fetchFlatLegalDocuments,
   fetchLoanDocumentLists,
+  fetchProjects,
+  fetchFlatDetailsAdmin,
 };
 

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HiPlus, HiChevronDown } from 'react-icons/hi';
+import { fetchProjects } from '../../api/mockData';
 
 const Projects = ({ onPageChange }) => {
   const [builderFilter, setBuilderFilter] = useState('builder');
@@ -9,6 +10,8 @@ const Projects = ({ onPageChange }) => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
+  const [loading, setLoading] = useState(true);
+  const [allProjects, setAllProjects] = useState([]);
   const [formData, setFormData] = useState({
     builder: '',
     name: '',
@@ -43,88 +46,25 @@ const Projects = ({ onPageChange }) => {
     }
   ]);
 
-  const [allProjects] = useState([
-    {
-      id: 1,
-      name: 'The Art Residency',
-      builder: 'GHPL Constructions',
-      location: 'Hyderabad, Telangana',
-      isActive: true,
-      createdAt: '15-01-2021'
-    },
-    {
-      id: 2,
-      name: 'Orchid Heights',
-      builder: 'Orchid Developers',
-      location: 'Bangalore, Karnataka',
-      isActive: true,
-      createdAt: '22-03-2021'
-    },
-    {
-      id: 3,
-      name: 'Green Valley',
-      builder: 'Green Homes',
-      location: 'Chennai, Tamil Nadu',
-      isActive: false,
-      createdAt: '10-06-2020'
-    },
-    {
-      id: 4,
-      name: 'Sunrise Towers',
-      builder: 'GHPL Constructions',
-      location: 'Mumbai, Maharashtra',
-      isActive: true,
-      createdAt: '05-08-2021'
-    },
-    {
-      id: 5,
-      name: 'Pine Garden',
-      builder: 'Orchid Developers',
-      location: 'Pune, Maharashtra',
-      isActive: false,
-      createdAt: '12-04-2020'
-    },
-    {
-        id: 6,
-        name: 'The Art Residency',
-        builder: 'GHPL Constructions',
-        location: 'Hyderabad, Telangana',
-        isActive: true,
-        createdAt: '15-01-2021'
-    },
-    {
-        id: 7,
-        name: 'Orchid Heights',
-        builder: 'Orchid Developers',
-        location: 'Bangalore, Karnataka',
-        isActive: true,
-        createdAt: '22-03-2021'
-    },
-    {
-        id: 8,
-        name: 'Green Valley',
-        builder: 'Green Homes',
-        location: 'Chennai, Tamil Nadu',
-        isActive: false,
-        createdAt: '10-06-2020'
-    },
-    {
-        id: 9,
-        name: 'Sunrise Towers',
-        builder: 'GHPL Constructions',
-        location: 'Mumbai, Maharashtra',
-        isActive: true,
-        createdAt: '05-08-2021'
-    },
-    {
-        id: 10,
-        name: 'Pine Garden',
-        builder: 'Orchid Developers',
-        location: 'Pune, Maharashtra',
-        isActive: false,
-        createdAt: '12-04-2020'
-    }
-  ]);
+  // Fetch projects data on component mount
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchProjects();
+        if (response.success) {
+          setAllProjects(response.data);
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error('Error loading projects:', error);
+        setLoading(false);
+      }
+    };
+
+    loadProjects();
+  }, []);
+
 
   // Filter projects based on search criteria
   const filteredProjects = allProjects.filter(project => {
@@ -257,19 +197,31 @@ const Projects = ({ onPageChange }) => {
   // Get selected blocks count (excluding new blocks)
   const selectedBlocksCount = blocks.filter(block => block.selected && !block.isNew).length;
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="h-full flex items-center justify-center" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <p className="text-gray-600">Loading projects...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full flex flex-col bg-white lg:bg-transparent shadow-sm lg:shadow-none border lg:border-0 border-gray-200" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', borderRadius: 'clamp(1rem, 1.5rem, 1.75rem)' }}>
       {/* Header Section */}
       <div style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
-        <div className="flex items-center justify-between" style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0" style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
           <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)' }}>
             Projects Management
           </h2>
           
-          {/* Add Project Button - Top Right */}
+          {/* Add Project Button - Responsive */}
           <button
             onClick={() => setShowAddForm(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-medium bg-green-600 hover:bg-green-700 transition-colors shadow-sm hover:shadow-md"
+            className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white font-medium bg-green-600 hover:bg-green-700 transition-colors shadow-sm hover:shadow-md w-full lg:w-auto"
             style={{ 
               fontSize: 'clamp(0.75rem, 0.875rem, 1rem)',
               paddingLeft: 'clamp(0.75rem, 1rem, 1.25rem)',
@@ -284,8 +236,8 @@ const Projects = ({ onPageChange }) => {
           </button>
         </div>
 
-        {/* Search Bar - Below Right Side */}
-        <div className="flex items-center justify-end" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
+        {/* Search Bar - Responsive */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-end space-y-3 lg:space-y-0" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
           {/* Builder Filter */}
           <div className="relative">
             <select
@@ -418,18 +370,15 @@ const Projects = ({ onPageChange }) => {
 
       {/* Content Area */}
       <div className="flex-1 overflow-y-auto min-h-0" style={{ paddingRight: 'clamp(0.5rem, 1rem, 1.5rem)' }}>
-        {/* Table Headers */}
-        <div
-          className="grid border-b sticky top-0 z-10 bg-white"
-          style={{ 
-            gridTemplateColumns: '0.5fr 0.5fr 2fr 1.5fr 1.5fr 1fr 1.2fr',
-            gap: 'clamp(0.375rem, 1rem, 1.5rem)',
-            paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)',
-            paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)',
-            borderBottomColor: '#616161',
-            borderBottomWidth: '0.1875rem'
-          }}
-        >
+        {/* Table Headers - Hidden on mobile, visible on tablet+ */}
+        <div className="hidden md:grid border-b sticky top-0 z-10 bg-white" style={{ 
+          gridTemplateColumns: '0.5fr 0.5fr 2fr 1.5fr 1.5fr 1fr 1.2fr',
+          gap: 'clamp(0.375rem, 1rem, 1.5rem)',
+          paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)',
+          paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)',
+          borderBottomColor: '#616161',
+          borderBottomWidth: '0.1875rem'
+        }}>
           <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold', textAlign: 'center' }}>
             <input
               type="checkbox"
@@ -461,52 +410,95 @@ const Projects = ({ onPageChange }) => {
         {/* Table Rows */}
         <div className="space-y-0">
           {filteredProjects.map((project, index) => (
-            <div
-              key={project.id}
-              className="grid border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
-              style={{ 
+            <div key={project.id}>
+              {/* Desktop/Tablet View */}
+              <div className="hidden md:grid border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200" style={{ 
                 gridTemplateColumns: '0.5fr 0.5fr 2fr 1.5fr 1.5fr 1fr 1.2fr',
                 gap: 'clamp(0.375rem, 1rem, 1.5rem)',
                 paddingTop: 'clamp(0.875rem, 1.25rem, 1.5rem)',
                 paddingBottom: 'clamp(0.875rem, 1.25rem, 1.5rem)'
-              }}
-            >
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400', textAlign: 'center' }}>
-                <input
-                  type="checkbox"
-                  checked={selectedRows.includes(project.id)}
-                  onChange={() => handleRowSelect(project.id)}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                />
+              }}>
+                <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400', textAlign: 'center' }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedRows.includes(project.id)}
+                    onChange={() => handleRowSelect(project.id)}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  />
+                </div>
+                <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400', textAlign: 'center' }}>
+                  {index + 1}
+                </div>
+                <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
+                  {project.name}
+                </div>
+                <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
+                  {project.builder}
+                </div>
+                <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
+                  {project.location}
+                </div>
+                <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
+                  <span
+                    style={{
+                      backgroundColor: project.isActive ? '#E4FFE5' : '#FFEBEB',
+                      color: project.isActive ? '#16A34A' : '#DC2626',
+                      padding: 'clamp(0.125rem, 0.25rem, 0.375rem) clamp(0.5rem, 0.75rem, 1rem)',
+                      borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)',
+                      fontSize: 'clamp(0.75rem, 0.875rem, 1rem)',
+                      fontWeight: '500',
+                    }}
+                  >
+                    {project.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+                <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
+                  {project.createdAt}
+                </div>
               </div>
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400', textAlign: 'center' }}>
-                {index + 1}
-              </div>
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                {project.name}
-              </div>
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                {project.builder}
-              </div>
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                {project.location}
-              </div>
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                <span
-                  style={{
-                    backgroundColor: project.isActive ? '#E4FFE5' : '#FFEBEB',
-                    color: project.isActive ? '#16A34A' : '#DC2626',
-                    padding: 'clamp(0.125rem, 0.25rem, 0.375rem) clamp(0.5rem, 0.75rem, 1rem)',
-                    borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)',
-                    fontSize: 'clamp(0.75rem, 0.875rem, 1rem)',
-                    fontWeight: '500',
-                  }}
-                >
-                  {project.isActive ? 'Active' : 'Inactive'}
-                </span>
-              </div>
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                {project.createdAt}
+
+              {/* Mobile View */}
+              <div className="md:hidden border border-gray-200 rounded-lg p-4 mb-3 bg-white shadow-sm">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedRows.includes(project.id)}
+                      onChange={() => handleRowSelect(project.id)}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                    />
+                    <div>
+                      <h3 className="font-semibold text-gray-900" style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}>
+                        {project.name}
+                      </h3>
+                      <p className="text-gray-600" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>
+                        {project.builder}
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    style={{
+                      backgroundColor: project.isActive ? '#E4FFE5' : '#FFEBEB',
+                      color: project.isActive ? '#16A34A' : '#DC2626',
+                      padding: 'clamp(0.125rem, 0.25rem, 0.375rem) clamp(0.5rem, 0.75rem, 1rem)',
+                      borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)',
+                      fontSize: 'clamp(0.75rem, 0.875rem, 1rem)',
+                      fontWeight: '500',
+                    }}
+                  >
+                    {project.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>Location:</span>
+                    <span className="text-gray-900" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>{project.location}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>Created:</span>
+                    <span className="text-gray-900" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>{project.createdAt}</span>
+                  </div>
+                </div>
               </div>
             </div>
           ))}

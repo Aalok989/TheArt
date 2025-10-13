@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -15,7 +14,7 @@ html {
 
 /* Ensure body scales properly with browser zoom */
 body {
-  font-family: 'Lora', serif;
+  font-family: 'Montserrat', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden; /* Prevent horizontal scroll at different zoom levels */
@@ -505,7 +504,7 @@ html {
 }
 
 .font-body {
-  font-family: 'Lora', serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 /* Header Styles */
@@ -542,4 +541,24 @@ h1, h2, h3, h4, h5, h6 {
 .text-h6 {
   font-family: 'Montserrat', sans-serif;
   font-weight: 500;
+}
+
+/* Ensure all elements use Montserrat by default */
+* {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Input and form elements */
+input, textarea, select, button {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Table elements */
+table, th, td {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Paragraph and text elements */
+p, span, div, a, label {
+  font-family: 'Montserrat', sans-serif;
 }
