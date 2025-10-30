@@ -54,10 +54,10 @@ const MobileSidebar = ({ isOpen, onClose, activePage, setActivePage, onLogout, o
           isActive: activePage === 'projects'
         },
         {
-          id: 'docadmin',
+          id: 'documents',
           label: 'Documents',
           icon: documentsIcon,
-          isActive: activePage === 'docadmin'
+          isActive: activePage === 'documents'
         }
       ];
     } else {

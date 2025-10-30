@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   HiBell,
   HiPhone,
@@ -12,6 +12,7 @@ import {
   HiClipboardList,
   HiBriefcase,
 } from "react-icons/hi";
+import Megamenu from "./Megamenu";
 import { customerAPI } from "../api/api";
 import UserProfile from "./Dashboard_User/UserProfile";
 import FlatDetails from "./Dashboard_User/FlatDetails.jsx";
@@ -27,13 +28,32 @@ import PasswordChangePopup from "./Dashboard_User/PasswordChangePopup";
 import ConstructionUpdatesPopup from "./Dashboard_User/ConstructionUpdatesPopup";
 import MyDocumentsPopup from "./Dashboard_User/MyDocumentsPopup";
 import FlatStatus from "./Dashboard_Admin/FlatStatus";
-import Report from "./Dashboard_Admin/Report";
+import BookedFlats from "./Dashboard_Admin/BookedFlats";
+import BlockedFlats from "./Dashboard_Admin/BlockedFlats";
+import CancelledFlats from "./Dashboard_Admin/CancelledFlats";
+import FlatVerification from "./Dashboard_Admin/FlatVerification";
+import FlatSummary from "./Dashboard_Admin/FlatSummary";
+import BlockInventory from "./Dashboard_Admin/BlockInventory";
+import UserLogs from "./Dashboard_Admin/UserLogs.jsx";
 import LoanDetails from "./Dashboard_Admin/LoanDetails";
 import LoanDocument from "./Dashboard_Admin/LoanDocument";
 import UploadLoanDoc from "./Dashboard_Admin/UploadLoanDoc";
-import AdminDocuments from "./Dashboard_Admin/docadmin.jsx";
 import Flat from "./Dashboard_Admin/Flat";
 import Projects from "./Dashboard_Admin/Projects";
+import Dashboard from "./Dashboard_Admin/Dashboard";
+import CommonDocs from "./Dashboard_Admin/CommonDocs";
+import FlatDocs from "./Dashboard_Admin/FlatDocs";
+import LegalDocs from "./Dashboard_Admin/LegalDocs";
+import FlatLegalDocs from "./Dashboard_Admin/FlatLegalDocs";
+import ActivityType from "./Dashboard_Admin/ActivityType";
+import ViewActivities from "./Dashboard_Admin/ViewActivities";
+import Customize from "./Dashboard_Admin/Customize";
+import ViewCustomization from "./Dashboard_Admin/ViewCustomization";
+import AddActivity from "./Dashboard_Admin/AddActivity";
+import AddSubactivity from "./Dashboard_Admin/AddSubactivity";
+import ViewActivity from "./Dashboard_Admin/ViewActivity";
+import FlatHandover from "./Dashboard_Admin/FlatHandover";
+import ViewHandover from "./Dashboard_Admin/ViewHandover";
 import Proprite from "../assets/proprite.png";
 import Hamburger from "../assets/Hamburger.png";
 import flatDetailsIcon from "../assets/flat details.png";
@@ -65,6 +85,60 @@ const Layout = ({
   
   // Admin Quick Tools state
   const [isQuickToolsOpen, setIsQuickToolsOpen] = useState(false);
+  
+  // Megamenu states - separate for each type
+  const [isServicesMegamenuOpen, setIsServicesMegamenuOpen] = useState(false);
+  const [isBankingMegamenuOpen, setIsBankingMegamenuOpen] = useState(false);
+  const [isProjectsMegamenuOpen, setIsProjectsMegamenuOpen] = useState(false);
+  const [isDocumentsMegamenuOpen, setIsDocumentsMegamenuOpen] = useState(false);
+  const megamenuTriggerRef = useRef(null);
+  const megamenuTimeoutRef = useRef(null);
+  const isHoveringMegamenuRef = useRef(false);
+  
+  
+
+  // Click outside handler for profile dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const profileButton = document.querySelector('[data-profile-button]');
+      const profileDropdown = document.querySelector('[data-profile-dropdown]');
+      
+      if (
+        isProfileDropdownOpen &&
+        profileButton &&
+        profileDropdown &&
+        !profileButton.contains(event.target) &&
+        !profileDropdown.contains(event.target)
+      ) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+
+    if (isProfileDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isProfileDropdownOpen]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (megamenuTimeoutRef.current) {
+        clearTimeout(megamenuTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Reset hover state when megamenus close
+  useEffect(() => {
+    const isAnyOpen = isServicesMegamenuOpen || isBankingMegamenuOpen || isProjectsMegamenuOpen || isDocumentsMegamenuOpen;
+    if (!isAnyOpen) {
+      isHoveringMegamenuRef.current = false;
+    }
+  }, [isServicesMegamenuOpen, isBankingMegamenuOpen, isProjectsMegamenuOpen, isDocumentsMegamenuOpen]);
 
   // Fetch notification count and profile image (only for customer users)
   useEffect(() => {
@@ -96,28 +170,36 @@ const Layout = ({
     if (userRole === "admin") {
       return [
         {
-          key: "overview",
-          label: "Overview",
-          icon: flatDetailsIcon, // Using existing icon for now
+          key: "services",
+          label: "Flats",
+          icon: paymentIcon, // Using existing icon for now
           width: "clamp(8.5rem, 10.625rem, 12rem)",
+          isMegamenu: true,
+          megamenuType: 'services',
         },
         {
           key: "banking",
-          label: "Banking",
+          label: "Payment",
           icon: currentDuesIcon, // Using existing icon for now
           width: "clamp(8.5rem, 10.625rem, 12rem)",
+          isMegamenu: true,
+          megamenuType: 'banking',
         },
         {
           key: "projects",
           label: "Projects",
           icon: paymentIcon, // Using existing icon for now
           width: "clamp(8.5rem, 10.625rem, 12rem)",
+          isMegamenu: true,
+          megamenuType: 'projects',
         },
         {
-          key: "docadmin",
+          key: "documents",
           label: "Documents",
           icon: documentsIcon,
           width: "clamp(8.75rem, 10.9375rem, 12.5rem)",
+          isMegamenu: true,
+          megamenuType: 'documents',
         },
       ];
     } else {
@@ -152,10 +234,138 @@ const Layout = ({
 
   const navigationItems = getNavigationItems();
 
+  // Helper function to get megamenu state
+  const getMegamenuState = (megamenuType) => {
+    switch (megamenuType) {
+      case 'services':
+        return isServicesMegamenuOpen;
+      case 'banking':
+        return isBankingMegamenuOpen;
+      case 'projects':
+        return isProjectsMegamenuOpen;
+      case 'documents':
+        return isDocumentsMegamenuOpen;
+      default:
+        return false;
+    }
+  };
+
+  // Check if current active page belongs to a specific megamenu
+  const isPageInMegamenu = (megamenuType) => {
+    if (!activePage) return false;
+    
+    switch (megamenuType) {
+      case 'services':
+        // Services megamenu pages
+        return ['flatStatus', 'report', 'blockedFlats', 'bookedFlats', 'cancelledFlats', 'blockInventory', 'flatVerification', 'projects', 'flat', 'activityType', 'viewActivities', 'customize', 'viewCustomization', 'addActivity', 'viewActivity', 'flatHandoverActivity', 'viewFlatHandoverActivity', 'addSubactivity', 'flatHandover', 'viewHandover'].includes(activePage);
+      case 'banking':
+        // Banking megamenu pages
+        return ['loanedFlats', 'loanDocuments', 'completePayment', 'balancePayment', 'noPayment', 'cheque', 'cash', 'neft', 'manageBank', 'manageUser', 'manageChannelPartner', 'manageCommission', 'calculateInterest', 'constructionStages'].includes(activePage);
+      case 'projects':
+        // Projects megamenu pages
+        return ['customer', 'channelPartners', 'projectSnapshots', 'reports', 'noDiscount', 'extraDiscount', 'extraPayment', 'signedBBA', 'unsignedBBA', 'addPartner', 'viewAll', 'releaseCommission', 'paidCommission', 'userLogs', 'viewCoupons', 'installmentReports', 'clpReport', 'finalReport', 'todayReport', 'datewiseReport'].includes(activePage);
+      case 'documents':
+        // Documents megamenu pages
+        return ['commonDocs', 'flatDocs', 'legalDocs', 'flatLegalDocs'].includes(activePage);
+      default:
+        return false;
+    }
+  };
+
   // Navbar handlers
   const handleNavClick = (page) => {
+    // Only prevent navigation for admin megamenu items
+    if (userRole === 'admin' && (page === 'services' || page === 'banking' || page === 'projects' || page === 'documents')) {
+      return; // Don't navigate, just show megamenu
+    }
     onPageChange(page);
   };
+
+  // Megamenu handlers
+  const handleMegamenuMouseEnter = (megamenuType) => {
+    // Clear any pending timeout when entering
+    if (megamenuTimeoutRef.current) {
+      clearTimeout(megamenuTimeoutRef.current);
+      megamenuTimeoutRef.current = null;
+    }
+    
+    // Close all other megamenus first
+    setIsServicesMegamenuOpen(false);
+    setIsBankingMegamenuOpen(false);
+    setIsProjectsMegamenuOpen(false);
+    setIsDocumentsMegamenuOpen(false);
+    
+    // Small delay to prevent flickering when switching between megamenus
+    setTimeout(() => {
+      switch (megamenuType) {
+        case 'services':
+          setIsServicesMegamenuOpen(true);
+          break;
+        case 'banking':
+          setIsBankingMegamenuOpen(true);
+          break;
+        case 'projects':
+          setIsProjectsMegamenuOpen(true);
+          break;
+        case 'documents':
+          setIsDocumentsMegamenuOpen(true);
+          break;
+        default:
+          break;
+      }
+    }, 30);
+  };
+
+  const handleMegamenuMouseLeave = (megamenuType) => {
+    // Clear any existing timeout
+    if (megamenuTimeoutRef.current) {
+      clearTimeout(megamenuTimeoutRef.current);
+    }
+    
+    // Add a delay to allow moving from button to megamenu
+    megamenuTimeoutRef.current = setTimeout(() => {
+      // Only close if we're not hovering over any megamenu
+      if (!isHoveringMegamenuRef.current) {
+        setIsServicesMegamenuOpen(false);
+        setIsBankingMegamenuOpen(false);
+        setIsProjectsMegamenuOpen(false);
+        setIsDocumentsMegamenuOpen(false);
+      }
+    }, 150);
+  };
+
+  const handleMegamenuClose = (megamenuType) => {
+    // Close all megamenus
+    setIsServicesMegamenuOpen(false);
+    setIsBankingMegamenuOpen(false);
+    setIsProjectsMegamenuOpen(false);
+    setIsDocumentsMegamenuOpen(false);
+  };
+
+  // Track when hovering over megamenu content
+  const handleMegamenuContentMouseEnter = useCallback(() => {
+    // Clear any pending close timeout
+    if (megamenuTimeoutRef.current) {
+      clearTimeout(megamenuTimeoutRef.current);
+      megamenuTimeoutRef.current = null;
+    }
+    isHoveringMegamenuRef.current = true;
+  }, []);
+
+  const handleMegamenuContentMouseLeave = useCallback(() => {
+    isHoveringMegamenuRef.current = false;
+    // Use the same timeout logic as button leave
+    megamenuTimeoutRef.current = setTimeout(() => {
+      if (!isHoveringMegamenuRef.current) {
+        setIsServicesMegamenuOpen(false);
+        setIsBankingMegamenuOpen(false);
+        setIsProjectsMegamenuOpen(false);
+        setIsDocumentsMegamenuOpen(false);
+      }
+    }, 150);
+  }, []);
+
+
 
   const handleSettingsClick = () => {
     setIsPasswordPopupOpen(true);
@@ -198,9 +408,29 @@ const Layout = ({
   };
 
   const handleQuickToolClick = (tool) => {
-    console.log(`Quick tool clicked: ${tool}`);
-    // Here you can add navigation or popup logic for each tool
     setIsQuickToolsOpen(false);
+    
+    // Handle different quick tools
+    switch (tool) {
+      case 'new-bookings':
+        // Navigate to appropriate page or open booking popup
+        alert('New Bookings feature - Coming soon!');
+        break;
+      case 'new-customer':
+        // Navigate to customer management or open customer popup
+        alert('New Customer feature - Coming soon!');
+        break;
+      case 'new-staff':
+        // Navigate to staff management or open staff popup
+        alert('New Staff feature - Coming soon!');
+        break;
+      case 'new-projects':
+        // Navigate to projects page or open project popup
+        onPageChange('projects');
+        break;
+      default:
+        console.log(`Quick tool clicked: ${tool}`);
+    }
   };
   const renderMiddlePanel = () => {
     if (!activePage) {
@@ -210,29 +440,14 @@ const Layout = ({
     // Admin components
     if (userRole === "admin") {
       switch (activePage) {
-        case "overview":
+        case "dashboard":
           return (
             <div
               className={`page-container h-full ${
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              {/* Desktop: Show both FlatStatus and Report side by side */}
-              <div className="hidden lg:flex h-full" style={{ gap: 'clamp(1rem, 1.5rem, 2rem)' }}>
-                <div className="basis-[60%] min-w-0 bg-white shadow-sm border border-gray-200" style={{ borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)', maxHeight: '100%', overflow: 'hidden' }}>
-                  <FlatStatus key={`flatStatus-${animationKey}`} onPageChange={onPageChange} />
-                </div>
-                <div className="basis-[40%] min-w-0 bg-white shadow-sm border border-gray-200" style={{ borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)', maxHeight: '100%', overflow: 'hidden' }}>
-                  <Report key={`report-${animationKey}`} />
-                </div>
-              </div>
-              {/* Mobile/Tablet: Show message to select sub-item */}
-              <div className="lg:hidden h-full flex items-center justify-center">
-                <div className="text-center text-gray-500 p-8">
-                  <p className="text-lg font-medium mb-2">Overview</p>
-                  <p className="text-sm">Please select Flat Status or Report from the sidebar</p>
-                </div>
-              </div>
+              <Dashboard key={`dashboard-${animationKey}`} onPageChange={onPageChange} />
             </div>
           );
         case "flatStatus":
@@ -242,9 +457,47 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <FlatStatus key={`flatStatus-${animationKey}`} onPageChange={onPageChange} />
-              </div>
+              <FlatStatus key={`flatStatus-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "bookedFlats":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <BookedFlats key={`bookedFlats-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "blockedFlats":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <BlockedFlats key={`blockedFlats-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "cancelledFlats":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <CancelledFlats key={`cancelledFlats-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "flatSummary":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <FlatSummary key={`flatSummary-${animationKey}`} onPageChange={onPageChange} />
             </div>
           );
         case "flat":
@@ -259,6 +512,116 @@ const Layout = ({
               </div>
             </div>
           );
+        case "flatVerification":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <FlatVerification key={`flatVerification-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "activityType":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <ActivityType key={`activityType-${animationKey}`} />
+            </div>
+          );
+        case "viewActivities":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <ViewActivities key={`viewActivities-${animationKey}`} />
+            </div>
+          );
+        case "customize":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <Customize key={`customize-${animationKey}`} />
+            </div>
+          );
+        case "viewCustomization":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <ViewCustomization key={`viewCustomization-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "flatHandoverActivity":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <AddActivity key={`flatHandoverActivity-${animationKey}`} />
+            </div>
+          );
+        case "addSubactivity":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <AddSubactivity key={`addSubactivity-${animationKey}`} />
+            </div>
+          );
+        case "viewActivity":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <ViewActivity key={`viewActivity-${animationKey}`} />
+            </div>
+          );
+        case "flatHandover":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <FlatHandover key={`flatHandover-${animationKey}`} />
+            </div>
+          );
+        case "viewHandover":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <ViewHandover key={`viewHandover-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "blockInventory":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <BlockInventory key={`blockInventory-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
         case "projects":
           return (
             <div
@@ -271,7 +634,7 @@ const Layout = ({
               </div>
             </div>
           );
-        case "report":
+        case "userLogs":
           return (
             <div
               className={`page-container h-full flex flex-col ${
@@ -279,7 +642,7 @@ const Layout = ({
               }`}
             >
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <Report key={`report-${animationKey}`} />
+                <UserLogs key={`userLogs-${animationKey}`} />
               </div>
             </div>
           );
@@ -328,7 +691,9 @@ const Layout = ({
               </div>
             </div>
           );
-        case "docadmin":
+        case "documents":
+          return <Documents key={`documents-${animationKey}`} />;
+        case "commonDocs":
           return (
             <div
               className={`page-container h-full flex flex-col ${
@@ -336,14 +701,46 @@ const Layout = ({
               }`}
             >
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <AdminDocuments
-                  key={`docadmin-${animationKey}`}
-                />
+                <CommonDocs key={`commonDocs-${animationKey}`} />
               </div>
             </div>
           );
-        case "documents":
-          return <Documents key={`documents-${animationKey}`} />;
+        case "flatDocs":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <FlatDocs key={`flatDocs-${animationKey}`} />
+              </div>
+            </div>
+          );
+        case "legalDocs":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <LegalDocs key={`legalDocs-${animationKey}`} />
+              </div>
+            </div>
+          );
+        case "flatLegalDocs":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <FlatLegalDocs key={`flatLegalDocs-${animationKey}`} />
+              </div>
+            </div>
+          );
         default:
           return null;
       }
@@ -439,15 +836,32 @@ const Layout = ({
 
             {/* Logo */}
             <div className="flex-shrink-0">
-              <img
-                src={Proprite}
-                alt="The Art"
-                style={{
-                  height: "clamp(2.5rem, 3.5rem, 4rem)",
-                  width: "auto",
-                  filter: "drop-shadow(0 0 30px rgba(255, 255, 255, 1))",
-                }}
-              />
+              {userRole === 'admin' ? (
+                <button
+                  onClick={() => onPageChange('dashboard')}
+                  className="hover:opacity-80 transition-opacity duration-200"
+                >
+                  <img
+                    src={Proprite}
+                    alt="The Art"
+                    style={{
+                      height: "clamp(2.5rem, 3.5rem, 4rem)",
+                      width: "auto",
+                      filter: "drop-shadow(0 0 30px rgba(255, 255, 255, 1))",
+                    }}
+                  />
+                </button>
+              ) : (
+                <img
+                  src={Proprite}
+                  alt="The Art"
+                  style={{
+                    height: "clamp(2.5rem, 3.5rem, 4rem)",
+                    width: "auto",
+                    filter: "drop-shadow(0 0 30px rgba(255, 255, 255, 1))",
+                  }}
+                />
+              )}
             </div>
           </div>
 
@@ -460,39 +874,66 @@ const Layout = ({
             }}
           >
             {navigationItems.map((item) => (
-              <button
+              <div
                 key={item.key}
-                onClick={() => handleNavClick(item.key)}
-                className={`flex items-center justify-center transition-all duration-300 ease-out whitespace-nowrap shadow-sm btn-animate hover-lift rounded-full ${
-                  activePage === item.key
-                    ? "text-white font-medium transform scale-105"
-                    : "text-gray-600 hover:text-gray-800 bg-white hover:bg-gray-50 hover:shadow-lg"
-                }`}
-                style={{
-                  width: item.width,
-                  height: "clamp(2.25rem, 2.8125rem, 3.25rem)",
-                  fontSize: "clamp(0.75rem, 0.875rem, 1rem)",
-                  background:
-                    activePage === item.key
-                      ? "linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)"
-                      : undefined,
-                }}
+                className="relative"
               >
-                <img
-                  src={item.icon}
-                  alt={item.label}
-                  className="flex-shrink-0"
+                <button
+                  ref={item.isMegamenu && userRole === 'admin' ? megamenuTriggerRef : undefined}
+                  onClick={() => handleNavClick(item.key)}
+                  onMouseEnter={item.isMegamenu && userRole === 'admin' ? () => handleMegamenuMouseEnter(item.megamenuType) : undefined}
+                  onMouseLeave={item.isMegamenu && userRole === 'admin' ? () => handleMegamenuMouseLeave(item.megamenuType) : undefined}
+                  className={`flex items-center justify-center transition-all duration-300 ease-out whitespace-nowrap shadow-sm rounded-full ${
+                    item.isMegamenu && userRole === 'admin' 
+                      ? "hover:bg-gray-50" // Simplified hover for megamenu buttons
+                      : "btn-animate hover-lift" // Full animation for regular buttons
+                  } ${
+                    activePage === item.key || (item.isMegamenu && userRole === 'admin' && (getMegamenuState(item.megamenuType) || isPageInMegamenu(item.megamenuType)))
+                      ? "text-white font-medium transform scale-105"
+                      : "text-gray-600 hover:text-gray-800 bg-white hover:bg-gray-50 hover:shadow-lg"
+                  }`}
                   style={{
-                    width: "clamp(1rem, 1.25rem, 1.5rem)",
-                    height: "clamp(1rem, 1.25rem, 1.5rem)",
-                    marginRight: "clamp(0.375rem, 0.5625rem, 0.75rem)",
-                    filter: activePage === item.key ? "invert(1)" : "none",
+                    width: item.width,
+                    height: "clamp(2.25rem, 2.8125rem, 3.25rem)",
+                    fontSize: "clamp(0.75rem, 0.875rem, 1rem)",
+                    background:
+                      activePage === item.key || (item.isMegamenu && userRole === 'admin' && (getMegamenuState(item.megamenuType) || isPageInMegamenu(item.megamenuType)))
+                        ? "linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)"
+                        : undefined,
                   }}
-                />
-                <span className="font-medium font-montserrat" style={{ fontSize: "clamp(0.75rem, 0.875rem, 1rem)" }}>
-                  {item.label}
-                </span>
-              </button>
+                >
+                  <img
+                    src={item.icon}
+                    alt={item.label}
+                    className="flex-shrink-0"
+                    style={{
+                      width: "clamp(1rem, 1.25rem, 1.5rem)",
+                      height: "clamp(1rem, 1.25rem, 1.5rem)",
+                      marginRight: "clamp(0.375rem, 0.5625rem, 0.75rem)",
+                      filter: 
+                        activePage === item.key || (item.isMegamenu && userRole === 'admin' && (getMegamenuState(item.megamenuType) || isPageInMegamenu(item.megamenuType)))
+                          ? "invert(1)" 
+                          : "none",
+                    }}
+                  />
+                  <span className="font-medium font-montserrat" style={{ fontSize: "clamp(0.75rem, 0.875rem, 1rem)" }}>
+                    {item.label}
+                  </span>
+                </button>
+                
+                {/* Consolidated Megamenu - Only for Admin */}
+                {item.isMegamenu && userRole === 'admin' && (
+                  <Megamenu
+                    isOpen={getMegamenuState(item.megamenuType)}
+                    onClose={handleMegamenuClose}
+                    triggerRef={megamenuTriggerRef}
+                    type={item.megamenuType || 'services'}
+                    onPageChange={onPageChange}
+                    onMouseEnter={handleMegamenuContentMouseEnter}
+                    onMouseLeave={handleMegamenuContentMouseLeave}
+                  />
+                )}
+              </div>
             ))}
           </div>
 
@@ -533,6 +974,7 @@ const Layout = ({
             </button>
             <div className="relative">
               <button
+                data-profile-button
                 onClick={handleProfileClick}
                 className="w-[2.5rem] h-[2.5rem] flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-gray-50 transition-all duration-300 hover-lift btn-animate overflow-hidden"
               >
@@ -551,7 +993,7 @@ const Layout = ({
 
               {/* Profile Dropdown */}
               {isProfileDropdownOpen && (
-                <div className="absolute right-0 top-[3rem] w-[12rem] bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animate-fade-in-up">
+                <div data-profile-dropdown className="absolute right-0 top-[3rem] w-[12rem] bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animate-fade-in-up">
                   {/* Desktop Only Items */}
                   <div className="lg:hidden">
                     <button
@@ -618,19 +1060,37 @@ const Layout = ({
 
           {/* Logo - Centered */}
           <div className="absolute left-1/2 transform -translate-x-1/2">
-            <img
-              src={Proprite}
-              alt="The Art"
-              style={{
-                height: "clamp(2rem, 2.5rem, 3rem)",
-                width: "auto",
-                filter: "drop-shadow(0 0 10px rgba(0, 0, 0, 0.1))",
-              }}
-            />
+            {userRole === 'admin' ? (
+              <button
+                onClick={() => onPageChange('dashboard')}
+                className="hover:opacity-80 transition-opacity duration-200"
+              >
+                <img
+                  src={Proprite}
+                  alt="The Art"
+                  style={{
+                    height: "clamp(2rem, 2.5rem, 3rem)",
+                    width: "auto",
+                    filter: "drop-shadow(0 0 10px rgba(0, 0, 0, 0.1))",
+                  }}
+                />
+              </button>
+            ) : (
+              <img
+                src={Proprite}
+                alt="The Art"
+                style={{
+                  height: "clamp(2rem, 2.5rem, 3rem)",
+                  width: "auto",
+                  filter: "drop-shadow(0 0 10px rgba(0, 0, 0, 0.1))",
+                }}
+              />
+            )}
           </div>
 
           {/* Profile Icon */}
           <button
+            data-profile-button
             onClick={handleProfileClick}
             className="flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-gray-50 transition-all duration-300 overflow-hidden border border-gray-200"
             style={{ width: 'clamp(2.25rem, 2.5rem, 2.75rem)', height: 'clamp(2.25rem, 2.5rem, 2.75rem)' }}
@@ -650,7 +1110,7 @@ const Layout = ({
 
           {/* Profile Dropdown - Mobile Version */}
           {isProfileDropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animate-fade-in-up" style={{ marginRight: 'clamp(1rem, 1.5rem, 2rem)' }}>
+            <div data-profile-dropdown className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animate-fade-in-up" style={{ marginRight: 'clamp(1rem, 1.5rem, 2rem)' }}>
               <button
                 onClick={handleSettingsClick}
                 className="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200"

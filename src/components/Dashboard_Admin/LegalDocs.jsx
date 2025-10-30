@@ -40,19 +40,39 @@ const LegalDocs = () => {
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="flex items-center gap-3">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-          <p className="text-gray-600">Loading legal documents...</p>
+      <div className="h-full flex flex-col" style={{ padding: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
+        {/* Header Section */}
+        <div style={{ marginBottom: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
+          <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.125rem, 1.5rem)', marginBottom: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
+            Legal Documents
+          </h2>
+        </div>
+
+        {/* Content Container */}
+        <div className="flex-1 overflow-y-auto min-h-0" style={{ paddingRight: 'clamp(0.25rem, 0.5rem, 1rem)' }}>
+          <div className="bg-white border border-gray-200 h-full" style={{ borderRadius: 'clamp(0.5rem, 0.75rem, 1rem)', padding: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
+            <div className="h-full flex items-center justify-center">
+              <div className="flex items-center gap-3">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                <p className="text-gray-600">Loading legal documents...</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Header with Upload Button */}
-      <div className="flex justify-end" style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
+    <div className="h-full flex flex-col" style={{ padding: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
+      {/* Header Section */}
+      <div style={{ marginBottom: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
+        <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.125rem, 1.5rem)', marginBottom: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
+          Legal Documents
+        </h2>
+
+        {/* Upload Button */}
+        <div className="flex justify-end">
         <button 
           onClick={handleUpload}
           className="bg-green-500 text-white font-medium hover:bg-green-600 transition-colors duration-200 flex items-center"
@@ -69,10 +89,14 @@ const LegalDocs = () => {
           <HiUpload style={{ width: 'clamp(0.875rem, 1rem, 1.25rem)', height: 'clamp(0.875rem, 1rem, 1.25rem)' }} />
           Upload Document
         </button>
+        </div>
       </div>
 
-      {/* Table Section */}
-      <div className="flex-1 overflow-y-auto min-h-0" style={{ paddingRight: 'clamp(0.5rem, 1rem, 1.5rem)' }}>
+      {/* Content Container */}
+      <div className="flex-1 overflow-y-auto min-h-0" style={{ paddingRight: 'clamp(0.25rem, 0.5rem, 1rem)' }}>
+        <div className="bg-white border border-gray-200 h-full" style={{ borderRadius: 'clamp(0.5rem, 0.75rem, 1rem)', padding: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
+          {/* Table Section */}
+          <div className="flex-1 overflow-y-auto min-h-0">
         {/* Table Headers */}
         <div
           className="grid border-b sticky top-0 z-10 bg-white"
@@ -170,12 +194,14 @@ const LegalDocs = () => {
           ))}
         </div>
 
-        {/* No Results Message */}
-        {documents.length === 0 && (
-          <div className="text-center" style={{ paddingTop: 'clamp(1.5rem, 2rem, 2.5rem)', paddingBottom: 'clamp(1.5rem, 2rem, 2.5rem)' }}>
-            <p className="text-gray-500 font-montserrat" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>No legal documents found.</p>
+          {/* No Results Message */}
+          {documents.length === 0 && (
+            <div className="text-center" style={{ paddingTop: 'clamp(1.5rem, 2rem, 2.5rem)', paddingBottom: 'clamp(1.5rem, 2rem, 2.5rem)' }}>
+              <p className="text-gray-500 font-montserrat" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>No legal documents found.</p>
+            </div>
+          )}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Upload Document Popup */}

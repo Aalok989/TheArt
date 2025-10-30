@@ -481,6 +481,74 @@ export const fetchFlatStatus = async () => {
   };
 };
 
+// ==================== ADMIN: BOOKED FLATS DETAILED DATA ====================
+const bookedFlatsDetails = [
+  {
+    flatNo: 'A101', customerName: 'V.REVATHI', coApplicantName: 'V.RAMA MOHAN RAO', email: 'vure.rama.mohan.rao@gmail.com', contactNo: '9966801523', panNo: 'BBEPV4857L', bookingDate: '11-10-2021', dealer: 'GHPL', paymentPlan: 'CLP', area: '1386', companyRate: '5000', loginRate: '5600', totalCost: '8396700', dueAmount: '6037650', pendingAmount: '0', paidAmount: '8219625', cleared: '8219625', dueTax: '301884', pendingTax: '301884', paidTax: '0', clearedTax: '0', totalPending: '301884'
+  },
+  {
+    flatNo: 'A103', customerName: 'Ashu', coApplicantName: '—', email: 'user1@example.com', contactNo: '1234567890', panNo: 'AAAPA1234A', bookingDate: '08-09-2025', dealer: 'GHPL', paymentPlan: 'CLP', area: '1500', companyRate: '5000', loginRate: '1000', totalCost: '1584000', dueAmount: '4605000', pendingAmount: '4605000', paidAmount: '0', cleared: '0', dueTax: '230250', pendingTax: '230250', paidTax: '0', clearedTax: '0', totalPending: '4835250'
+  },
+  {
+    flatNo: 'A105', customerName: 'SRAVANTHI PULLELA', coApplicantName: 'RAHUL PULLELA', email: 'rahul.pullela@gmail.com', contactNo: '9963371173', panNo: 'CQYPS7558K', bookingDate: '25-06-2022', dealer: 'GHPL', paymentPlan: 'CLP', area: '1171', companyRate: '5000', loginRate: '5600', totalCost: '56936400', dueAmount: '6765300', pendingAmount: '6765300', paidAmount: '0', cleared: '0', dueTax: '338265', pendingTax: '338265', paidTax: '0', clearedTax: '0', totalPending: '7103565'
+  },
+  {
+    flatNo: 'B102', customerName: 'SURESH', coApplicantName: '—', email: 'suresh@example.com', contactNo: '9876543210', panNo: 'ABCDE1234F', bookingDate: '14-10-2025', dealer: 'HDFC', paymentPlan: 'EMI', area: '1231', companyRate: '5000', loginRate: '4000', totalCost: '6140000', dueAmount: '1188000', pendingAmount: '1188000', paidAmount: '0', cleared: '0', dueTax: '59400', pendingTax: '59400', paidTax: '0', clearedTax: '0', totalPending: '1247400'
+  },
+  {
+    flatNo: 'C302', customerName: 'CHILUKURI RAMA KRISHNA', coApplicantName: '—', email: 'hrkrishna@gmail.com', contactNo: '8463924759', panNo: 'AEHPC6394L', bookingDate: '07-01-2022', dealer: 'GHPL', paymentPlan: 'CLP', area: '1500', companyRate: '5000', loginRate: '5500', totalCost: '56584500', dueAmount: '6819000', pendingAmount: '6819000', paidAmount: '0', cleared: '0', dueTax: '340953', pendingTax: '340953', paidTax: '0', clearedTax: '0', totalPending: '7159953'
+  }
+];
+
+export const fetchBookedFlatsDetails = async () => {
+  return {
+    success: true,
+    data: bookedFlatsDetails
+  };
+};
+
+// ==================== ADMIN: BLOCKED FLATS DETAILED DATA ====================
+const blockedFlatsDetails = [
+  { flatNo: 'A104', customerName: 'Aalok', contactNo: '1234567891', bookingDate: '29-10-2025', dealer: 'GHPL' },
+  { flatNo: 'B104', customerName: 'Rohit', contactNo: '9988776655', bookingDate: '10-11-2025', dealer: 'GHPL' },
+  { flatNo: 'C402', customerName: 'Kiran', contactNo: '9812312312', bookingDate: '18-09-2025', dealer: 'GHPL' },
+];
+
+export const fetchBlockedFlatsDetails = async () => {
+  return {
+    success: true,
+    data: blockedFlatsDetails
+  };
+};
+
+// ==================== ADMIN: CANCELLED FLATS DETAILED DATA ====================
+const cancelledFlatsDetails = [
+  { flatNo: 'A105', customerName: 'BHASKAR', paidAmount: '0', dealer: 'GHPL', cancellationDate: '30-11-2001', remarks: '', status: 'In-Process' },
+  { flatNo: 'A409', customerName: 'MS.', paidAmount: '1981800', dealer: 'GHPL', cancellationDate: '10-06-2020', remarks: 'Due to Covid-19.', status: 'Cancelled' },
+];
+
+export const fetchCancelledFlatsDetails = async () => {
+  return {
+    success: true,
+    data: cancelledFlatsDetails
+  };
+};
+
+// ==================== ADMIN: REFUNDED FLATS / CHEQUES DATA ====================
+const refundedFlatsData = [
+  { srNo: 1, flatNo: 'A103', clearedAmount: '0', refundedAmount: '200000', refundedDate: '15-06-2020', chequeNo: 'NEFT0', chequeBank: 'HDFC', chequeDate: '15-06-2020', chequeStatus: 'Cleared', remarks: 'refund the given account' },
+  { srNo: 2, flatNo: 'A105', clearedAmount: '188250', refundedAmount: '188250', refundedDate: '03-11-2020', chequeNo: '555544', chequeBank: 'HDFC', chequeDate: '01-11-2020', chequeStatus: 'Cleared', remarks: 'Cancelled Flats' },
+  { srNo: 3, flatNo: 'A105', clearedAmount: '111750', refundedAmount: '111750', refundedDate: '03-11-2020', chequeNo: '555545', chequeBank: 'HDFC', chequeDate: '01-11-2020', chequeStatus: 'Cleared', remarks: 'Cancelled Flats' },
+];
+
+const refundedChequesData = [
+  { srNo: 4, flatNo: 'A105', clearedAmount: '-300000', refundedAmount: '-300000', refundedDate: '08-10-2025', chequeNo: '72727', chequeBank: 'HDFC', chequeDate: '01-10-2025', chequeStatus: 'InProcess', remarks: '72' },
+  { srNo: 5, flatNo: 'A409', clearedAmount: '1981800', refundedAmount: '1282597', refundedDate: '03-11-2020', chequeNo: '55547', chequeBank: 'FEDER', chequeDate: '01-11-2020', chequeStatus: 'Cleared', remarks: 'Cancelled Flats' },
+];
+
+export const fetchRefundedFlats = async () => ({ success: true, data: refundedFlatsData });
+export const fetchRefundedCheques = async () => ({ success: true, data: refundedChequesData });
+
 // ==================== ADMIN: REPORTS DATA ====================
 const reportsData = [
   { srNo: 1, username: 'rohit', ipAddress: '103.48.197.219', dateTime: '06-10-2025 10:06:38' },
@@ -888,11 +956,26 @@ const flatDetailsAdminData = {
   },
   flatInfo: {
     area: '1386 Sq.ft',
-    bookingDate: '11-10-2021',
+    bookingDate: '2025-09-08',
     paymentPlan: 'CLP',
     channelPartner: 'GHPL (Change)',
     totalCost: '8396700',
-    totalBookingAmount: '300000'
+    totalBookingAmount: '300000',
+    // New fields for edit mode
+    dealer: 'GHPL',
+    companyRate: '5000',
+    loginRate: '1000',
+    scheme: 'NSC',
+    // Applicable PLC charges
+    ground: '',
+    amenities: '100',
+    corpusFund: '70',
+    ewsw: '100',
+    hmwssb: '0',
+    homeAutomation: '100',
+    maintenance1stYear: '40',
+    maintenance2ndYear: '40',
+    singleCarParking: '150000'
   },
   charges: {
     extraCharges: 'View Applicable Charges',
@@ -979,9 +1062,11 @@ const flatDetailsAdminData = {
 };
 
 export const fetchFlatDetailsAdmin = async (flatNo) => {
+  // Return a copy with requested flatNo so UI reflects the selected flat
+  const dataForFlat = { ...flatDetailsAdminData, flatNo: flatNo || flatDetailsAdminData.flatNo };
   return {
     success: true,
-    data: flatDetailsAdminData
+    data: dataForFlat
   };
 };
 

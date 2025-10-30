@@ -27,8 +27,8 @@ function App() {
       const userRole = localStorage.getItem('userRole') || 'user';
       
       if (userRole === 'admin') {
-        // Admin: on mobile/tablet default to flatStatus, on desktop default to overview
-        const defaultPage = isMobile ? 'flatStatus' : 'overview';
+        // Admin: on mobile/tablet default to flatStatus, on desktop default to dashboard
+        const defaultPage = isMobile ? 'flatStatus' : 'dashboard';
         return defaultPage;
       } else {
         // User: on mobile/tablet no default page, on desktop default to flatDetails
@@ -57,14 +57,13 @@ function App() {
           return null;
         });
       } else if (mobile && currentUserRole === 'admin') {
-        // Admin on mobile: default to flatStatus if switching from desktop
+        // Admin on mobile: prefer flatStatus
         setActivePage(prevPage => {
-          // If coming from desktop with "overview", switch to "flatStatus"
-          if (prevPage === 'overview') {
+          // If coming from desktop dashboard, switch to flatStatus
+          if (prevPage === 'dashboard') {
             navigate('/dashboard/flatStatus', { replace: true });
             return 'flatStatus';
           }
-          // Otherwise keep current page or default to flatStatus
           const pageToSet = prevPage || 'flatStatus';
           if (!prevPage) {
             navigate(`/dashboard/${pageToSet}`, { replace: true });
@@ -83,18 +82,14 @@ function App() {
           return prevPage;
         });
       } else if (!mobile && currentUserRole === 'admin') {
-        // Admin on desktop: default to overview or keep current page
+        // Admin on desktop: keep current page if set; otherwise default to dashboard
         setActivePage(prevPage => {
-          // If coming from mobile with "flatStatus" or "report", switch to "overview"
-          if (prevPage === 'flatStatus' || prevPage === 'report') {
-            navigate('/dashboard/overview', { replace: true });
-            return 'overview';
+          if (prevPage) {
+            // Do not override existing page on desktop
+            return prevPage;
           }
-          // Otherwise keep current page or default to overview
-          const pageToSet = prevPage || 'overview';
-          if (!prevPage) {
-            navigate(`/dashboard/${pageToSet}`, { replace: true });
-          }
+          const pageToSet = 'dashboard';
+          navigate(`/dashboard/${pageToSet}`, { replace: true });
           return pageToSet;
         });
       }
@@ -139,9 +134,9 @@ function App() {
             setActivePage('flatDetails');
           }
         } else if (!isMobileDevice && userRole === 'admin') {
-          // On desktop, admin defaults to overview
+          // On desktop, admin defaults to dashboard
           if (!activePage) {
-            setActivePage('overview');
+            setActivePage('dashboard');
           }
         }
       }
@@ -180,8 +175,8 @@ function App() {
           setActivePage('flatStatus');
           navigate('/dashboard/flatStatus', { replace: true });
         } else {
-          setActivePage('overview');
-          navigate('/dashboard/overview', { replace: true });
+          setActivePage('dashboard');
+          navigate('/dashboard/dashboard', { replace: true });
         }
       } else {
         // Regular (customer) users
@@ -199,14 +194,11 @@ function App() {
 
   const handlePageChange = (page) => {
     if (page !== activePage) {
-      setIsAnimating(true);
-      setTimeout(() => {
-        setActivePage(page);
-        setAnimationKey(prev => prev + 1);
-        setIsAnimating(false);
-        // Update URL to reflect current page
-        navigate(`/dashboard/${page}`, { replace: false });
-      }, 150);
+      // Update state immediately to avoid intermediate flashes
+      setActivePage(page);
+      setAnimationKey(prev => prev + 1);
+      setIsAnimating(false);
+      navigate(`/dashboard/${page}`, { replace: false });
     }
   };
 
