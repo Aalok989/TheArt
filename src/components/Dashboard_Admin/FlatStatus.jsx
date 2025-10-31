@@ -62,6 +62,8 @@ const FlatStatus = ({ onPageChange }) => {
   const handleFlatClick = (flat) => {
     // Store flat data in sessionStorage for the Flat page
     sessionStorage.setItem('selectedFlat', JSON.stringify(flat));
+    // Store the origin page so back navigation works correctly
+    sessionStorage.setItem('flatOrigin', 'flatStatus');
     // Navigate to the flat page
     if (onPageChange) {
       onPageChange('flat');
@@ -428,22 +430,34 @@ const FlatStatus = ({ onPageChange }) => {
           {/* Rows */}
           <div className="space-y-0" style={{ marginTop: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
             {filteredFlatsData.length > 0 ? (
-              filteredFlatsData.map((flat, index) => (
-              <div
-                key={index}
-                className="grid border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
-                style={{ gridTemplateColumns: '1fr 2fr', gap: 'clamp(1rem, 2rem, 4rem)', paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}
-              >
-                  <button
-                    onClick={() => handleFlatClick(flat)}
-                    className={`font-medium ${flat.color} font-montserrat text-left hover:underline cursor-pointer transition-all duration-200`}
-                    style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}
+              filteredFlatsData.map((flat, index) => {
+                const isBooked = flat.status === 'Booked';
+                return (
+                  <div
+                    key={index}
+                    className="grid border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
+                    style={{ gridTemplateColumns: '1fr 2fr', gap: 'clamp(1rem, 2rem, 4rem)', paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}
                   >
-                  {flat.flatNo}
-                  </button>
-                  <div className="text-gray-700 font-montserrat" style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}>{flat.status}</div>
-                </div>
-              ))
+                    {isBooked ? (
+                      <button
+                        onClick={() => handleFlatClick(flat)}
+                        className={`font-medium ${flat.color} font-montserrat text-left hover:underline cursor-pointer transition-all duration-200`}
+                        style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}
+                      >
+                        {flat.flatNo}
+                      </button>
+                    ) : (
+                      <div
+                        className={`font-medium ${flat.color} font-montserrat text-left cursor-not-allowed transition-all duration-200`}
+                        style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}
+                      >
+                        {flat.flatNo}
+                      </div>
+                    )}
+                    <div className="text-gray-700 font-montserrat" style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}>{flat.status}</div>
+                  </div>
+                );
+              })
             ) : (
               <div className="text-center py-8">
                 <p className="text-gray-500 text-sm font-montserrat">

@@ -31,6 +31,7 @@ import FlatStatus from "./Dashboard_Admin/FlatStatus";
 import BookedFlats from "./Dashboard_Admin/BookedFlats";
 import BlockedFlats from "./Dashboard_Admin/BlockedFlats";
 import CancelledFlats from "./Dashboard_Admin/CancelledFlats";
+import LoanedFlats from "./Dashboard_Admin/LoanedFlats";
 import FlatVerification from "./Dashboard_Admin/FlatVerification";
 import FlatSummary from "./Dashboard_Admin/FlatSummary";
 import BlockInventory from "./Dashboard_Admin/BlockInventory";
@@ -659,6 +660,16 @@ const Layout = ({
                   onPageChange={onPageChange}
                 />
               </div>
+            </div>
+          );
+        case "loanedFlats":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <LoanedFlats key={`loanedFlats-${animationKey}`} onPageChange={onPageChange} />
             </div>
           );
         case "loanDocuments":
