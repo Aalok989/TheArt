@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { FiCopy } from 'react-icons/fi';
 import { FaFileExcel, FaFilePdf } from 'react-icons/fa';
 import { HiChevronDown, HiChevronLeft, HiChevronRight } from 'react-icons/hi';
-import { fetchFlatStatus, fetchBookedFlatsDetails } from '../../api/mockData';
+import { fetchFlatStatus, fetchBookedFlatsDetails, fetchMonths, fetchYears } from '../../api/mockData';
 
 const BookedFlats = ({ onPageChange }) => {
   const [expandedFilters, setExpandedFilters] = useState(new Set());
@@ -19,6 +19,8 @@ const BookedFlats = ({ onPageChange }) => {
   const tableRef = useRef(null);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [months, setMonths] = useState([]);
+  const [years, setYears] = useState([]);
   
   const floorScrollRef = useRef(null);
   const blockScrollRef = useRef(null);
@@ -28,15 +30,23 @@ const BookedFlats = ({ onPageChange }) => {
     const getFlatStatus = async () => {
       try {
         setLoading(true);
-        const [statusRes, detailsRes] = await Promise.all([
+        const [statusRes, detailsRes, monthsRes, yearsRes] = await Promise.all([
           fetchFlatStatus(),
-          fetchBookedFlatsDetails()
+          fetchBookedFlatsDetails(),
+          fetchMonths(),
+          fetchYears()
         ]);
         if (statusRes.success) {
           setFlatStatusData(statusRes.data);
         }
         if (detailsRes.success) {
           setBookedDetails(detailsRes.data || []);
+        }
+        if (monthsRes.success) {
+          setMonths(monthsRes.data || []);
+        }
+        if (yearsRes.success) {
+          setYears(yearsRes.data || []);
         }
       } catch (error) {
         console.error('Error fetching booked flats:', error);
@@ -501,7 +511,7 @@ const BookedFlats = ({ onPageChange }) => {
                       className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 w-full"
                     >
                       <option value="" disabled>Select Year</option>
-                      {Array.from({ length: 15 }, (_, i) => 2015 + i).map((y) => (
+                      {years.map((y) => (
                         <option key={y} value={y}>{y}</option>
                       ))}
                     </select>
@@ -514,7 +524,7 @@ const BookedFlats = ({ onPageChange }) => {
                       className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 w-full"
                     >
                       <option value="" disabled>Select Month</option>
-                      {['January','February','March','April','May','June','July','August','September','October','November','December'].map(name => (
+                      {months.map(name => (
                         <option key={name} value={name}>{name}</option>
                       ))}
                     </select>

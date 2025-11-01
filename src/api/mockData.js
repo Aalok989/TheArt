@@ -578,8 +578,8 @@ export const fetchReports = async () => {
   };
 };
 
-// ==================== ADMIN: LOAN DETAILS DATA ====================
-const loanDetailsData = {
+// ==================== ADMIN: LOANED FLATS DATA ====================
+const loanedFlatsData = {
   loans: [
     { srNo: 1, flatNo: 'A301', customerName: 'Akaash', sanctionedAmount: '40000', loanBank: 'PNB', loanAccountNo: '1245786532', loanInterest: '4000', status: 'Successful' },
     { srNo: 2, flatNo: 'A302', customerName: 'Akhilesh', sanctionedAmount: '50000', loanBank: 'SBI', loanAccountNo: '1245786532', loanInterest: '5000', status: 'Successful' },
@@ -599,40 +599,40 @@ const loanDetailsData = {
   ],
 };
 
-export const fetchLoanDetails = async () => {
+export const fetchLoanedFlatsData = async () => {
   return {
     success: true,
-    data: loanDetailsData
+    data: loanedFlatsData
   };
 };
 
 // ==================== ADMIN: LOAN DOCUMENTS DATA ====================
 const loanDocumentsData = {
   loans: [
-    { srNo: 1, flatNo: 'A1', name: 'V.REVATHI', contactNo: '9966801523', paymentPlan: 'CLP', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes' },
+    { srNo: 1, flatNo: 'A1', name: 'V.REVATHI', contactNo: '9966801523', paymentPlan: 'CLP', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes', kycId: 'TA76967SKV', employmentType: 'salaried', uploadedDocuments: ['ID Proof (PAN card mandatory/Company Id Card)', 'Address Proof (Voter Id Card/Passport/electricity bill/bank statement/Aadhar Card)', 'Salary Slip (6 months for salaried)', 'Bank Statement (12 months current)'] },
     { srNo: 2, flatNo: 'A101', name: 'SMT. Z SINCY', contactNo: '9052730815', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'No' },
     { srNo: 3, flatNo: 'A102', name: 'S V NARASIMHA SWAMY', contactNo: '9704008535', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
-    { srNo: 4, flatNo: 'A103', name: 'RAJ KUMAR REDDY KOMMIDI', contactNo: '9538775554', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes' },
+    { srNo: 4, flatNo: 'A103', name: 'RAJ KUMAR REDDY KOMMIDI', contactNo: '9538775554', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes', kycId: 'TA91234XYZ', employmentType: 'selfEmployed', uploadedDocuments: ['ID Proof (PAN card mandatory/Company Id Card)', 'Address Proof (Voter Id Card/Passport/electricity bill/bank statement/Aadhar Card)', 'Builder Buyer Agreement', 'Credit Card Statement', 'Bank Statement (12 months current)'] },
     { srNo: 5, flatNo: 'A104', name: 'D. SAI AKSHAY RAJ', contactNo: '8008233657', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
     { srNo: 6, flatNo: 'A105', name: 'ARASANI SREEKANTH REDDY', contactNo: '9963377522', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'No' },
     { srNo: 7, flatNo: 'A106', name: 'RAVINDRANATH MEDISETTI', contactNo: '6300022405', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
-    { srNo: 8, flatNo: 'A107', name: 'CHANDRASEKHAR VEERASWAMI DONTHA', contactNo: '9819287227', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes' },
+    { srNo: 8, flatNo: 'A107', name: 'CHANDRASEKHAR VEERASWAMI DONTHA', contactNo: '9819287227', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes', kycId: 'TA87654ABC', employmentType: 'salaried', uploadedDocuments: ['ID Proof (PAN card mandatory/Company Id Card)', 'Address Proof (Voter Id Card/Passport/electricity bill/bank statement/Aadhar Card)', 'Salary Slip (6 months for salaried)', 'Form 16 of 3 years'] },
     { srNo: 9, flatNo: 'A108', name: 'KAPIL DEV CHOWDHRY', contactNo: '9177665757', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
     { srNo: 10, flatNo: 'A109', name: 'MUTHADI SRIDHAR REDDY', contactNo: '9618245135', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'No' },
     { srNo: 11, flatNo: 'A11', name: 'Ashu', contactNo: '1234567890', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
-    { srNo: 12, flatNo: 'A110', name: 'SMT: SIRISHA MALYALA', contactNo: '8125308700', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes' },
+    { srNo: 12, flatNo: 'A110', name: 'SMT: SIRISHA MALYALA', contactNo: '8125308700', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes', kycId: 'TA34567DEF', employmentType: 'selfEmployed', uploadedDocuments: ['ID Proof (PAN card mandatory/Company Id Card)', 'Address Proof (Voter Id Card/Passport/electricity bill/bank statement/Aadhar Card)', 'Builder Buyer Agreement', 'ITR (3 years with balance sheet, computation P&L)'] },
     { srNo: 13, flatNo: 'A111', name: 'THAKUR DHEREN SINGH', contactNo: '8897543490', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
     { srNo: 14, flatNo: 'A112', name: 'CHILUKURI RAMA KRISHNA', contactNo: '8463924759', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'No' },
     { srNo: 15, flatNo: 'A201', name: 'N. DHANANJOY SINGH', contactNo: '7032909776', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
-    { srNo: 16, flatNo: 'A202', name: 'VIJAY KRISHNA MALLADI', contactNo: '9676892424', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes' },
+    { srNo: 16, flatNo: 'A202', name: 'VIJAY KRISHNA MALLADI', contactNo: '9676892424', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes', kycId: 'TA11111GHI', employmentType: 'salaried', uploadedDocuments: ['ID Proof (PAN card mandatory/Company Id Card)', 'Address Proof (Voter Id Card/Passport/electricity bill/bank statement/Aadhar Card)', 'Salary Slip (6 months for salaried)', 'Bank Statement (12 months current)', 'Utility Bill (electricity bill, telephone bill, gas connection)'] },
     { srNo: 17, flatNo: 'A203', name: 'SMT. NALUMASU SINDHUJA', contactNo: '9666054123', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
     { srNo: 18, flatNo: 'A204', name: 'SAI KUMAR VALLURI', contactNo: '8008044487', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'No' },
     { srNo: 19, flatNo: 'A205', name: 'KOMMANA PRADEEP', contactNo: '8790572832', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
-    { srNo: 20, flatNo: 'A206', name: 'RAJESH KUMAR', contactNo: '9876543210', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes' },
+    { srNo: 20, flatNo: 'A206', name: 'RAJESH KUMAR', contactNo: '9876543210', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes', kycId: 'TA22222JKL', employmentType: 'selfEmployed', uploadedDocuments: ['ID Proof (PAN card mandatory/Company Id Card)', 'Address Proof (Voter Id Card/Passport/electricity bill/bank statement/Aadhar Card)', 'Credit Card Statement', 'Bank Statement (12 months current)', 'Asset/Liabilities'] },
     { srNo: 21, flatNo: 'A207', name: 'PRIYA SHARMA', contactNo: '8765432109', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
     { srNo: 22, flatNo: 'A208', name: 'AMIT SINGH', contactNo: '7654321098', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'No' },
     { srNo: 23, flatNo: 'A209', name: 'SUNITA DEVI', contactNo: '6543210987', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
-    { srNo: 24, flatNo: 'A210', name: 'VIKRAM REDDY', contactNo: '5432109876', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes' },
+    { srNo: 24, flatNo: 'A210', name: 'VIKRAM REDDY', contactNo: '5432109876', paymentPlan: 'EMI', bbaSigned: 'Yes', loanRequired: 'Yes', documentsReceived: 'Yes', kycId: 'TA33333MNO', employmentType: 'salaried', uploadedDocuments: ['ID Proof (PAN card mandatory/Company Id Card)', 'Address Proof (Voter Id Card/Passport/electricity bill/bank statement/Aadhar Card)', 'Salary Slip (6 months for salaried)', 'Form 16 of 3 years', 'Bank Statement (12 months current)'] },
     { srNo: 25, flatNo: 'B101', name: 'KAVITHA RAO', contactNo: '4321098765', paymentPlan: 'CLP', bbaSigned: 'No', loanRequired: 'No', documentsReceived: 'No' },
   ],
 };
@@ -641,6 +641,52 @@ export const fetchLoanDocuments = async () => {
   return {
     success: true,
     data: loanDocumentsData
+  };
+};
+
+export const updateLoanDocuments = async (flatNo, kycId, employmentType, uploadedDocuments) => {
+  const loanIndex = loanDocumentsData.loans.findIndex(loan => loan.flatNo === flatNo);
+  if (loanIndex !== -1) {
+    loanDocumentsData.loans[loanIndex].kycId = kycId;
+    loanDocumentsData.loans[loanIndex].employmentType = employmentType;
+    loanDocumentsData.loans[loanIndex].uploadedDocuments = uploadedDocuments;
+    loanDocumentsData.loans[loanIndex].documentsReceived = 'Yes';
+    return {
+      success: true,
+      message: 'Loan documents updated successfully'
+    };
+  }
+  return {
+    success: false,
+    message: 'Loan not found'
+  };
+};
+
+// ==================== ADMIN: COMPLETE PAYMENT DATA ====================
+const completePaymentData = {
+  payments: [
+    { srNo: 1, flatNo: 'A101', name: 'Rajesh Kumar', email: 'rajesh.kumar@email.com', phnNo: '9876543210', paymentPlan: 'CLP', dueAmount: '500000', pendingAmount: '200000', clearedAmount: '300000', inProcess: '50000', dueTax: '50000', pendingTax: '20000', paidTax: '25000', clearedTax: '5000', totalDues: '750000' },
+    { srNo: 2, flatNo: 'A102', name: 'Priya Sharma', email: 'priya.sharma@email.com', phnNo: '8765432109', paymentPlan: 'CLP', dueAmount: '600000', pendingAmount: '150000', clearedAmount: '450000', inProcess: '75000', dueTax: '60000', pendingTax: '25000', paidTax: '30000', clearedTax: '5000', totalDues: '825000' },
+    { srNo: 3, flatNo: 'A103', name: 'Amit Singh', email: 'amit.singh@email.com', phnNo: '7654321098', paymentPlan: 'CLP', dueAmount: '550000', pendingAmount: '250000', clearedAmount: '300000', inProcess: '60000', dueTax: '55000', pendingTax: '30000', paidTax: '20000', clearedTax: '5000', totalDues: '855000' },
+    { srNo: 4, flatNo: 'B201', name: 'Sunita Devi', email: 'sunita.devi@email.com', phnNo: '6543210987', paymentPlan: 'Regular', dueAmount: '700000', pendingAmount: '100000', clearedAmount: '600000', inProcess: '80000', dueTax: '70000', pendingTax: '15000', paidTax: '40000', clearedTax: '15000', totalDues: '885000' },
+    { srNo: 5, flatNo: 'B202', name: 'Vikram Reddy', email: 'vikram.reddy@email.com', phnNo: '5432109876', paymentPlan: 'Regular', dueAmount: '650000', pendingAmount: '300000', clearedAmount: '350000', inProcess: '70000', dueTax: '65000', pendingTax: '35000', paidTax: '25000', clearedTax: '5000', totalDues: '1010000' },
+    { srNo: 6, flatNo: 'C301', name: 'Kavitha Rao', email: 'kavitha.rao@email.com', phnNo: '4321098765', paymentPlan: 'CLP', dueAmount: '580000', pendingAmount: '180000', clearedAmount: '400000', inProcess: '65000', dueTax: '58000', pendingTax: '20000', paidTax: '30000', clearedTax: '8000', totalDues: '863000' },
+    { srNo: 7, flatNo: 'C302', name: 'Naresh Patel', email: 'naresh.patel@email.com', phnNo: '3210987654', paymentPlan: 'CLP', dueAmount: '620000', pendingAmount: '220000', clearedAmount: '400000', inProcess: '72000', dueTax: '62000', pendingTax: '28000', paidTax: '28000', clearedTax: '6000', totalDues: '904000' },
+    { srNo: 8, flatNo: 'D401', name: 'Anjali Gupta', email: 'anjali.gupta@email.com', phnNo: '2109876543', paymentPlan: 'Regular', dueAmount: '680000', pendingAmount: '120000', clearedAmount: '560000', inProcess: '78000', dueTax: '68000', pendingTax: '18000', paidTax: '35000', clearedTax: '15000', totalDues: '886000' },
+    { srNo: 9, flatNo: 'D402', name: 'Rohit Verma', email: 'rohit.verma@email.com', phnNo: '1098765432', paymentPlan: 'Regular', dueAmount: '590000', pendingAmount: '190000', clearedAmount: '400000', inProcess: '68000', dueTax: '59000', pendingTax: '22000', paidTax: '32000', clearedTax: '5000', totalDues: '873000' },
+    { srNo: 10, flatNo: 'A104', name: 'Deepa Nair', email: 'deepa.nair@email.com', phnNo: '9876543211', paymentPlan: 'CLP', dueAmount: '540000', pendingAmount: '240000', clearedAmount: '300000', inProcess: '62000', dueTax: '54000', pendingTax: '30000', paidTax: '22000', clearedTax: '2000', totalDues: '894000' },
+    { srNo: 11, flatNo: 'B203', name: 'Suresh Iyer', email: 'suresh.iyer@email.com', phnNo: '8765432110', paymentPlan: 'Regular', dueAmount: '610000', pendingAmount: '210000', clearedAmount: '400000', inProcess: '71000', dueTax: '61000', pendingTax: '25000', paidTax: '28000', clearedTax: '8000', totalDues: '897000' },
+    { srNo: 12, flatNo: 'C303', name: 'Meera Joshi', email: 'meera.joshi@email.com', phnNo: '7654321109', paymentPlan: 'CLP', dueAmount: '570000', pendingAmount: '170000', clearedAmount: '400000', inProcess: '66000', dueTax: '57000', pendingTax: '19000', paidTax: '29000', clearedTax: '9000', totalDues: '853000' },
+    { srNo: 13, flatNo: 'D403', name: 'Arjun Menon', email: 'arjun.menon@email.com', phnNo: '6543211098', paymentPlan: 'Regular', dueAmount: '630000', pendingAmount: '230000', clearedAmount: '400000', inProcess: '73000', dueTax: '63000', pendingTax: '32000', paidTax: '26000', clearedTax: '5000', totalDues: '918000' },
+    { srNo: 14, flatNo: 'A105', name: 'Lakshmi Pillai', email: 'lakshmi.pillai@email.com', phnNo: '5432110987', paymentPlan: 'CLP', dueAmount: '560000', pendingAmount: '160000', clearedAmount: '400000', inProcess: '64000', dueTax: '56000', pendingTax: '18000', paidTax: '30000', clearedTax: '8000', totalDues: '842000' },
+    { srNo: 15, flatNo: 'B204', name: 'Kiran Desai', email: 'kiran.desai@email.com', phnNo: '4321109876', paymentPlan: 'Regular', dueAmount: '590000', pendingAmount: '190000', clearedAmount: '400000', inProcess: '69000', dueTax: '59000', pendingTax: '21000', paidTax: '31000', clearedTax: '7000', totalDues: '870000' },
+  ],
+};
+
+export const fetchCompletePayment = async () => {
+  return {
+    success: true,
+    data: completePaymentData
   };
 };
 
@@ -1070,6 +1116,181 @@ export const fetchFlatDetailsAdmin = async (flatNo) => {
   };
 };
 
+// ==================== ADMIN: VIEW HANDOVER DATA ====================
+const viewHandoverData = [
+  { id: 1, flatNo: 'A-101' },
+  { id: 2, flatNo: 'A-102' },
+  { id: 3, flatNo: 'B-201' },
+  { id: 4, flatNo: 'B-202' },
+  { id: 5, flatNo: 'C-301' },
+];
+
+export const fetchViewHandover = async () => {
+  return {
+    success: true,
+    data: viewHandoverData
+  };
+};
+
+// ==================== ADMIN: VIEW CUSTOMIZATION DATA ====================
+const viewCustomizationData = [
+  { id: 1, flatNo: 'A-101', taxAmount: '5000' },
+  { id: 2, flatNo: 'B-202', taxAmount: '3500' },
+  { id: 3, flatNo: 'C-303', taxAmount: '4200' },
+  { id: 4, flatNo: 'D-404', taxAmount: '2800' },
+];
+
+export const fetchViewCustomization = async () => {
+  return {
+    success: true,
+    data: viewCustomizationData
+  };
+};
+
+// ==================== ADMIN: VIEW ACTIVITIES DATA ====================
+const viewActivitiesData = [
+  { id: 1, name: 'Flooring' },
+  { id: 2, name: 'Painting' },
+  { id: 3, name: 'Plumbing' },
+  { id: 4, name: 'Electrical' },
+  { id: 5, name: 'Carpentry' },
+];
+
+export const fetchViewActivities = async () => {
+  return {
+    success: true,
+    data: viewActivitiesData
+  };
+};
+
+// ==================== ADMIN: FLAT HANDOVER ACTIVITIES DATA ====================
+const flatHandoverActivitiesData = [
+  {
+    id: 1,
+    title: 'Main Door',
+    subs: [
+      'Main door frame & beeding',
+      'Door shutter & frame polish',
+      'Lock fixing',
+      'Tower bolt fixing',
+      'Stopper',
+    ],
+  },
+  {
+    id: 2,
+    title: 'Drawing Room',
+    subs: [
+      'Upvc window fixing with mesh',
+      'Grills fixing',
+      'Electrical db door',
+      'Communication box',
+      'Electrical switches',
+    ],
+  },
+  {
+    id: 3,
+    title: 'Dining',
+    subs: [
+      'Sliding door',
+      'Flooring & skirting',
+      'Electrical switches',
+      'Half wash basin with fittings',
+      'Paint',
+    ],
+  },
+];
+
+export const fetchFlatHandoverActivities = async () => {
+  return {
+    success: true,
+    data: flatHandoverActivitiesData
+  };
+};
+
+// ==================== ADMIN: VIEW ACTIVITY DATA ====================
+const viewActivityData = [
+  { id: 1, activity: 'Main Door', subs: ['Main door frame & beeding', 'Door shutter & frame polish', 'Lock fixing', 'Tower bolt fixing', 'Stopper'] },
+  { id: 2, activity: 'Drawing Room', subs: ['Upvc window fixing with mesh', 'Grills fixing', 'Electrical DB door', 'Communication box', 'Electrical switches', 'Paint', 'Flooring & skirting'] },
+  { id: 3, activity: 'Dining', subs: ['Sliding door', 'Flooring & skirting', 'Electrical switches', 'Half wash basin with fittings', 'Paint'] },
+  { id: 4, activity: 'Kitchen', subs: ['Kitchen sink', 'Faucet', 'Tiles', 'Electrical switches'] },
+];
+
+export const fetchViewActivity = async () => {
+  return {
+    success: true,
+    data: viewActivityData
+  };
+};
+
+// ==================== ADMIN: ACTIVITY TO SUBACTIVITY MAPPING ====================
+const activityToSubactivityData = {
+  Flooring: ['Tiles', 'Granite', 'Wooden'],
+  Painting: ['Primer', 'Putty', 'Final Coat'],
+  Plumbing: ['Pipes', 'Fittings', 'Fixtures'],
+  Electrical: ['Wiring', 'Switches', 'Lights'],
+  Carpentry: ['Doors', 'Windows', 'Furniture'],
+};
+
+export const fetchActivityToSubactivity = async () => {
+  return {
+    success: true,
+    data: activityToSubactivityData
+  };
+};
+
+// ==================== ADMIN: BLOCKS DATA ====================
+const blocksData = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
+export const fetchBlocks = async () => {
+  return {
+    success: true,
+    data: blocksData
+  };
+};
+
+// ==================== ADMIN: CUSTOMIZATION TYPES DATA ====================
+const customizationTypesData = ['Flooring', 'Painting', 'Plumbing', 'Electrical', 'Other'];
+
+export const fetchCustomizationTypes = async () => {
+  return {
+    success: true,
+    data: customizationTypesData
+  };
+};
+
+// ==================== ADMIN: DEALER IDs DATA ====================
+const dealerIdsData = ['D001', 'D002', 'D003', 'D004', 'D005'];
+
+export const fetchDealerIds = async () => {
+  return {
+    success: true,
+    data: dealerIdsData
+  };
+};
+
+// ==================== ADMIN: MONTHS DATA ====================
+const monthsData = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+export const fetchMonths = async () => {
+  return {
+    success: true,
+    data: monthsData
+  };
+};
+
+// ==================== ADMIN: YEARS DATA ====================
+const getYearsData = () => {
+  const currentYear = new Date().getFullYear();
+  return Array.from({ length: 15 }, (_, i) => currentYear - 5 + i);
+};
+
+export const fetchYears = async () => {
+  return {
+    success: true,
+    data: getYearsData()
+  };
+};
+
 export default {
   fetchUserProfile,
   fetchDetailedInformation,
@@ -1083,8 +1304,10 @@ export default {
   submitCustomerCareMessage,
   fetchFlatStatus,
   fetchReports,
-  fetchLoanDetails,
+  fetchLoanedFlatsData,
   fetchLoanDocuments,
+  updateLoanDocuments,
+  fetchCompletePayment,
   fetchCommonDocuments,
   fetchFlatDocuments,
   fetchLegalDocuments,
@@ -1092,5 +1315,16 @@ export default {
   fetchLoanDocumentLists,
   fetchProjects,
   fetchFlatDetailsAdmin,
+  fetchViewHandover,
+  fetchViewCustomization,
+  fetchViewActivities,
+  fetchFlatHandoverActivities,
+  fetchViewActivity,
+  fetchActivityToSubactivity,
+  fetchBlocks,
+  fetchCustomizationTypes,
+  fetchDealerIds,
+  fetchMonths,
+  fetchYears,
 };
 

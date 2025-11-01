@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { HiChevronDown, HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import { FiCopy } from 'react-icons/fi';
 import { FaFileExcel, FaFilePdf } from 'react-icons/fa';
-import { fetchFlatStatus, fetchCancelledFlatsDetails, fetchRefundedFlats, fetchRefundedCheques } from '../../api/mockData';
+import { fetchFlatStatus, fetchCancelledFlatsDetails, fetchRefundedFlats, fetchRefundedCheques, fetchMonths, fetchYears } from '../../api/mockData';
 
 const CancelledFlats = ({ onPageChange }) => {
   const [expandedFilters, setExpandedFilters] = useState(new Set());
@@ -23,6 +23,8 @@ const CancelledFlats = ({ onPageChange }) => {
   const [refundRow, setRefundRow] = useState(null);
   const [refundedSet, setRefundedSet] = useState(new Set());
   const [editContext, setEditContext] = useState(null); // { mode: 'refundedFlats'|'refundedCheques', index: number, row }
+  const [months, setMonths] = useState([]);
+  const [years, setYears] = useState([]);
 
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,16 +33,20 @@ const CancelledFlats = ({ onPageChange }) => {
     const load = async () => {
       try {
         setLoading(true);
-        const [statusRes, cancelRes, refundFlatsRes, refundChequesRes] = await Promise.all([
+        const [statusRes, cancelRes, refundFlatsRes, refundChequesRes, monthsRes, yearsRes] = await Promise.all([
           fetchFlatStatus(),
           fetchCancelledFlatsDetails(),
           fetchRefundedFlats(),
           fetchRefundedCheques(),
+          fetchMonths(),
+          fetchYears(),
         ]);
         if (statusRes.success) setFlatStatusData(statusRes.data);
         if (cancelRes.success) setDetails(cancelRes.data || []);
         if (refundFlatsRes.success) setRefundedFlatsRows(refundFlatsRes.data || []);
         if (refundChequesRes.success) setRefundedChequesRows(refundChequesRes.data || []);
+        if (monthsRes.success) setMonths(monthsRes.data || []);
+        if (yearsRes.success) setYears(yearsRes.data || []);
       } finally { setLoading(false); }
     };
     load();
@@ -168,14 +174,14 @@ const CancelledFlats = ({ onPageChange }) => {
                     <label className="text-sm font-semibold text-gray-700 mb-1">Select Year</label>
                     <select value={selectedYear||''} onChange={(e)=>setSelectedYear(e.target.value)} className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 w-full">
                       <option value="" disabled>Select Year</option>
-                      {Array.from({length:15},(_,i)=>2015+i).map(y=>(<option key={y} value={y}>{y}</option>))}
+                      {years.map(y=>(<option key={y} value={y}>{y}</option>))}
                     </select>
                   </div>
                   <div className="flex flex-col min-w-0">
                     <label className="text-sm font-semibold text-gray-700 mb-1">Select Month</label>
                     <select value={selectedMonth||''} onChange={(e)=>setSelectedMonth(e.target.value)} className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 w-full">
                       <option value="" disabled>Select Month</option>
-                      {['January','February','March','April','May','June','July','August','September','October','November','December'].map(name=>(<option key={name} value={name}>{name}</option>))}
+                      {months.map(name=>(<option key={name} value={name}>{name}</option>))}
                     </select>
                   </div>
                   <div className="flex md:justify-start">

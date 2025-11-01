@@ -1,41 +1,42 @@
-import React, { useMemo, useState } from 'react';
-
-// Sample handover structure
-const DEFAULT_ACTIVITIES = [
-  {
-    id: 1,
-    title: 'Main Door',
-    subs: [
-      'Main door frame & beeding',
-      'Door shutter & frame polish',
-      'Lock fixing',
-      'Tower bolt fixing',
-      'Stopper',
-    ],
-  },
-  {
-    id: 2,
-    title: 'Drawing Room',
-    subs: [
-      'Upvc window fixing with mesh',
-      'Grills fixing',
-      'Electrical db door',
-      'Communication box',
-      'Electrical switches',
-    ],
-  },
-];
+import React, { useMemo, useState, useEffect } from 'react';
+import { fetchFlatHandoverActivities, fetchBlocks } from '../../api/mockData';
 
 const FlatHandover = () => {
   const [block, setBlock] = useState('');
   const [flat, setFlat] = useState('');
+  const [activities, setActivities] = useState([]);
+  const [blocks, setBlocks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoading(true);
+        const [activitiesRes, blocksRes] = await Promise.all([
+          fetchFlatHandoverActivities(),
+          fetchBlocks()
+        ]);
+        if (activitiesRes.success) {
+          setActivities(activitiesRes.data || []);
+        }
+        if (blocksRes.success) {
+          setBlocks(blocksRes.data || []);
+        }
+      } catch (error) {
+        console.error('Error fetching flat handover data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   // Build state map: key `${i}.${j}`
   const keys = useMemo(() => {
     const list = [];
-    DEFAULT_ACTIVITIES.forEach((a, ai) => a.subs.forEach((_, si) => list.push(`${ai + 1}.${si + 1}`)));
+    activities.forEach((a, ai) => a.subs.forEach((_, si) => list.push(`${ai + 1}.${si + 1}`)));
     return list;
-  }, []);
+  }, [activities]);
 
   const [status, setStatus] = useState({});
   const [date, setDate] = useState({});
@@ -53,6 +54,17 @@ const FlatHandover = () => {
     alert('Flat handover saved (mock).');
   };
 
+  if (loading) {
+    return (
+      <div className="flex h-full bg-white rounded-2xl overflow-hidden shadow-md w-full items-center justify-center">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full bg-white overflow-hidden w-full shadow-sm lg:shadow-md border lg:border-gray-200" style={{ borderRadius:'clamp(1rem,1.5rem,2rem)' }}>
       <div className="flex-shrink-0" style={{ padding:'clamp(1rem,1.5rem,2rem)', paddingBottom:'clamp(0.5rem,0.75rem,1rem)' }}>
@@ -64,7 +76,7 @@ const FlatHandover = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
           <select value={block} onChange={(e)=>{ setBlock(e.target.value); setFlat(''); }} className="w-full border rounded px-3 h-10">
             <option value="" disabled>Select Block</option>
-            {['A','B','C','D'].map(b => (<option key={b} value={b}>{b}</option>))}
+            {blocks.map(b => (<option key={b} value={b}>{b}</option>))}
           </select>
           <select value={flat} onChange={(e)=>setFlat(e.target.value)} disabled={!block} className={`w-full border rounded px-3 h-10 ${!block?'bg-gray-100 cursor-not-allowed text-gray-500':''}`}>
             <option value="" disabled>{block ? 'Select Flat' : 'Select Block first'}</option>
@@ -85,7 +97,7 @@ const FlatHandover = () => {
               </tr>
             </thead>
             <tbody>
-              {DEFAULT_ACTIVITIES.map((a, ai) => (
+              {activities.map((a, ai) => (
                 <React.Fragment key={a.id}>
                   <tr className="bg-gray-50">
                     <td className="border border-gray-200 px-3 py-2 font-semibold">{ai + 1}</td>

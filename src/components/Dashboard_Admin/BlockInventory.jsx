@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { HiChevronDown, HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import { FiCopy } from 'react-icons/fi';
 import { FaFileExcel, FaFilePdf } from 'react-icons/fa';
-import { fetchFlatStatus } from '../../api/mockData';
+import { fetchFlatStatus, fetchDealerIds } from '../../api/mockData';
 
 const BlockInventory = ({ onPageChange }) => {
   const [expandedFilters, setExpandedFilters] = useState(new Set());
@@ -24,13 +24,18 @@ const BlockInventory = ({ onPageChange }) => {
   const [formName, setFormName] = useState('');
   const [formPhone, setFormPhone] = useState('');
   const [formDealer, setFormDealer] = useState('');
+  const [dealerIds, setDealerIds] = useState([]);
 
   useEffect(() => {
     const load = async () => {
       try {
         setLoading(true);
-        const statusRes = await fetchFlatStatus();
+        const [statusRes, dealerRes] = await Promise.all([
+          fetchFlatStatus(),
+          fetchDealerIds()
+        ]);
         if (statusRes.success) { setFlatStatusData(statusRes.data); setInventoryFlats(statusRes.data.flats || []); }
+        if (dealerRes.success) { setDealerIds(dealerRes.data || []); }
       } finally { setLoading(false); }
     };
     load();
@@ -296,7 +301,7 @@ const BlockInventory = ({ onPageChange }) => {
               <label className="block text-xs text-gray-700 mb-1">Dealer ID<span className="text-red-500">*</span></label>
               <select value={formDealer} onChange={e=>setFormDealer(e.target.value)} className="w-full border rounded px-3 h-9">
                 <option value="" disabled>Select Dealer</option>
-                {['D001','D002','D003','D004'].map(id=>(<option key={id} value={id}>{id}</option>))}
+                {dealerIds.map(id=>(<option key={id} value={id}>{id}</option>))}
               </select>
             </div>
             <div className="sm:col-span-2">

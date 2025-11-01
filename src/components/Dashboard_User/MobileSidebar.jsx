@@ -42,12 +42,6 @@ const MobileSidebar = ({ isOpen, onClose, activePage, setActivePage, onLogout, o
           ]
         },
         {
-          id: 'banking',
-          label: 'Banking',
-          icon: currentDuesIcon,
-          isActive: activePage === 'banking'
-        },
-        {
           id: 'projects',
           label: 'Projects',
           icon: paymentIcon,

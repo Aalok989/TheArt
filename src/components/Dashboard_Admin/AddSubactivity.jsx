@@ -1,16 +1,29 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { fetchActivityToSubactivity } from '../../api/mockData';
 
 const AddSubactivity = () => {
   const [activity, setActivity] = useState('');
   const [subactivity, setSubactivity] = useState('');
   const [error, setError] = useState('');
+  const [activityToSubs, setActivityToSubs] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  const activityToSubs = useMemo(() => ({
-    Flooring: ['Tiles', 'Granite', 'Wooden'],
-    Painting: ['Primer', 'Putty', 'Final Coat'],
-    Plumbing: ['Pipes', 'Fittings', 'Fixtures'],
-    Electrical: ['Wiring', 'Switches', 'Lights'],
-  }), []);
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchActivityToSubactivity();
+        if (response.success) {
+          setActivityToSubs(response.data || {});
+        }
+      } catch (error) {
+        console.error('Error fetching activity to subactivity:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   const submit = (e) => {
     e.preventDefault();
@@ -23,6 +36,17 @@ const AddSubactivity = () => {
   };
 
   const subOptions = activity ? (activityToSubs[activity] || []) : [];
+
+  if (loading) {
+    return (
+      <div className="flex h-full bg-white rounded-2xl overflow-hidden shadow-md w-full items-center justify-center">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full bg-white overflow-hidden w-full shadow-sm lg:shadow-md border lg:border-gray-200" style={{ borderRadius:'clamp(1rem,1.5rem,2rem)' }}>

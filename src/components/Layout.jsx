@@ -36,9 +36,16 @@ import FlatVerification from "./Dashboard_Admin/FlatVerification";
 import FlatSummary from "./Dashboard_Admin/FlatSummary";
 import BlockInventory from "./Dashboard_Admin/BlockInventory";
 import UserLogs from "./Dashboard_Admin/UserLogs.jsx";
-import LoanDetails from "./Dashboard_Admin/LoanDetails";
 import LoanDocument from "./Dashboard_Admin/LoanDocument";
 import UploadLoanDoc from "./Dashboard_Admin/UploadLoanDoc";
+import CompletePayment from "./Dashboard_Admin/CompletePayment";
+import BalancePayment from "./Dashboard_Admin/BalancePayment";
+import NoPayment from "./Dashboard_Admin/NoPayment";
+import Cheque from "./Dashboard_Admin/Cheque";
+import Cash from "./Dashboard_Admin/Cash";
+import NEFT from "./Dashboard_Admin/NEFT";
+import ManageBank from "./Dashboard_Admin/ManageBank";
+import ManageUser from "./Dashboard_Admin/ManageUser";
 import Flat from "./Dashboard_Admin/Flat";
 import Projects from "./Dashboard_Admin/Projects";
 import Dashboard from "./Dashboard_Admin/Dashboard";
@@ -647,21 +654,6 @@ const Layout = ({
               </div>
             </div>
           );
-        case "banking":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <LoanDetails
-                  key={`loanDetails-${animationKey}`}
-                  onPageChange={onPageChange}
-                />
-              </div>
-            </div>
-          );
         case "loanedFlats":
           return (
             <div
@@ -697,6 +689,126 @@ const Layout = ({
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
                 <UploadLoanDoc
                   key={`uploadLoanDoc-${animationKey}`}
+                  onPageChange={onPageChange}
+                />
+              </div>
+            </div>
+          );
+        case "completePayment":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <CompletePayment
+                  key={`completePayment-${animationKey}`}
+                  onPageChange={onPageChange}
+                />
+              </div>
+            </div>
+          );
+        case "balancePayment":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <BalancePayment
+                  key={`balancePayment-${animationKey}`}
+                  onPageChange={onPageChange}
+                />
+              </div>
+            </div>
+          );
+        case "noPayment":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <NoPayment
+                  key={`noPayment-${animationKey}`}
+                  onPageChange={onPageChange}
+                />
+              </div>
+            </div>
+          );
+        case "cheque":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <Cheque
+                  key={`cheque-${animationKey}`}
+                  onPageChange={onPageChange}
+                />
+              </div>
+            </div>
+          );
+        case "cash":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <Cash
+                  key={`cash-${animationKey}`}
+                  onPageChange={onPageChange}
+                />
+              </div>
+            </div>
+          );
+        case "neft":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <NEFT
+                  key={`neft-${animationKey}`}
+                  onPageChange={onPageChange}
+                />
+              </div>
+            </div>
+          );
+        case "manageBank":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <ManageBank
+                  key={`manageBank-${animationKey}`}
+                  onPageChange={onPageChange}
+                />
+              </div>
+            </div>
+          );
+        case "manageUser":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <ManageUser
+                  key={`manageUser-${animationKey}`}
                   onPageChange={onPageChange}
                 />
               </div>

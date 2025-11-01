@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { FiCopy } from 'react-icons/fi';
-import { FaFileExcel, FaFilePdf } from 'react-icons/fa';
+import React, { useState, useEffect, useMemo } from 'react';
+import { IoPrint } from 'react-icons/io5';
 import { HiChevronDown } from 'react-icons/hi';
-import { fetchLoanDetails } from '../../api/mockData';
+import { fetchLoanedFlatsData, fetchMonths, fetchYears } from '../../api/mockData';
 
 const LoanedFlats = ({ onPageChange }) => {
   const [expandedFilters, setExpandedFilters] = useState(new Set());
@@ -11,18 +10,28 @@ const LoanedFlats = ({ onPageChange }) => {
   const [loading, setLoading] = useState(true);
   const [loanedDetails, setLoanedDetails] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [copied, setCopied] = useState(false);
-  const tableRef = useRef(null);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [months, setMonths] = useState([]);
+  const [years, setYears] = useState([]);
   
   useEffect(() => {
     const getLoanedFlats = async () => {
       try {
         setLoading(true);
-        const response = await fetchLoanDetails();
-        if (response.success) {
-          setLoanedDetails(response.data.loans || []);
+        const [loansRes, monthsRes, yearsRes] = await Promise.all([
+          fetchLoanedFlatsData(),
+          fetchMonths(),
+          fetchYears()
+        ]);
+        if (loansRes.success) {
+          setLoanedDetails(loansRes.data.loans || []);
+        }
+        if (monthsRes.success) {
+          setMonths(monthsRes.data || []);
+        }
+        if (yearsRes.success) {
+          setYears(yearsRes.data || []);
         }
       } catch (error) {
         console.error('Error fetching loaned flats:', error);
@@ -83,47 +92,8 @@ const LoanedFlats = ({ onPageChange }) => {
     setCurrentPage(1);
   }, [searchQuery, pageSize, displayedRows.length]);
 
-  const handleCopy = async () => {
-    const csv = [headers.join('\t'), ...displayedRows.map(r => [
-      r.srNo, r.flatNo, r.customerName, r.sanctionedAmount, r.loanBank, r.loanAccountNo, r.loanInterest, r.status
-    ].join('\t'))].join('\n');
-    try {
-      await navigator.clipboard.writeText(csv);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch (e) {
-      console.error('Copy failed', e);
-    }
-  };
-
-  const handleExportCSV = () => {
-    const csv = [headers.join(','), ...displayedRows.map(r => [
-      r.srNo, r.flatNo, r.customerName, r.sanctionedAmount, r.loanBank, r.loanAccountNo, r.loanInterest, r.status
-    ].map(val => `"${String(val).replace(/"/g,'""')}"`).join(','))].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'loaned-flats.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  const handleExportPDF = () => {
-    const w = window.open('', '_blank');
-    if (!w) return;
-    const tableHtml = tableRef.current ? tableRef.current.outerHTML : '';
-    w.document.write(`<!doctype html><html><head><title>Loaned Flats</title>
-      <style>
-        table{width:100%;border-collapse:collapse;font-family:Arial, sans-serif;font-size:12px}
-        th,td{border:1px solid #ccc;padding:6px;text-align:left}
-        thead{background:#dbeafe}
-      </style></head><body>${tableHtml}</body></html>`);
-    w.document.close();
-    w.focus();
-    w.print();
+  const handlePrint = () => {
+    window.print();
   };
 
   if (loading) {
@@ -209,7 +179,7 @@ const LoanedFlats = ({ onPageChange }) => {
                       className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 w-full"
                     >
                       <option value="" disabled>Select Year</option>
-                      {Array.from({ length: 15 }, (_, i) => 2015 + i).map((y) => (
+                      {years.map((y) => (
                         <option key={y} value={y}>{y}</option>
                       ))}
                     </select>
@@ -222,7 +192,7 @@ const LoanedFlats = ({ onPageChange }) => {
                       className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 w-full"
                     >
                       <option value="" disabled>Select Month</option>
-                      {['January','February','March','April','May','June','July','August','September','October','November','December'].map(name => (
+                      {months.map(name => (
                         <option key={name} value={name}>{name}</option>
                       ))}
                     </select>
@@ -261,30 +231,21 @@ const LoanedFlats = ({ onPageChange }) => {
                   className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                 />
               </div>
-              <div className="flex items-center gap-2 relative">
-                <button onClick={handleCopy} aria-label="Copy" title="Copy"
-                  className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800">
-                  <FiCopy size={14} />
-                </button>
-                {copied && (
-                  <span className="absolute -top-7 left-0 bg-gray-800 text-white text-xs rounded px-2 py-1 shadow">Copied</span>
-                )}
-                <button onClick={handleExportCSV} aria-label="Export Excel" title="Export Excel"
-                  className="w-8 h-8 flex items-center justify-center rounded-md bg-green-500 hover:bg-green-600 text-white">
-                  <FaFileExcel size={14} />
-                </button>
-                <button onClick={handleExportPDF} aria-label="Export PDF" title="Export PDF"
-                  className="w-8 h-8 flex items-center justify-center rounded-md bg-red-500 hover:bg-red-600 text-white">
-                  <FaFilePdf size={14} />
-                </button>
-              </div>
+              <button
+                onClick={handlePrint}
+                className="flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors"
+                style={{ padding: '0' }}
+                title="Print"
+              >
+                <IoPrint size={32} />
+              </button>
             </div>
           </div>
         </div>
 
         <div className="flex-1 overflow-auto min-h-0" style={{ paddingLeft: 'clamp(1rem, 1.5rem, 2rem)', paddingRight: 'clamp(1rem, 1.5rem, 2rem)' }}>
           <div className="min-w-[800px]">
-            <table ref={tableRef} className="w-full border-collapse text-sm">
+            <table className="w-full border-collapse text-sm">
               <thead className="sticky top-0 z-10">
                 <tr className="bg-blue-200 text-gray-800">
                   {headers.map((h) => (

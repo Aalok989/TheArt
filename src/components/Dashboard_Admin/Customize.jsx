@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { fetchBlocks, fetchCustomizationTypes } from '../../api/mockData';
 
 const Customize = () => {
   const initialTarget = (() => {
@@ -43,6 +44,32 @@ const Customize = () => {
   const [taxAmount, setTaxAmount] = useState('');
   const [rows, setRows] = useState([]);
   const [locked, setLocked] = useState(initialTarget.locked); // when navigated from ViewCustomization
+  const [blocks, setBlocks] = useState([]);
+  const [customizationTypes, setCustomizationTypes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoading(true);
+        const [blocksRes, typesRes] = await Promise.all([
+          fetchBlocks(),
+          fetchCustomizationTypes()
+        ]);
+        if (blocksRes.success) {
+          setBlocks(blocksRes.data || []);
+        }
+        if (typesRes.success) {
+          setCustomizationTypes(typesRes.data || []);
+        }
+      } catch (error) {
+        console.error('Error fetching customize data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   const amount = useMemo(() => {
     const q = Number(qty || 0);
@@ -75,6 +102,17 @@ const Customize = () => {
     setRows([]); setTaxAmount('');
   };
 
+  if (loading) {
+    return (
+      <div className="flex h-full bg-white rounded-2xl overflow-hidden shadow-md w-full items-center justify-center">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full bg-white overflow-hidden w-full shadow-sm lg:shadow-md border lg:border-gray-200" style={{ borderRadius:'clamp(1rem,1.5rem,2rem)' }}>
       <div className="flex-shrink-0" style={{ padding:'clamp(1rem,1.5rem,2rem)', paddingBottom:'clamp(0.5rem,0.75rem,1rem)' }}>
@@ -86,7 +124,7 @@ const Customize = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <select value={block} onChange={(e)=>{ setBlock(e.target.value); setFlat(''); }} disabled={locked} className={`w-full border rounded px-3 h-10 ${locked?'bg-gray-100 cursor-not-allowed text-gray-500':''}`}>
             <option value="" disabled>Select Block</option>
-            {['A','B','C','D'].map(b=> (<option key={b} value={b}>{b}</option>))}
+            {blocks.map(b=> (<option key={b} value={b}>{b}</option>))}
           </select>
           <select value={flat} onChange={(e)=>setFlat(e.target.value)} disabled={locked || !block} className={`w-full border rounded px-3 h-10 ${(locked || !block)?'bg-gray-100 cursor-not-allowed text-gray-500':''}`}>
             <option value="" disabled>{block ? 'Select Flat' : 'Select Block first'}</option>
@@ -101,7 +139,7 @@ const Customize = () => {
               <label className="block text-xs text-gray-700 mb-1">Customization Type</label>
               <select value={type} onChange={(e)=>setType(e.target.value)} className="w-full border rounded px-3 h-10">
                 <option value="">Please Select Type</option>
-                {['Flooring','Painting','Plumbing','Electrical','Other'].map(t=>(<option key={t} value={t}>{t}</option>))}
+                {customizationTypes.map(t=>(<option key={t} value={t}>{t}</option>))}
               </select>
             </div>
             <div className="lg:col-span-2">

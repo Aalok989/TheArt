@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { HiChevronDown, HiSearch, HiArrowLeft } from 'react-icons/hi';
+import React, { useState, useEffect, useMemo } from 'react';
+import { IoDocumentTextSharp, IoPrint } from 'react-icons/io5';
 import { fetchLoanDocuments } from '../../api/mockData';
 
 const LoanDocument = ({ onPageChange }) => {
   const [loading, setLoading] = useState(true);
   const [loanData, setLoanData] = useState(null);
-  const [sortByYear, setSortByYear] = useState('Select Payment Plan');
-  const [sortByMonth, setSortByMonth] = useState('Select Status');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Fetch data on component mount
   useEffect(() => {
@@ -29,249 +29,203 @@ const LoanDocument = ({ onPageChange }) => {
   }, []);
 
   // Filter data based on search term
-  const filteredData = loanData?.loans?.filter(item =>
-    item.flatNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.contactNo.includes(searchTerm)
-  ) || [];
+  const displayed = useMemo(() => {
+    const q = searchQuery.toLowerCase();
+    if (!q) return loanData?.loans || [];
+    return (loanData?.loans || []).filter(item =>
+      item.flatNo.toLowerCase().includes(q) ||
+      item.name.toLowerCase().includes(q) ||
+      item.contactNo.includes(q)
+    );
+  }, [loanData, searchQuery]);
+
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(displayed.length / pageSize));
+  }, [displayed.length, pageSize]);
+
+  const paginatedRows = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return displayed.slice(start, start + pageSize);
+  }, [displayed, currentPage, pageSize]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, pageSize, displayed.length]);
+
+  const handleFlatClick = (flat) => {
+    sessionStorage.setItem('selectedFlat', JSON.stringify({ flatNo: flat.flatNo }));
+    try { sessionStorage.setItem('flatOrigin', 'loanDocuments'); } catch {}
+    if (onPageChange) {
+      onPageChange('flat');
+    }
+  };
+
+  const handleDocumentClick = (loan) => {
+    // Store loan details in sessionStorage for both view and edit mode
+    sessionStorage.setItem('loanDocumentDetails', JSON.stringify({
+      flatNo: loan.flatNo,
+      name: loan.name,
+      kycId: loan.kycId,
+      employmentType: loan.employmentType,
+      uploadedDocuments: loan.uploadedDocuments,
+      documentsReceived: loan.documentsReceived
+    }));
+    if (onPageChange) {
+      onPageChange('uploadLoanDoc');
+    }
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   // Loading state
   if (loading || !loanData) {
     return (
-      <div className="h-full flex items-center justify-center p-[1.5rem]">
+      <div className="flex h-full bg-white rounded-2xl overflow-hidden shadow-md w-full items-center justify-center">
         <div className="flex items-center gap-3">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-          <p className="text-gray-600">Loading loan documents...</p>
+          <p className="text-gray-600">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col lg:p-0 bg-white lg:bg-transparent shadow-sm lg:shadow-none border lg:border-0 border-gray-200" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', borderRadius: 'clamp(1rem, 1.5rem, 1.75rem)' }}>
-      {/* Header Section */}
-      <div style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0" style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
-          <div className="flex items-center" style={{ gap: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
+    <div className="flex flex-col h-full bg-white overflow-hidden w-full shadow-sm lg:shadow-md border lg:border-gray-200" style={{ borderRadius:'clamp(1rem,1.5rem,2rem)' }}>
+      <div className="flex-shrink-0" style={{ padding:'clamp(1rem,1.5rem,2rem)', paddingBottom:'clamp(0.5rem,0.75rem,1rem)' }}>
+        <div className="flex items-center gap-3 flex-wrap">
+          <h2 className="font-bold text-gray-800" style={{ fontSize:'clamp(1rem,1.25rem,1.5rem)' }}>Loan Documents</h2>
+          <div className="ml-auto flex items-center gap-3">
+            <div className="min-w-[10rem]" style={{ width:'clamp(10rem,14rem,18rem)' }}>
+              <input type="text" value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} placeholder="Search..." className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
+            </div>
             <button 
-              onClick={() => onPageChange && onPageChange('banking')}
-              className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+              onClick={handlePrint}
+              className="flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors"
+              style={{ padding: '0' }}
+              title="Print"
             >
-              <HiArrowLeft style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} />
+              <IoPrint size={32} />
             </button>
-            <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)' }}>Loan Documents</h2>
-          </div>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0" style={{ gap: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
-            {/* Sort Dropdowns */}
-            <div className="flex items-center w-full sm:w-auto" style={{ gap: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
-              <span
-                className="font-medium text-gray-700 whitespace-nowrap"
-                style={{ fontFamily: 'Montserrat', fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}
-              >
-                Sort by
-              </span>
-              <div className="relative flex-1 sm:flex-none">
-                <select
-                  value={sortByYear}
-                  onChange={(e) => setSortByYear(e.target.value)}
-                  className="appearance-none border border-gray-300 focus:outline-none w-full"
-                  style={{
-                    backgroundColor: '#EFF1F6',
-                    borderRadius: 'clamp(0.375rem, 0.5rem, 0.625rem)',
-                    height: 'clamp(2rem, 2.5rem, 3rem)',
-                    paddingLeft: 'clamp(0.5rem, 0.75rem, 1rem)',
-                    paddingRight: 'clamp(1.5rem, 2rem, 2.5rem)',
-                    minWidth: 'clamp(6rem, 8rem, 10rem)',
-                    fontFamily: 'Montserrat',
-                    fontSize: 'clamp(0.875rem, 1rem, 1.125rem)',
-                    color: '#313131',
-                  }}
-                >
-                  <option value="Select Payment Plan">Select Payment Plan</option>
-                  <option value="CLP">CLP</option>
-                  <option value="EMI">EMI</option>
-                </select>
-                <HiChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" style={{ width: 'clamp(0.875rem, 1rem, 1.25rem)', height: 'clamp(0.875rem, 1rem, 1.25rem)' }} />
-              </div>
-              <div className="relative flex-1 sm:flex-none">
-                <select
-                  value={sortByMonth}
-                  onChange={(e) => setSortByMonth(e.target.value)}
-                  className="appearance-none border border-gray-300 focus:outline-none w-full"
-                  style={{
-                    backgroundColor: '#EFF1F6',
-                    borderRadius: 'clamp(0.375rem, 0.5rem, 0.625rem)',
-                    height: 'clamp(2rem, 2.5rem, 3rem)',
-                    paddingLeft: 'clamp(0.5rem, 0.75rem, 1rem)',
-                    paddingRight: 'clamp(1.5rem, 2rem, 2.5rem)',
-                    minWidth: 'clamp(6rem, 8rem, 10rem)',
-                    fontFamily: 'Montserrat',
-                    fontSize: 'clamp(0.875rem, 1rem, 1.125rem)',
-                    color: '#313131',
-                  }}
-                >
-                  <option value="Select Status">Select Status</option>
-                  <option value="BBA Signed">BBA Signed</option>
-                  <option value="Documents Received">Documents Received</option>
-                  <option value="Loan Required">Loan Required</option>
-                </select>
-                <HiChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" style={{ width: 'clamp(0.875rem, 1rem, 1.25rem)', height: 'clamp(0.875rem, 1rem, 1.25rem)' }} />
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex items-center" style={{ gap: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
-              <button className="bg-blue-500 text-white font-medium hover:bg-blue-600 transition-colors duration-200" style={{ paddingLeft: 'clamp(0.75rem, 1rem, 1.25rem)', paddingRight: 'clamp(0.75rem, 1rem, 1.25rem)', paddingTop: 'clamp(0.375rem, 0.5rem, 0.625rem)', paddingBottom: 'clamp(0.375rem, 0.5rem, 0.625rem)', borderRadius: 'clamp(0.375rem, 0.5rem, 0.625rem)', fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>
-                Check
-              </button>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Content Section */}
-      <div className="flex-1 overflow-y-auto min-h-0" style={{ paddingRight: 'clamp(0.5rem, 1rem, 1.5rem)' }}>
-        {/* Table Headers */}
-        <div
-          className="grid border-b sticky top-0 z-10 bg-white"
-          style={{ 
-            gridTemplateColumns: '0.5fr 1fr 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr',
-            gap: 'clamp(0.375rem, 1rem, 1.5rem)',
-            paddingTop: 'clamp(0.75rem, 1rem, 1.25rem)',
-            paddingBottom: 'clamp(0.75rem, 1rem, 1.25rem)',
-            borderBottomColor: '#616161',
-            borderBottomWidth: '0.1875rem'
-          }}
-        >
-          <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold' }}>
-            SR.No.
-          </div>
-          <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold' }}>
-            Flat No
-          </div>
-          <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold' }}>
-            Name
-          </div>
-          <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold' }}>
-            Contact No
-          </div>
-          <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold' }}>
-            Payment Plan
-          </div>
-          <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold' }}>
-            BBA Signed
-          </div>
-          <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold' }}>
-            Loan Required
-          </div>
-          <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold' }}>
-            Documents Received
-          </div>
-          <div style={{ fontSize: 'clamp(0.625rem, 0.75rem, 0.875rem)', color: '#8C8C8C', fontWeight: 'bold' }}>
-            Documents
-          </div>
-        </div>
-
-        {/* Table Rows */}
-        <div className="space-y-0">
-          {filteredData.map((loan, index) => (
-            <div
-              key={index}
-              className="grid border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
-              style={{ gridTemplateColumns: '0.5fr 1fr 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr', gap: 'clamp(0.375rem, 1rem, 1.5rem)', paddingTop: 'clamp(0.875rem, 1.25rem, 1.5rem)', paddingBottom: 'clamp(0.875rem, 1.25rem, 1.5rem)' }}
-            >
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                {loan.srNo}
-              </div>
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                {loan.flatNo}
-              </div>
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                {loan.name}
-              </div>
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                {loan.contactNo}
-              </div>
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                {loan.paymentPlan}
-              </div>
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                <span
-                  style={{
-                    backgroundColor: loan.bbaSigned === 'Yes' ? '#E4FFE5' : '#FFEBEB',
-                    color: loan.bbaSigned === 'Yes' ? '#16A34A' : '#DC2626',
-                    padding: 'clamp(0.125rem, 0.25rem, 0.375rem) clamp(0.5rem, 0.75rem, 1rem)',
-                    borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)',
-                    fontSize: 'clamp(0.75rem, 0.875rem, 1rem)',
-                    fontWeight: '500',
-                  }}
-                >
+      <div className="flex-1 overflow-auto min-h-0" style={{ paddingLeft:'clamp(1rem,1.5rem,2rem)', paddingRight:'clamp(1rem,1.5rem,2rem)' }}>
+        <table className="w-full border-collapse text-sm">
+          <thead>
+            <tr className="bg-blue-200 text-gray-800">
+              <th className="border border-gray-300 px-3 py-2 text-left">Sr No.</th>
+              <th className="border border-gray-300 px-3 py-2 text-left">Flat No.</th>
+              <th className="border border-gray-300 px-3 py-2 text-left">Name</th>
+              <th className="border border-gray-300 px-3 py-2 text-left">Contact No.</th>
+              <th className="border border-gray-300 px-3 py-2 text-left">Payment Plan</th>
+              <th className="border border-gray-300 px-3 py-2 text-left">BBA Signed</th>
+              <th className="border border-gray-300 px-3 py-2 text-left">Loan Required</th>
+              <th className="border border-gray-300 px-3 py-2 text-left">Documents Received</th>
+              <th className="border border-gray-300 px-3 py-2 text-left">Documents</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedRows.length === 0 ? (
+              <tr><td colSpan={9} className="text-center text-gray-500 py-6">No data found.</td></tr>
+            ) : paginatedRows.map((loan, idx) => (
+              <tr key={idx} className="bg-white even:bg-gray-50">
+                <td className="border border-gray-200 px-3 py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
+                <td className="border border-gray-200 px-3 py-2 text-blue-600 font-medium">
+                  <button onClick={()=>handleFlatClick(loan)} className="hover:underline">{loan.flatNo}</button>
+                </td>
+                <td className="border border-gray-200 px-3 py-2">{loan.name}</td>
+                <td className="border border-gray-200 px-3 py-2">{loan.contactNo}</td>
+                <td className="border border-gray-200 px-3 py-2">{loan.paymentPlan}</td>
+                <td className="border border-gray-200 px-3 py-2">
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${
+                    loan.bbaSigned === 'Yes' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  }`}>
                   {loan.bbaSigned}
                 </span>
-              </div>
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                {loan.loanRequired === 'Yes' ? (
-                  <span
-                    style={{
-                      backgroundColor: '#E4FFE5',
-                      color: '#16A34A',
-                      padding: 'clamp(0.125rem, 0.25rem, 0.375rem) clamp(0.5rem, 0.75rem, 1rem)',
-                      borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)',
-                      fontSize: 'clamp(0.75rem, 0.875rem, 1rem)',
-                      fontWeight: '500',
-                    }}
-                  >
+                </td>
+                <td className="border border-gray-200 px-3 py-2">
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${
+                    loan.loanRequired === 'Yes' ? 'bg-green-100 text-green-800' : loan.loanRequired === 'No' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
+                  }`}>
                     {loan.loanRequired}
                   </span>
-                ) : loan.loanRequired === 'No' ? (
-                  <span
-                    style={{
-                      backgroundColor: '#FFEBEB',
-                      color: '#DC2626',
-                      padding: 'clamp(0.125rem, 0.25rem, 0.375rem) clamp(0.5rem, 0.75rem, 1rem)',
-                      borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)',
-                      fontSize: 'clamp(0.75rem, 0.875rem, 1rem)',
-                      fontWeight: '500',
-                    }}
-                  >
-                    {loan.loanRequired}
+                </td>
+                <td className="border border-gray-200 px-3 py-2">
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${
+                    loan.documentsReceived === 'Yes' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  }`}>
+                    {loan.documentsReceived}
                   </span>
-                ) : (
-                  loan.loanRequired
-                )}
+                </td>
+                <td className="border border-gray-200 px-3 py-2">
+                  <button 
+                    onClick={() => handleDocumentClick(loan)}
+                    className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer flex items-center"
+                  >
+                    <IoDocumentTextSharp size={18} className="mr-1" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="flex-shrink-0 bg-white border-t border-gray-200 py-2 px-4" style={{ paddingRight:'clamp(2rem,4rem,5rem)', paddingLeft:'clamp(2rem,3rem,4rem)' }}>
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-600">
+            Showing {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, displayed.length)} of {displayed.length}
               </div>
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
-                <span
-                  style={{
-                    backgroundColor: loan.documentsReceived === 'Yes' ? '#E4FFE5' : '#FFEBEB',
-                    color: loan.documentsReceived === 'Yes' ? '#16A34A' : '#DC2626',
-                    padding: 'clamp(0.125rem, 0.25rem, 0.375rem) clamp(0.5rem, 0.75rem, 1rem)',
-                    borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)',
-                    fontSize: 'clamp(0.75rem, 0.875rem, 1rem)',
-                    fontWeight: '500',
-                  }}
-                >
-                  {loan.documentsReceived}
-                </span>
-              </div>
-              <div style={{ fontSize: 'clamp(0.75rem, 1rem, 1.125rem)', color: '#000000', fontWeight: '400' }}>
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-gray-600">Rows per page</label>
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              className="border border-gray-300 rounded-md px-2 py-1 text-sm"
+            >
+              {[10, 20, 50, 100].map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+            <div className="flex items-center gap-1 ml-2">
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className={`w-8 h-8 flex items-center justify-center rounded-md ${currentPage===1? 'bg-gray-100 text-gray-400' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'}`}
+                title="First"
+              >
+                «
+              </button>
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className={`w-8 h-8 flex items-center justify-center rounded-md ${currentPage===1? 'bg-gray-100 text-gray-400' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'}`}
+                title="Previous"
+              >
+                ‹
+              </button>
+              <span className="text-sm text-gray-700 px-2">{currentPage} / {totalPages}</span>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className={`w-8 h-8 flex items-center justify-center rounded-md ${currentPage===totalPages? 'bg-gray-100 text-gray-400' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'}`}
+                title="Next"
+              >
+                ›
+              </button>
                 <button 
-                  className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-                  onClick={() => onPageChange && onPageChange('uploadLoanDoc')}
-                >
-                  Loan Documents
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                className={`w-8 h-8 flex items-center justify-center rounded-md ${currentPage===totalPages? 'bg-gray-100 text-gray-400' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'}`}
+                title="Last"
+              >
+                »
                 </button>
               </div>
             </div>
-          ))}
         </div>
-
-        {/* No Results Message */}
-        {filteredData.length === 0 && (
-          <div className="text-center" style={{ paddingTop: 'clamp(1.5rem, 2rem, 2.5rem)', paddingBottom: 'clamp(1.5rem, 2rem, 2.5rem)' }}>
-            <p className="text-gray-500 font-montserrat" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>No loan documents found matching your search criteria.</p>
-          </div>
-        )}
       </div>
     </div>
   );

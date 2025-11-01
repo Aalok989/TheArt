@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { HiArrowLeft } from "react-icons/hi";
-import { fetchLoanDocumentLists } from "../../api/mockData";
+import { fetchLoanDocumentLists, updateLoanDocuments } from "../../api/mockData";
 
 const UploadLoanDoc = ({ onPageChange }) => {
-  const [kycId, setKycId] = useState("TA76967SKV");
+  const [kycId, setKycId] = useState("");
   const [employmentType, setEmploymentType] = useState("");
   const [documentLists, setDocumentLists] = useState({
     salariedDocuments: [],
@@ -14,6 +14,10 @@ const UploadLoanDoc = ({ onPageChange }) => {
     salaried: {},
     selfEmployed: {}
   });
+  const [viewMode, setViewMode] = useState(false);
+  const [uploadedDocuments, setUploadedDocuments] = useState([]);
+  const [flatNo, setFlatNo] = useState("");
+  const [documentsReceived, setDocumentsReceived] = useState("No");
 
   useEffect(() => {
     const getDocumentLists = async () => {
@@ -31,17 +35,54 @@ const UploadLoanDoc = ({ onPageChange }) => {
     };
 
     getDocumentLists();
+
+    // Check if we're in view mode from sessionStorage
+    const loanDetails = sessionStorage.getItem('loanDocumentDetails');
+    if (loanDetails) {
+      try {
+        const details = JSON.parse(loanDetails);
+        setKycId(details.kycId || "");
+        setEmploymentType(details.employmentType || "");
+        setFlatNo(details.flatNo || "");
+        setDocumentsReceived(details.documentsReceived || "No");
+        if (details.documentsReceived === 'Yes') {
+          setViewMode(true);
+          setUploadedDocuments(details.uploadedDocuments || []);
+        }
+      } catch (error) {
+        console.error('Error parsing loan document details:', error);
+      }
+    }
   }, []);
 
-  // Clear checked documents when employment type changes
+  // Pre-check uploaded documents in view mode
   useEffect(() => {
-    if (employmentType) {
+    if (viewMode && employmentType && uploadedDocuments.length > 0 && 
+        (documentLists.salariedDocuments.length > 0 || documentLists.selfEmployedDocuments.length > 0)) {
+      const currentDocList = employmentType === "salaried" 
+        ? documentLists.salariedDocuments 
+        : documentLists.selfEmployedDocuments;
+      
+      const checked = {};
+      currentDocList.forEach((doc, index) => {
+        if (uploadedDocuments.includes(doc)) {
+          checked[index] = true;
+        }
+      });
+      
+      setCheckedDocuments(prev => ({
+        salaried: {},
+        selfEmployed: {},
+        [employmentType]: checked
+      }));
+    } else if (employmentType && !viewMode) {
+      // Clear checked documents when employment type changes in edit mode
       setCheckedDocuments({
         salaried: {},
         selfEmployed: {}
       });
     }
-  }, [employmentType]);
+  }, [employmentType, viewMode, uploadedDocuments, documentLists.salariedDocuments.length, documentLists.selfEmployedDocuments.length]);
 
   const handleCheckboxChange = (index, type) => {
     setCheckedDocuments(prev => ({
@@ -53,12 +94,39 @@ const UploadLoanDoc = ({ onPageChange }) => {
     }));
   };
 
-  const handleSubmit = () => {
-    // Handle form submission
-    console.log("KYC ID:", kycId);
-    console.log("Employment Type:", employmentType);
-    console.log("Checked Documents:", checkedDocuments);
-    // Add submission logic here
+  const handleSubmit = async () => {
+    // Get list of checked document names
+    const currentDocList = employmentType === "salaried" 
+      ? documentLists.salariedDocuments 
+      : documentLists.selfEmployedDocuments;
+    
+    const selectedDocs = [];
+    Object.keys(checkedDocuments[employmentType] || {}).forEach(index => {
+      if (checkedDocuments[employmentType][index]) {
+        selectedDocs.push(currentDocList[index]);
+      }
+    });
+
+    // Update the loan documents
+    if (flatNo && kycId && employmentType && selectedDocs.length > 0) {
+      try {
+        const response = await updateLoanDocuments(flatNo, kycId, employmentType, selectedDocs);
+        if (response.success) {
+          alert('Documents submitted successfully!');
+          sessionStorage.removeItem('loanDocumentDetails');
+          if (onPageChange) {
+            onPageChange('loanDocuments');
+          }
+        } else {
+          alert('Failed to submit documents');
+        }
+      } catch (error) {
+        console.error('Error updating loan documents:', error);
+        alert('An error occurred while submitting documents');
+      }
+    } else {
+      alert('Please fill all fields and select at least one document');
+    }
   };
 
   if (loading) {
@@ -77,13 +145,16 @@ const UploadLoanDoc = ({ onPageChange }) => {
       {/* Header Section with Back Button */}
       <div className="flex items-center" style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)', gap: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
         <button
-          onClick={() => onPageChange && onPageChange("loanDocuments")}
+          onClick={() => {
+            sessionStorage.removeItem('loanDocumentDetails');
+            onPageChange && onPageChange("loanDocuments");
+          }}
           className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
         >
           <HiArrowLeft style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} />
         </button>
         <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)' }}>
-          Upload Loan Document
+          {viewMode ? 'View Loan Document' : 'Upload Loan Document'}
         </h2>
       </div>
 
@@ -93,7 +164,7 @@ const UploadLoanDoc = ({ onPageChange }) => {
           {/* KYC ID Field */}
           <div style={{ marginBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
             <label className="block font-medium text-gray-700" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)', marginBottom: 'clamp(0.375rem, 0.5rem, 0.625rem)' }}>
-              Enter KYC Id
+              {viewMode ? 'KYC Id' : 'Enter KYC Id'}
             </label>
             <input
               type="text"
@@ -108,10 +179,10 @@ const UploadLoanDoc = ({ onPageChange }) => {
           {/* Employment Type Selection */}
           <div style={{ marginBottom: 'clamp(1.5rem, 2rem, 2.5rem)' }}>
             <label className="block font-medium text-gray-700" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)', marginBottom: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
-              Please Select
+              {viewMode ? 'Employment Type' : 'Please Select'}
             </label>
             <div className="flex" style={{ gap: 'clamp(1rem, 1.5rem, 2rem)' }}>
-              <label className="flex items-center cursor-pointer">
+              <label className={`flex items-center ${viewMode && employmentType !== "salaried" ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
                 <input
                   type="checkbox"
                   checked={employmentType === "salaried"}
@@ -122,12 +193,13 @@ const UploadLoanDoc = ({ onPageChange }) => {
                       setEmploymentType("");
                     }
                   }}
+                  disabled={viewMode && employmentType !== "salaried"}
                   className="text-blue-600 focus:ring-blue-500"
                   style={{ marginRight: 'clamp(0.375rem, 0.5rem, 0.625rem)', width: 'clamp(0.875rem, 1rem, 1.125rem)', height: 'clamp(0.875rem, 1rem, 1.125rem)' }}
                 />
                 <span className="text-gray-700" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>Salaried</span>
               </label>
-              <label className="flex items-center cursor-pointer">
+              <label className={`flex items-center ${viewMode && employmentType !== "selfEmployed" ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
                 <input
                   type="checkbox"
                   checked={employmentType === "selfEmployed"}
@@ -138,6 +210,7 @@ const UploadLoanDoc = ({ onPageChange }) => {
                       setEmploymentType("");
                     }
                   }}
+                  disabled={viewMode && employmentType !== "selfEmployed"}
                   className="text-blue-600 focus:ring-blue-500"
                   style={{ marginRight: 'clamp(0.375rem, 0.5rem, 0.625rem)', width: 'clamp(0.875rem, 1rem, 1.125rem)', height: 'clamp(0.875rem, 1rem, 1.125rem)' }}
                 />
@@ -196,7 +269,7 @@ const UploadLoanDoc = ({ onPageChange }) => {
               className="bg-gray-500 text-white font-medium hover:bg-gray-600 transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
               style={{ paddingLeft: 'clamp(1.5rem, 2rem, 2.5rem)', paddingRight: 'clamp(1.5rem, 2rem, 2.5rem)', paddingTop: 'clamp(0.375rem, 0.5rem, 0.625rem)', paddingBottom: 'clamp(0.375rem, 0.5rem, 0.625rem)', borderRadius: 'clamp(0.25rem, 0.375rem, 0.5rem)', fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}
             >
-              submit
+              {viewMode ? 'Update' : 'submit'}
             </button>
           </div>
         </div>
