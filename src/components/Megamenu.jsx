@@ -163,20 +163,26 @@ const Megamenu = ({ isOpen, onClose, triggerRef, type = 'services', onPageChange
                      </button>
                    </li>
                    <li>
-                     <a
-                       href="#"
-                       className="text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat block py-1 px-2 rounded hover:bg-gray-50"
+                     <button
+                       onClick={() => {
+                         onPageChange('releaseCommission');
+                         onClose();
+                       }}
+                       className="block w-full text-left text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat py-1 px-2 rounded hover:bg-gray-50"
                      >
                        Release Commission
-                     </a>
+                     </button>
                    </li>
                    <li>
-                     <a
-                       href="#"
-                       className="text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat block py-1 px-2 rounded hover:bg-gray-50"
+                     <button
+                       onClick={() => {
+                         onPageChange('paidCommission');
+                         onClose();
+                       }}
+                       className="block w-full text-left text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat py-1 px-2 rounded hover:bg-gray-50"
                      >
                        Paid Commission
-                     </a>
+                     </button>
                    </li>
                  </ul>
               </div>
@@ -243,52 +249,70 @@ const Megamenu = ({ isOpen, onClose, triggerRef, type = 'services', onPageChange
                      </button>
                    </li>
                    <li>
-                     <a
-                       href="#"
-                       className="text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat block py-1 px-2 rounded hover:bg-gray-50"
+                     <button
+                       onClick={() => {
+                         onPageChange('viewCoupons');
+                         onClose();
+                       }}
+                       className="block w-full text-left text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat py-1 px-2 rounded hover:bg-gray-50"
                      >
                        View Coupons
-                     </a>
+                     </button>
                    </li>
                    <li>
-                     <a
-                       href="#"
-                       className="text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat block py-1 px-2 rounded hover:bg-gray-50"
+                     <button
+                       onClick={() => {
+                         onPageChange('installmentReport');
+                         onClose();
+                       }}
+                       className="block w-full text-left text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat py-1 px-2 rounded hover:bg-gray-50"
                      >
                        Installment Reports
-                     </a>
+                     </button>
                    </li>
                    <li>
-                     <a
-                       href="#"
-                       className="text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat block py-1 px-2 rounded hover:bg-gray-50"
+                     <button
+                       onClick={() => {
+                         onPageChange('clpReport');
+                         onClose();
+                       }}
+                       className="block w-full text-left text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat py-1 px-2 rounded hover:bg-gray-50"
                      >
                        CLP Report
-                     </a>
+                     </button>
                    </li>
                    <li>
-                     <a
-                       href="#"
-                       className="text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat block py-1 px-2 rounded hover:bg-gray-50"
+                     <button
+                       onClick={() => {
+                         onPageChange('finalReport');
+                         onClose();
+                       }}
+                       className="block w-full text-left text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat py-1 px-2 rounded hover:bg-gray-50"
                      >
                        Final Report
-                     </a>
+                     </button>
                    </li>
                    <li>
-                     <a
-                       href="#"
-                       className="text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat block py-1 px-2 rounded hover:bg-gray-50"
+                     <button
+                       onClick={() => {
+                         onPageChange('todayReport');
+                         onClose();
+                       }}
+                       className="block w-full text-left text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat py-1 px-2 rounded hover:bg-gray-50"
                      >
                        Today Report
-                     </a>
+                     </button>
                    </li>
                    <li>
-                     <a
-                       href="#"
-                       className="text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat block py-1 px-2 rounded hover:bg-gray-50"
+                     <button
+                       onClick={() => {
+                         onPageChange('datewiseReport');
+                         onClose();
+                       }}
+                       className="block w-full text-left text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat py-1 px-2 rounded hover:bg-gray-50"
                      >
                        Datewise Report
-                     </a>
+                     </button>
                    </li>
                  </ul>
               </div>

@@ -692,6 +692,29 @@ export const updateLoanDocuments = async (flatNo, kycId, employmentType, uploade
   };
 };
 
+// ==================== ADMIN: FLAT DETAIL CP DATA ====================
+const flatDetailCPData = {
+  flats: [
+    { flatNo: 'A1', customerName: 'V.REVATHI', emailId: 'vure.rama.mohan.rao@gmail.com', contactNo: '9966801523', address: 'Flat No-16-104 Near Saibaba Temple, Huzusnagar, at Suryapet.', paymentPlan: 'CLP', companyRate: 5000, loginRate: 5600, bookingDate: '11-10-2021', dealerId: 'GHPL' },
+    { flatNo: 'A10', customerName: 'Mukul Sagar', emailId: 'ph23m006@smail.iitm.ac.in', contactNo: '9467676327', address: '141, Ganga IIT Madras', paymentPlan: 'CLP', companyRate: 5000, loginRate: 4000, bookingDate: '01-10-2025', dealerId: 'HDFC' },
+    { flatNo: 'A101', customerName: 'SMT. Z SINCY', emailId: 'mdvazeerahmad@gmail.com', contactNo: '9052730815', address: '#1-1-1007, Siddarthanagar, NIT Post, Kazipet, Warangal-506004, Telangana', paymentPlan: 'CLP', companyRate: 5000, loginRate: 4100, bookingDate: '06-01-2020', dealerId: 'GHPL' },
+    { flatNo: 'A102', customerName: 'S V NARASIMHA SWAMY', emailId: 'narasimha18sv@gmail.com', contactNo: '9704008535', address: '#2/78, Yenumulapalli, Puttaparthi, Anantapur-515134', paymentPlan: 'CLP', companyRate: 5000, loginRate: 4050, bookingDate: '29-09-2019', dealerId: 'GHPL' },
+    { flatNo: 'A103', customerName: 'RAJ KUMAR REDDY', emailId: 'raj.kumar@email.com', contactNo: '9876543210', address: '123 Main Street, Hyderabad', paymentPlan: 'CLP', companyRate: 5000, loginRate: 5500, bookingDate: '15-03-2021', dealerId: 'GHPL' },
+    { flatNo: 'A104', customerName: 'PRIYA SHARMA', emailId: 'priya.sharma@email.com', contactNo: '8765432109', address: '456 Park Avenue, Mumbai', paymentPlan: 'EMI', companyRate: 5000, loginRate: 4500, bookingDate: '20-04-2021', dealerId: 'HDFC' },
+    { flatNo: 'A105', customerName: 'AMIT SINGH', emailId: 'amit.singh@email.com', contactNo: '7654321098', address: '789 Business District, Delhi', paymentPlan: 'CLP', companyRate: 5000, loginRate: 5000, bookingDate: '10-05-2021', dealerId: 'ICICI' },
+    { flatNo: 'B101', customerName: 'SUNITA DEVI', emailId: 'sunita.devi@email.com', contactNo: '6543210987', address: '321 Residential Area, Bangalore', paymentPlan: 'CLP', companyRate: 5000, loginRate: 4800, bookingDate: '05-06-2021', dealerId: 'GHPL' },
+    { flatNo: 'B102', customerName: 'VIKRAM KUMAR', emailId: 'vikram.kumar@email.com', contactNo: '5432109876', address: '654 Commercial Street, Chennai', paymentPlan: 'EMI', companyRate: 5000, loginRate: 4200, bookingDate: '25-07-2021', dealerId: 'HDFC' },
+    { flatNo: 'C101', customerName: 'LAKSHMI NARAYANAN', emailId: 'lakshmi.n@email.com', contactNo: '4321098765', address: '987 Garden Road, Pune', paymentPlan: 'CLP', companyRate: 5000, loginRate: 4600, bookingDate: '15-08-2021', dealerId: 'ICICI' },
+  ],
+};
+
+export const fetchFlatDetailCP = async () => {
+  return {
+    success: true,
+    data: flatDetailCPData
+  };
+};
+
 // ==================== ADMIN: COMPLETE PAYMENT DATA ====================
 const completePaymentData = {
   payments: [
@@ -851,14 +874,33 @@ export const fetchCommonDocuments = async () => {
 
 // ==================== ADMIN: FLAT DOCUMENTS DATA ====================
 const flatDocumentsData = [
+  // Block A documents
   { srNo: 1, flatNo: 'A101', documentName: 'Sale Agreement', type: 'PDF', uploadDate: '2024-10-01', status: 'Approved' },
-  { srNo: 2, flatNo: 'A102', documentName: 'Allotment Letter', type: 'PDF', uploadDate: '2024-10-02', status: 'Approved' },
-  { srNo: 3, flatNo: 'B203', documentName: 'Payment Receipt', type: 'PDF', uploadDate: '2024-10-03', status: 'Pending' },
-  { srNo: 4, flatNo: 'C304', documentName: 'Registry Document', type: 'PDF', uploadDate: '2024-10-04', status: 'Approved' },
-  { srNo: 5, flatNo: 'D405', documentName: 'Possession Letter', type: 'PDF', uploadDate: '2024-10-05', status: 'Approved' },
-  { srNo: 6, flatNo: 'A201', documentName: 'Parking Allotment', type: 'PDF', uploadDate: '2024-10-06', status: 'Approved' },
-  { srNo: 7, flatNo: 'B102', documentName: 'Maintenance Agreement', type: 'PDF', uploadDate: '2024-10-07', status: 'Pending' },
-  { srNo: 8, flatNo: 'C205', documentName: 'Handover Certificate', type: 'PDF', uploadDate: '2024-10-08', status: 'Approved' },
+  { srNo: 2, flatNo: 'A101', documentName: 'Allotment Letter', type: 'PDF', uploadDate: '2024-10-02', status: 'Approved' },
+  { srNo: 3, flatNo: 'A101', documentName: 'Payment Receipt', type: 'PDF', uploadDate: '2024-10-03', status: 'Approved' },
+  { srNo: 4, flatNo: 'A102', documentName: 'Sale Agreement', type: 'PDF', uploadDate: '2024-10-04', status: 'Approved' },
+  { srNo: 5, flatNo: 'A102', documentName: 'Allotment Letter', type: 'PDF', uploadDate: '2024-10-05', status: 'Pending' },
+  { srNo: 6, flatNo: 'A103', documentName: 'Sale Agreement', type: 'PDF', uploadDate: '2024-10-06', status: 'Approved' },
+  { srNo: 7, flatNo: 'A103', documentName: 'Possession Letter', type: 'PDF', uploadDate: '2024-10-07', status: 'Approved' },
+  { srNo: 8, flatNo: 'A201', documentName: 'Parking Allotment', type: 'PDF', uploadDate: '2024-10-08', status: 'Approved' },
+  { srNo: 9, flatNo: 'A201', documentName: 'Sale Agreement', type: 'PDF', uploadDate: '2024-10-09', status: 'Approved' },
+  { srNo: 10, flatNo: 'A202', documentName: 'Payment Receipt', type: 'PDF', uploadDate: '2024-10-10', status: 'Pending' },
+  // Block B documents
+  { srNo: 11, flatNo: 'B101', documentName: 'Sale Agreement', type: 'PDF', uploadDate: '2024-10-11', status: 'Approved' },
+  { srNo: 12, flatNo: 'B102', documentName: 'Maintenance Agreement', type: 'PDF', uploadDate: '2024-10-12', status: 'Pending' },
+  { srNo: 13, flatNo: 'B102', documentName: 'Allotment Letter', type: 'PDF', uploadDate: '2024-10-13', status: 'Approved' },
+  { srNo: 14, flatNo: 'B203', documentName: 'Payment Receipt', type: 'PDF', uploadDate: '2024-10-14', status: 'Approved' },
+  { srNo: 15, flatNo: 'B203', documentName: 'Parking Allotment', type: 'PDF', uploadDate: '2024-10-15', status: 'Approved' },
+  { srNo: 16, flatNo: 'B301', documentName: 'Sale Agreement', type: 'PDF', uploadDate: '2024-10-16', status: 'Approved' },
+  { srNo: 17, flatNo: 'B301', documentName: 'Possession Letter', type: 'PDF', uploadDate: '2024-10-17', status: 'Pending' },
+  // Block C documents
+  { srNo: 18, flatNo: 'C101', documentName: 'Sale Agreement', type: 'PDF', uploadDate: '2024-10-18', status: 'Approved' },
+  { srNo: 19, flatNo: 'C102', documentName: 'Allotment Letter', type: 'PDF', uploadDate: '2024-10-19', status: 'Approved' },
+  { srNo: 20, flatNo: 'C205', documentName: 'Handover Certificate', type: 'PDF', uploadDate: '2024-10-20', status: 'Approved' },
+  { srNo: 21, flatNo: 'C304', documentName: 'Registry Document', type: 'PDF', uploadDate: '2024-10-21', status: 'Approved' },
+  { srNo: 22, flatNo: 'C304', documentName: 'Payment Receipt', type: 'PDF', uploadDate: '2024-10-22', status: 'Pending' },
+  { srNo: 23, flatNo: 'C401', documentName: 'Sale Agreement', type: 'PDF', uploadDate: '2024-10-23', status: 'Approved' },
+  { srNo: 24, flatNo: 'C401', documentName: 'Maintenance Agreement', type: 'PDF', uploadDate: '2024-10-24', status: 'Approved' },
 ];
 
 export const fetchFlatDocuments = async () => {
@@ -930,13 +972,33 @@ export const fetchLoanDocumentLists = async () => {
 
 // ==================== ADMIN: FLAT LEGAL DOCUMENTS DATA ====================
 const flatLegalDocumentsData = [
+  // Block A legal documents
   { srNo: 1, flatNo: 'A101', documentName: 'Sale Deed', legalType: 'Registration', uploadDate: '2024-10-01', status: 'Approved' },
-  { srNo: 2, flatNo: 'A102', documentName: 'Mutation Certificate', legalType: 'Property Transfer', uploadDate: '2024-10-02', status: 'Approved' },
-  { srNo: 3, flatNo: 'B203', documentName: 'Possession Certificate', legalType: 'Handover', uploadDate: '2024-10-03', status: 'Pending' },
-  { srNo: 4, flatNo: 'C304', documentName: 'Encumbrance Certificate', legalType: 'Verification', uploadDate: '2024-10-04', status: 'Approved' },
-  { srNo: 5, flatNo: 'D405', documentName: 'BBA Agreement', legalType: 'Contract', uploadDate: '2024-10-05', status: 'Approved' },
-  { srNo: 6, flatNo: 'A201', documentName: 'Property Tax Receipt', legalType: 'Tax', uploadDate: '2024-10-06', status: 'Approved' },
-  { srNo: 7, flatNo: 'B102', documentName: 'Registry Extract', legalType: 'Registration', uploadDate: '2024-10-07', status: 'Pending' },
+  { srNo: 2, flatNo: 'A101', documentName: 'Mutation Certificate', legalType: 'Property Transfer', uploadDate: '2024-10-02', status: 'Approved' },
+  { srNo: 3, flatNo: 'A101', documentName: 'Property Tax Receipt', legalType: 'Tax', uploadDate: '2024-10-03', status: 'Approved' },
+  { srNo: 4, flatNo: 'A102', documentName: 'Sale Deed', legalType: 'Registration', uploadDate: '2024-10-04', status: 'Approved' },
+  { srNo: 5, flatNo: 'A102', documentName: 'Mutation Certificate', legalType: 'Property Transfer', uploadDate: '2024-10-05', status: 'Pending' },
+  { srNo: 6, flatNo: 'A103', documentName: 'Sale Deed', legalType: 'Registration', uploadDate: '2024-10-06', status: 'Approved' },
+  { srNo: 7, flatNo: 'A103', documentName: 'BBA Agreement', legalType: 'Contract', uploadDate: '2024-10-07', status: 'Approved' },
+  { srNo: 8, flatNo: 'A201', documentName: 'Property Tax Receipt', legalType: 'Tax', uploadDate: '2024-10-08', status: 'Approved' },
+  { srNo: 9, flatNo: 'A201', documentName: 'Encumbrance Certificate', legalType: 'Verification', uploadDate: '2024-10-09', status: 'Approved' },
+  { srNo: 10, flatNo: 'A202', documentName: 'Possession Certificate', legalType: 'Handover', uploadDate: '2024-10-10', status: 'Pending' },
+  // Block B legal documents
+  { srNo: 11, flatNo: 'B101', documentName: 'Sale Deed', legalType: 'Registration', uploadDate: '2024-10-11', status: 'Approved' },
+  { srNo: 12, flatNo: 'B102', documentName: 'Registry Extract', legalType: 'Registration', uploadDate: '2024-10-12', status: 'Pending' },
+  { srNo: 13, flatNo: 'B102', documentName: 'Mutation Certificate', legalType: 'Property Transfer', uploadDate: '2024-10-13', status: 'Approved' },
+  { srNo: 14, flatNo: 'B203', documentName: 'Possession Certificate', legalType: 'Handover', uploadDate: '2024-10-14', status: 'Approved' },
+  { srNo: 15, flatNo: 'B203', documentName: 'Property Tax Receipt', legalType: 'Tax', uploadDate: '2024-10-15', status: 'Approved' },
+  { srNo: 16, flatNo: 'B301', documentName: 'Sale Deed', legalType: 'Registration', uploadDate: '2024-10-16', status: 'Approved' },
+  { srNo: 17, flatNo: 'B301', documentName: 'BBA Agreement', legalType: 'Contract', uploadDate: '2024-10-17', status: 'Pending' },
+  // Block C legal documents
+  { srNo: 18, flatNo: 'C101', documentName: 'Sale Deed', legalType: 'Registration', uploadDate: '2024-10-18', status: 'Approved' },
+  { srNo: 19, flatNo: 'C102', documentName: 'Mutation Certificate', legalType: 'Property Transfer', uploadDate: '2024-10-19', status: 'Approved' },
+  { srNo: 20, flatNo: 'C205', documentName: 'Encumbrance Certificate', legalType: 'Verification', uploadDate: '2024-10-20', status: 'Approved' },
+  { srNo: 21, flatNo: 'C304', documentName: 'Encumbrance Certificate', legalType: 'Verification', uploadDate: '2024-10-21', status: 'Approved' },
+  { srNo: 22, flatNo: 'C304', documentName: 'Property Tax Receipt', legalType: 'Tax', uploadDate: '2024-10-22', status: 'Pending' },
+  { srNo: 23, flatNo: 'C401', documentName: 'Sale Deed', legalType: 'Registration', uploadDate: '2024-10-23', status: 'Approved' },
+  { srNo: 24, flatNo: 'C401', documentName: 'BBA Agreement', legalType: 'Contract', uploadDate: '2024-10-24', status: 'Approved' },
 ];
 
 export const fetchFlatLegalDocuments = async () => {
@@ -1122,6 +1184,7 @@ const flatDetailsAdminData = {
     name: 'V.REVATHI',
     contactNo: '9966801523',
     panNo: 'BBEPV4857L',
+    kycId: 'TA21143V',
     address: 'Flat No-16-104 Near Saibaba Temple, Huzusnagar, at Suryapet.',
     fatherHusband: 'V.RAMA MOHAN RAO',
     email: 'vure.rama.mohan.rao@gmail.com',
@@ -1245,7 +1308,20 @@ const flatDetailsAdminData = {
 
 export const fetchFlatDetailsAdmin = async (flatNo) => {
   // Return a copy with requested flatNo so UI reflects the selected flat
-  const dataForFlat = { ...flatDetailsAdminData, flatNo: flatNo || flatDetailsAdminData.flatNo };
+  // Deep copy to ensure nested objects are preserved
+  const dataForFlat = {
+    ...flatDetailsAdminData,
+    flatNo: flatNo || flatDetailsAdminData.flatNo,
+    customerInfo: {
+      ...flatDetailsAdminData.customerInfo
+    },
+    coApplicantInfo: {
+      ...flatDetailsAdminData.coApplicantInfo
+    },
+    flatInfo: {
+      ...flatDetailsAdminData.flatInfo
+    }
+  };
   return {
     success: true,
     data: dataForFlat
@@ -1522,11 +1598,11 @@ export const fetchNeftData = async () => {
 
 // ==================== ADMIN: CHEQUE DATA ====================
 const chequeData = [
-  { srNo: 1, flatNo: 'A103', customer: 'RAJ KUMAR REDDY KOMMIDI', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '277726', chequeAmount: '17867', amount: '17867', onAccountOf: 'Service Tax', bank: 'HDFC', date: '2021-05-12', status: 'In Process', account: '', remarks: '', updatedBy: 'bhavani', favor: 'ORCHID', receivingDate: '', clearingDate: '', receiverBank: 'NA' },
-  { srNo: 2, flatNo: 'A501', customer: 'BIKUMALLA ASHOK', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '000018', chequeAmount: '62527', amount: '62527', onAccountOf: 'Service Tax', bank: 'ICICI', date: '2021-07-10', status: 'In Process', account: '007605004803', remarks: '', updatedBy: 'bhavani', favor: 'ORCHID', receivingDate: '', clearingDate: '', receiverBank: 'NA' },
-  { srNo: 3, flatNo: 'A102', customer: 'PRIYA SHARMA', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '277727', chequeAmount: '25000', amount: '25000', onAccountOf: 'Booking Advance', bank: 'HDFC', date: '2021-06-15', status: 'Cleared', account: '007605004802', remarks: '', updatedBy: 'admin', favor: 'ORCHID', receivingDate: '', clearingDate: '', receiverBank: 'NA' },
-  { srNo: 4, flatNo: 'B201', customer: 'AMIT SINGH', paymentPlan: 'Regular', channelPartner: 'GHPL', chequeNo: '000019', chequeAmount: '50000', amount: '50000', onAccountOf: 'Agreement Sale', bank: 'ICICI', date: '2021-08-20', status: 'Bounced', account: '', remarks: 'Insufficient funds', updatedBy: 'admin', favor: 'ORCHID', receivingDate: '', clearingDate: '', receiverBank: 'NA' },
-  { srNo: 5, flatNo: 'C301', customer: 'SUNITA DEVI', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '277728', chequeAmount: '30000', amount: '30000', onAccountOf: 'Installment', bank: 'HDFC', date: '2021-09-05', status: 'Cleared', account: '007605004804', remarks: '', updatedBy: 'bhavani', favor: 'ORCHID', receivingDate: '', clearingDate: '', receiverBank: 'NA' },
+  { srNo: 1, flatNo: 'A103', customer: 'RAJ KUMAR REDDY KOMMIDI', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '277726', chequeAmount: '17867', amount: '17867', onAccountOf: 'Service Tax', bank: 'HDFC', date: '2021-05-12', chequeDate: '2021-05-10', status: 'In Process', account: '', remarks: '', updatedBy: 'bhavani', favor: 'ORCHID', receivingDate: '2021-05-12', clearingDate: '', receiverBank: 'NA' },
+  { srNo: 2, flatNo: 'A501', customer: 'BIKUMALLA ASHOK', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '000018', chequeAmount: '62527', amount: '62527', onAccountOf: 'Service Tax', bank: 'ICICI', date: '2021-07-10', chequeDate: '2021-07-08', status: 'In Process', account: '007605004803', remarks: '', updatedBy: 'bhavani', favor: 'ORCHID', receivingDate: '2021-07-10', clearingDate: '', receiverBank: 'NA' },
+  { srNo: 3, flatNo: 'A102', customer: 'PRIYA SHARMA', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '277727', chequeAmount: '25000', amount: '25000', onAccountOf: 'Booking Advance', bank: 'HDFC', date: '2021-06-15', chequeDate: '2021-06-13', status: 'Cleared', account: '007605004802', remarks: '', updatedBy: 'admin', favor: 'ORCHID', receivingDate: '2021-06-15', clearingDate: '', receiverBank: 'NA' },
+  { srNo: 4, flatNo: 'B201', customer: 'AMIT SINGH', paymentPlan: 'Regular', channelPartner: 'GHPL', chequeNo: '000019', chequeAmount: '50000', amount: '50000', onAccountOf: 'Agreement Sale', bank: 'ICICI', date: '2021-08-20', chequeDate: '2021-08-18', status: 'Bounced', account: '', remarks: 'Insufficient funds', updatedBy: 'admin', favor: 'ORCHID', receivingDate: '2021-08-20', clearingDate: '', receiverBank: 'NA' },
+  { srNo: 5, flatNo: 'C301', customer: 'SUNITA DEVI', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '277728', chequeAmount: '30000', amount: '30000', onAccountOf: 'Installment', bank: 'HDFC', date: '2021-09-05', chequeDate: '2021-09-03', status: 'Cleared', account: '007605004804', remarks: '', updatedBy: 'bhavani', favor: 'ORCHID', receivingDate: '2021-09-05', clearingDate: '', receiverBank: 'NA' },
 ];
 
 export const fetchChequeData = async () => {
@@ -1883,6 +1959,158 @@ export const fetchChannelPartners = async () => {
   };
 };
 
+export const fetchChannelPartnerByDealerId = async (dealerId) => {
+  // Sample detailed channel partner data based on dealer ID
+  const partnerDetailsMap = {
+    'GHPL': {
+      dealerId: 'GHPL',
+      name: 'Giridhari Homes Pvt.',
+      contactNo: '9999999999',
+      address: 'Test Address',
+      city: 'Hyderabad',
+      pin: '',
+      state: 'Andra Pradesh',
+      emailId: 'info@giridharihomes.com',
+      panNo: 'TEMPZ1234S',
+      company: '',
+      profession: '',
+      designation: '',
+      commissionDetails: [
+        {
+          commissionType: 'Percentage',
+          flatType: 'all',
+          commissionAmount: 9
+        }
+      ]
+    },
+    'HDFC': {
+      dealerId: 'HDFC',
+      name: 'HDFC Realty Partners',
+      contactNo: '8888888888',
+      address: '123 Business Center',
+      city: 'Mumbai',
+      pin: '400001',
+      state: 'Maharashtra',
+      emailId: 'info@hdfcrealty.com',
+      panNo: 'ABCDE1234F',
+      company: 'HDFC Realty',
+      profession: 'Real Estate',
+      designation: 'Partner',
+      commissionDetails: [
+        {
+          commissionType: 'Percentage',
+          flatType: 'all',
+          commissionAmount: 8
+        }
+      ]
+    },
+    'ICICI': {
+      dealerId: 'ICICI',
+      name: 'ICICI Properties Ltd.',
+      contactNo: '7777777777',
+      address: '456 Financial District',
+      city: 'Delhi',
+      pin: '110001',
+      state: 'Delhi',
+      emailId: 'info@iciciproperties.com',
+      panNo: 'FGHIJ5678K',
+      company: 'ICICI Properties',
+      profession: 'Real Estate',
+      designation: 'Director',
+      commissionDetails: [
+        {
+          commissionType: 'Percentage',
+          flatType: 'all',
+          commissionAmount: 7.5
+        }
+      ]
+    }
+  };
+
+  const partnerDetails = partnerDetailsMap[dealerId];
+  
+  if (partnerDetails) {
+    return {
+      success: true,
+      data: partnerDetails
+    };
+  } else {
+    // Default partner details if dealer ID not found
+    return {
+      success: true,
+      data: {
+        dealerId: dealerId,
+        name: 'Unknown Partner',
+        contactNo: '',
+        address: '',
+        city: '',
+        pin: '',
+        state: '',
+        emailId: '',
+        panNo: '',
+        company: '',
+        profession: '',
+        designation: '',
+        commissionDetails: []
+      }
+    };
+  }
+};
+
+// ==================== ADMIN: CP DETAIL DATA ====================
+export const fetchCPDetail = async (dealerId) => {
+  // Sample CP Detail data based on dealer ID
+  const cpDetailMap = {
+    'GHPL': {
+      dealerId: 'GHPL',
+      dealerName: 'Giridhari Homes Pvt.',
+      records: [
+        { flatNo: 'A1', customerName: 'V.REVATHI', contactNo: '9966801523', paymentPlan: 'CLP', companyRate: 5000, loginRate: 5600, dealRate: 0, dueAmount: 6176250, clearedAmount: 8219625, totalCommission: 0, commissionAfterTDS: 0, total: 0 },
+        { flatNo: 'A101', customerName: 'SMT. Z SINCY', contactNo: '9052730815', paymentPlan: 'CLP', companyRate: 5000, loginRate: 4100, dealRate: 0, dueAmount: 5500000, clearedAmount: 3000000, totalCommission: 0, commissionAfterTDS: 0, total: 0 },
+        { flatNo: 'A102', customerName: 'S V NARASIMHA SWAMY', contactNo: '9704008535', paymentPlan: 'CLP', companyRate: 5000, loginRate: 4050, dealRate: 0, dueAmount: 4800000, clearedAmount: 2500000, totalCommission: 0, commissionAfterTDS: 0, total: 0 },
+        { flatNo: 'A103', customerName: 'RAJ KUMAR REDDY', contactNo: '9876543210', paymentPlan: 'CLP', companyRate: 5000, loginRate: 5500, dealRate: 0, dueAmount: 5000000, clearedAmount: 3500000, totalCommission: 0, commissionAfterTDS: 0, total: 0 },
+        { flatNo: 'B101', customerName: 'SUNITA DEVI', contactNo: '6543210987', paymentPlan: 'CLP', companyRate: 5000, loginRate: 4800, dealRate: 0, dueAmount: 5500000, clearedAmount: 3200000, totalCommission: 0, commissionAfterTDS: 0, total: 0 },
+      ]
+    },
+    'HDFC': {
+      dealerId: 'HDFC',
+      dealerName: 'HDFC Realty Partners',
+      records: [
+        { flatNo: 'A10', customerName: 'Mukul Sagar', contactNo: '9467676327', paymentPlan: 'CLP', companyRate: 5000, loginRate: 4000, dealRate: 0, dueAmount: 6000000, clearedAmount: 4000000, totalCommission: 0, commissionAfterTDS: 0, total: 0 },
+        { flatNo: 'A104', customerName: 'PRIYA SHARMA', contactNo: '8765432109', paymentPlan: 'EMI', companyRate: 5000, loginRate: 4500, dealRate: 0, dueAmount: 6200000, clearedAmount: 4200000, totalCommission: 0, commissionAfterTDS: 0, total: 0 },
+        { flatNo: 'B102', customerName: 'VIKRAM KUMAR', contactNo: '5432109876', paymentPlan: 'EMI', companyRate: 5000, loginRate: 4200, dealRate: 0, dueAmount: 5800000, clearedAmount: 3800000, totalCommission: 0, commissionAfterTDS: 0, total: 0 },
+      ]
+    },
+    'ICICI': {
+      dealerId: 'ICICI',
+      dealerName: 'ICICI Properties Ltd.',
+      records: [
+        { flatNo: 'A105', customerName: 'AMIT SINGH', contactNo: '7654321098', paymentPlan: 'CLP', companyRate: 5000, loginRate: 5000, dealRate: 0, dueAmount: 5500000, clearedAmount: 3500000, totalCommission: 0, commissionAfterTDS: 0, total: 0 },
+        { flatNo: 'C101', customerName: 'LAKSHMI NARAYANAN', contactNo: '4321098765', paymentPlan: 'CLP', companyRate: 5000, loginRate: 4600, dealRate: 0, dueAmount: 5600000, clearedAmount: 3600000, totalCommission: 0, commissionAfterTDS: 0, total: 0 }
+      ]
+    }
+  };
+
+  const cpDetail = cpDetailMap[dealerId];
+  
+  if (cpDetail) {
+    return {
+      success: true,
+      data: cpDetail
+    };
+  } else {
+    // Default data if dealer ID not found
+    return {
+      success: true,
+      data: {
+        dealerId: dealerId,
+        dealerName: 'Unknown Partner',
+        records: []
+      }
+    };
+  }
+};
+
 // ==================== ADMIN: CONSTRUCTION STAGES DATA ====================
 const paymentPlansData = ['CLP', 'PR', 'EMI', 'Regular'];
 const loanBanksData = ['Self', 'PNB', 'SBI', 'HDFC', 'ICICI', 'Axis Bank'];
@@ -1966,6 +2194,7 @@ export default {
   fetchLoanedFlatsData,
   fetchLoanDocuments,
   updateLoanDocuments,
+  fetchFlatDetailCP,
   fetchCompletePayment,
   fetchCommonDocuments,
   fetchFlatDocuments,
@@ -1994,6 +2223,8 @@ export default {
   fetchManageUserUsernamesByRole,
   getManageUserUsernamesForRole,
   fetchChannelPartners,
+  fetchChannelPartnerByDealerId,
+  fetchCPDetail,
   fetchPaymentPlans,
   fetchLoanBanks,
   fetchConstructionStagesBlocks,

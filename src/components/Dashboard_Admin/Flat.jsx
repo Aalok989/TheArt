@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HiChevronLeft, HiPlus, HiMinus, HiDotsVertical, HiTrash, HiPencil, HiCheckCircle, HiReceiptTax, HiCog, HiMenu, HiX, HiLightningBolt, HiBell, HiFolder, HiEye, HiRefresh, HiDocumentText, HiCurrencyRupee, HiPrinter, HiShare, HiInformationCircle, HiDocument, HiKey, HiArrowUp, HiArrowDown, HiXCircle, HiArrowRight, HiDeviceMobile } from 'react-icons/hi';
 import { fetchFlatDetailsAdmin } from '../../api/mockData';
+import UploadDocumentPopup from './UploadDocumentPopup';
 
 const Flat = ({ onPageChange }) => {
   const [loading, setLoading] = useState(true);
@@ -16,6 +17,8 @@ const Flat = ({ onPageChange }) => {
   const [editingSection, setEditingSection] = useState(null);
   const [editingPaymentIndex, setEditingPaymentIndex] = useState(null);
   const [editData, setEditData] = useState({});
+  const [showPaymentEditModal, setShowPaymentEditModal] = useState(false);
+  const [editingPayment, setEditingPayment] = useState(null);
   
   // Hover popup state
   const [showChargesPopup, setShowChargesPopup] = useState(false);
@@ -26,6 +29,32 @@ const Flat = ({ onPageChange }) => {
     flatNo: '',
     oldChannelPartner: '',
     newChannelPartner: ''
+  });
+
+  // SMS popup state
+  const [showSMSPopup, setShowSMSPopup] = useState(false);
+  const [smsMessage, setSmsMessage] = useState('');
+
+  // Shift Flat popup state
+  const [showShiftFlatPopup, setShowShiftFlatPopup] = useState(false);
+  const [shiftFlatData, setShiftFlatData] = useState({
+    oldFlatNo: '',
+    newTower: '',
+    newFlat: ''
+  });
+
+  // Cancel Flat popup state
+  const [showCancelFlatPopup, setShowCancelFlatPopup] = useState(false);
+  const [cancelFlatData, setCancelFlatData] = useState({
+    cancellationDate: '',
+    remarks: ''
+  });
+
+  // Reset Password popup state
+  const [showResetPasswordPopup, setShowResetPasswordPopup] = useState(false);
+  const [resetPasswordData, setResetPasswordData] = useState({
+    password: '',
+    confirmPassword: ''
   });
 
   // Verification details popup state
@@ -45,6 +74,16 @@ const Flat = ({ onPageChange }) => {
 
   // BBA toggle state
   const [isBBASigned, setIsBBASigned] = useState(false);
+
+  // Login enabled/disabled state
+  const [isLoginEnabled, setIsLoginEnabled] = useState(false);
+
+  // Add Remarks popup state
+  const [showAddRemarksPopup, setShowAddRemarksPopup] = useState(false);
+  const [showUploadDocumentsPopup, setShowUploadDocumentsPopup] = useState(false);
+  const [remarkType, setRemarkType] = useState(''); // 'comment' or 'customerNotification'
+  const [commentVisibility, setCommentVisibility] = useState(''); // 'public' or 'confidential'
+  const [remarkText, setRemarkText] = useState('');
 
   useEffect(() => {
     // Load flat data from sessionStorage or API
@@ -96,13 +135,31 @@ const Flat = ({ onPageChange }) => {
       if (!event.target.closest('.verification-popup') && isVerificationPopupClicked) {
         handleCloseVerificationPopup();
       }
+      if (!event.target.closest('.sms-popup') && showSMSPopup) {
+        handleCloseSMSPopup();
+      }
+      if (!event.target.closest('.shift-flat-popup') && showShiftFlatPopup) {
+        handleCloseShiftFlatPopup();
+      }
+      if (!event.target.closest('.cancel-flat-popup') && showCancelFlatPopup) {
+        handleCloseCancelFlatPopup();
+      }
+      if (!event.target.closest('.reset-password-popup') && showResetPasswordPopup) {
+        handleCloseResetPasswordPopup();
+      }
+      if (!event.target.closest('.add-remarks-popup') && showAddRemarksPopup) {
+        handleCloseAddRemarksPopup();
+      }
+      if (!event.target.closest('.upload-documents-popup') && showUploadDocumentsPopup) {
+        handleCloseUploadDocumentsPopup();
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showChannelPartnerPopup, isVerificationPopupClicked]);
+  }, [showChannelPartnerPopup, isVerificationPopupClicked, showSMSPopup, showShiftFlatPopup, showCancelFlatPopup, showResetPasswordPopup, showAddRemarksPopup, showUploadDocumentsPopup]);
 
   // Edit mode handlers
   const handleEditClick = (section, data = null) => {
@@ -187,21 +244,27 @@ const Flat = ({ onPageChange }) => {
   };
 
   const handlePaymentEditClick = (index, payment) => {
-    setEditingPaymentIndex(index);
-    setEditData(payment);
+    setEditingPayment({ index, ...payment });
+    setShowPaymentEditModal(true);
   };
 
-  const handlePaymentSaveClick = () => {
-    if (editingPaymentIndex !== null) {
+  const handlePaymentSaveClick = (updatedData) => {
+    if (editingPayment !== null) {
       const updatedFlatData = { ...flatData };
-      updatedFlatData.paymentInfo[editingPaymentIndex] = { ...editData };
+      updatedFlatData.paymentInfo[editingPayment.index] = { ...updatedFlatData.paymentInfo[editingPayment.index], ...updatedData };
       setFlatData(updatedFlatData);
-      setEditingPaymentIndex(null);
-      setEditData({});
+      setShowPaymentEditModal(false);
+      setEditingPayment(null);
       
       // In a real app, you would send the updated payment data to the API here
-      console.log('Saving payment data:', editData);
+      console.log('Saving payment data:', updatedData);
+      alert('Payment information updated successfully!');
     }
+  };
+
+  const handleClosePaymentEditModal = () => {
+    setShowPaymentEditModal(false);
+    setEditingPayment(null);
   };
 
   const handlePaymentDelete = (index) => {
@@ -285,6 +348,280 @@ const Flat = ({ onPageChange }) => {
       oldChannelPartner: '',
       newChannelPartner: ''
     });
+  };
+
+  // SMS handlers
+  const handleSendSMSClick = () => {
+    setIsQuickAccessOpen(false);
+    setShowSMSPopup(true);
+    setSmsMessage('');
+  };
+
+  const handleSMSSubmit = () => {
+    if (!smsMessage.trim()) {
+      alert('Please enter a message');
+      return;
+    }
+
+    // TODO: Implement SMS sending API call
+    console.log('Sending SMS:', {
+      flatNo: flatData.flatNo,
+      message: smsMessage
+    });
+
+    alert('SMS sent successfully!');
+    handleCloseSMSPopup();
+  };
+
+  const handleCloseSMSPopup = () => {
+    setShowSMSPopup(false);
+    setSmsMessage('');
+  };
+
+  // Shift Flat handlers
+  const handleShiftFlatClick = () => {
+    setIsQuickAccessOpen(false);
+    setShowShiftFlatPopup(true);
+    setShiftFlatData({
+      oldFlatNo: flatData?.flatNo || '',
+      newTower: '',
+      newFlat: ''
+    });
+  };
+
+  const handleShiftFlatInputChange = (field, value) => {
+    setShiftFlatData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleShiftFlatSubmit = () => {
+    if (!shiftFlatData.newTower.trim() || !shiftFlatData.newFlat.trim()) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    // TODO: Implement shift flat API call
+    console.log('Shifting flat:', {
+      oldFlatNo: shiftFlatData.oldFlatNo,
+      newTower: shiftFlatData.newTower,
+      newFlat: shiftFlatData.newFlat
+    });
+
+    alert('Flat shifted successfully!');
+    handleCloseShiftFlatPopup();
+  };
+
+  const handleCloseShiftFlatPopup = () => {
+    setShowShiftFlatPopup(false);
+    setShiftFlatData({
+      oldFlatNo: '',
+      newTower: '',
+      newFlat: ''
+    });
+  };
+
+  // Cancel Flat handlers
+  const handleCancelFlatClick = () => {
+    setIsQuickAccessOpen(false);
+    setShowCancelFlatPopup(true);
+    setCancelFlatData({
+      cancellationDate: '',
+      remarks: ''
+    });
+    // Debug: Log customerInfo to check kycId
+    console.log('Flat data on cancel click:', flatData);
+    console.log('Customer info:', flatData?.customerInfo);
+    console.log('KYC ID:', flatData?.customerInfo?.kycId);
+  };
+
+  const handleCancelFlatInputChange = (field, value) => {
+    setCancelFlatData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleCancelFlatSubmit = () => {
+    if (!cancelFlatData.remarks.trim()) {
+      alert('Please enter remarks');
+      return;
+    }
+
+    if (!cancelFlatData.cancellationDate.trim()) {
+      alert('Please select cancellation date');
+      return;
+    }
+
+    // TODO: Implement cancel flat API call
+    console.log('Cancelling flat:', {
+      flatNo: flatData?.flatNo,
+      cancellationDate: cancelFlatData.cancellationDate,
+      remarks: cancelFlatData.remarks
+    });
+
+    alert('Flat cancelled successfully!');
+    handleCloseCancelFlatPopup();
+  };
+
+  const handleCloseCancelFlatPopup = () => {
+    setShowCancelFlatPopup(false);
+    setCancelFlatData({
+      cancellationDate: '',
+      remarks: ''
+    });
+  };
+
+  // Reset Password handlers
+  const handleResetPasswordClick = () => {
+    setIsQuickAccessOpen(false);
+    setShowResetPasswordPopup(true);
+    setResetPasswordData({
+      password: '',
+      confirmPassword: ''
+    });
+  };
+
+  const handleResetPasswordInputChange = (field, value) => {
+    setResetPasswordData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleResetPasswordSubmit = () => {
+    if (!resetPasswordData.password.trim()) {
+      alert('Please enter password');
+      return;
+    }
+
+    if (resetPasswordData.password !== resetPasswordData.confirmPassword) {
+      alert('Password and confirm password do not match');
+      return;
+    }
+
+    if (resetPasswordData.password.length < 6) {
+      alert('Password must be at least 6 characters long');
+      return;
+    }
+
+    // TODO: Implement reset password API call
+    console.log('Resetting password for flat:', {
+      flatNo: flatData?.flatNo,
+      password: resetPasswordData.password
+    });
+
+    alert('Password reset successfully!');
+    handleCloseResetPasswordPopup();
+  };
+
+  const handleCloseResetPasswordPopup = () => {
+    setShowResetPasswordPopup(false);
+    setResetPasswordData({
+      password: '',
+      confirmPassword: ''
+    });
+  };
+
+  // Enable/Disable Login handler
+  const handleToggleLogin = () => {
+    setIsQuickAccessOpen(false);
+    const newState = !isLoginEnabled;
+    setIsLoginEnabled(newState);
+    
+    // TODO: Implement API call to enable/disable login
+    console.log(`${newState ? 'Enabling' : 'Disabling'} login for flat:`, flatData?.flatNo);
+    
+    alert(`Login ${newState ? 'enabled' : 'disabled'} successfully!`);
+  };
+
+  // Add Remarks handlers
+  const handleAddRemarksClick = () => {
+    setIsMenuOpen(false);
+    setShowAddRemarksPopup(true);
+    setRemarkType('');
+    setCommentVisibility('');
+    setRemarkText('');
+  };
+
+  const handleRemarkTypeChange = (type) => {
+    setRemarkType(type);
+    setCommentVisibility('');
+    setRemarkText('');
+  };
+
+  const handleCommentVisibilityChange = (visibility) => {
+    setCommentVisibility(visibility);
+  };
+
+  const handleAddRemarksSubmit = () => {
+    if (!remarkType) {
+      alert('Please select a remark type');
+      return;
+    }
+
+    if (!remarkText.trim()) {
+      alert('Please enter remark');
+      return;
+    }
+
+    if (remarkType === 'comment' && !commentVisibility) {
+      alert('Please select comment visibility');
+      return;
+    }
+
+    // TODO: Implement API call to add remark
+    console.log('Adding remark:', {
+      flatNo: flatData?.flatNo,
+      remarkType,
+      commentVisibility: remarkType === 'comment' ? commentVisibility : null,
+      remark: remarkText
+    });
+
+    alert('Remark added successfully!');
+    handleCloseAddRemarksPopup();
+  };
+
+  const handleCloseAddRemarksPopup = () => {
+    setShowAddRemarksPopup(false);
+    setRemarkType('');
+    setCommentVisibility('');
+    setRemarkText('');
+  };
+
+  // Upload Documents handler
+  const handleUploadDocumentsClick = () => {
+    setIsMenuOpen(false);
+    setShowUploadDocumentsPopup(true);
+  };
+
+  const handleCloseUploadDocumentsPopup = () => {
+    setShowUploadDocumentsPopup(false);
+  };
+
+  // View Documents handler - Navigate to FlatDocs with pre-selected flat
+  const handleViewDocumentsClick = () => {
+    setIsQuickAccessOpen(false);
+    // Store current flat number and block in sessionStorage for FlatDocs page
+    if (flatData?.flatNo) {
+      // Get block directly from flatData (it's stored separately)
+      const block = flatData.block || (flatData.flatNo.match(/^([A-Z])/)?.[1] || 'A');
+      
+      // Extract flat number (remove block prefix and hyphen if present)
+      // flatNo might be "A-101" or "A101", we need just "101"
+      let flatNo = flatData.flatNo.replace(/^[A-Z]-?/, '');
+      
+      console.log('Setting view flags for flat:', { 
+        block, 
+        flatNo, 
+        originalFlatNo: flatData.flatNo,
+        flatDataBlock: flatData.block 
+      });
+      
+      // Store in sessionStorage for FlatDocs page
+      sessionStorage.setItem('viewFlatNo', flatNo);
+      sessionStorage.setItem('viewBlock', block);
+      sessionStorage.setItem('viewFromFlat', 'true');
+      // Store flat number for back navigation
+      sessionStorage.setItem('flatNoForBack', flatData.flatNo);
+      sessionStorage.setItem('fromFlatPage', 'true');
+    }
+    // Navigate to FlatDocs page
+    if (onPageChange) {
+      onPageChange('flatDocs');
+    }
   };
 
   // Verification details handlers
@@ -528,14 +865,30 @@ const Flat = ({ onPageChange }) => {
               {/* Quick Access Tool Items */}
               {[
                 { icon: HiDocument, text: 'Welcome Letter' },
-                { icon: HiCheckCircle, text: 'Enable Login' },
-                { icon: HiKey, text: 'Reset Password' },
+                { icon: HiCheckCircle, text: isLoginEnabled ? 'Disable Login' : 'Enable Login', action: 'toggleLogin' },
+                { icon: HiKey, text: 'Reset Password', action: 'resetPassword' },
                 { icon: HiArrowUp, text: 'Transfer Flat' },
-                { icon: HiXCircle, text: 'Cancel Flat' },
-                { icon: HiArrowRight, text: 'Shift Flat' },
-                { icon: HiDeviceMobile, text: 'Send SMS' },
+                { icon: HiXCircle, text: 'Cancel Flat', action: 'cancelFlat' },
+                { icon: HiArrowRight, text: 'Shift Flat', action: 'shiftFlat' },
+                { icon: HiDeviceMobile, text: 'Send SMS', action: 'sendSMS' },
               ].map((item, index) => (
-                <button key={index} className="w-full px-4 py-3 text-left text-white hover:bg-gray-600 transition-colors flex items-center gap-3 bg-gray-700 border-b border-gray-600 last:border-b-0">
+                <button 
+                  key={index} 
+                  onClick={() => {
+                    if (item.action === 'sendSMS') {
+                      handleSendSMSClick();
+                    } else if (item.action === 'shiftFlat') {
+                      handleShiftFlatClick();
+                    } else if (item.action === 'cancelFlat') {
+                      handleCancelFlatClick();
+                    } else if (item.action === 'resetPassword') {
+                      handleResetPasswordClick();
+                    } else if (item.action === 'toggleLogin') {
+                      handleToggleLogin();
+                    }
+                  }}
+                  className="w-full px-4 py-3 text-left text-white hover:bg-gray-600 transition-colors flex items-center gap-3 bg-gray-700 border-b border-gray-600 last:border-b-0"
+                >
                   <item.icon style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} />
                   <span style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>{item.text}</span>
                 </button>
@@ -556,14 +909,14 @@ const Flat = ({ onPageChange }) => {
               
               {/* Menu Items */}
               {[
-                { icon: HiFolder, text: 'Upload Documents' },
+                { icon: HiFolder, text: 'Upload Documents', action: 'uploadDocuments' },
                 { icon: HiEye, text: 'View Documents' },
                 { icon: HiEye, text: 'View Legal Documents' },
                 { icon: HiEye, text: 'Construction Stages Change' },
                 { icon: HiRefresh, text: 'Construction Stages Reset' },
                 { icon: HiDocumentText, text: 'Generate Receipt Number' },
                 { icon: HiCurrencyRupee, text: 'Add Payment' },
-                { icon: HiPlus, text: 'Add Remarks' },
+                { icon: HiPlus, text: 'Add Remarks', action: 'addRemarks' },
                 { icon: HiPrinter, text: 'Print Demand Letter' },
                 { icon: HiShare, text: 'Email Demand Letter' },
                 { icon: HiPrinter, text: 'Print Payment Schedule' },
@@ -574,7 +927,42 @@ const Flat = ({ onPageChange }) => {
                 { icon: HiInformationCircle, text: 'Email Individual Demand' },
                 { icon: HiDocumentText, text: 'Cost Sheet' },
               ].map((item, index) => (
-                <button key={index} className="w-full px-4 py-3 text-left text-blue-600 hover:bg-blue-50 transition-colors flex items-center gap-3 border-t border-gray-100">
+                <button 
+                  key={index} 
+                  onClick={() => {
+                    if (item.action === 'addRemarks') {
+                      handleAddRemarksClick();
+                    } else if (item.action === 'uploadDocuments') {
+                      handleUploadDocumentsClick();
+                    } else if (item.text === 'View Documents') {
+                      handleViewDocumentsClick();
+                    } else if (item.text === 'View Legal Documents') {
+                      // Similar handler for legal documents
+                      setIsQuickAccessOpen(false);
+                      // Store current flat number and block in sessionStorage for FlatLegalDocs page
+                      if (flatData?.flatNo) {
+                        // Get block directly from flatData (it's stored separately)
+                        const block = flatData.block || (flatData.flatNo.match(/^([A-Z])/)?.[1] || 'A');
+                        
+                        // Extract flat number (remove block prefix and hyphen if present)
+                        let flatNo = flatData.flatNo.replace(/^[A-Z]-?/, '');
+                        
+                        // Store in sessionStorage for FlatLegalDocs page
+                        sessionStorage.setItem('viewFlatNo', flatNo);
+                        sessionStorage.setItem('viewBlock', block);
+                        sessionStorage.setItem('viewFromFlat', 'true');
+                        sessionStorage.setItem('viewLegalDocs', 'true');
+                        // Store flat number for back navigation
+                        sessionStorage.setItem('flatNoForBack', flatData.flatNo);
+                        sessionStorage.setItem('fromFlatPage', 'true');
+                      }
+                      if (onPageChange) {
+                        onPageChange('flatLegalDocs');
+                      }
+                    }
+                  }}
+                  className="w-full px-4 py-3 text-left text-blue-600 hover:bg-blue-50 transition-colors flex items-center gap-3 border-t border-gray-100"
+                >
                   <item.icon style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} />
                   <span style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>{item.text}</span>
                 </button>
@@ -1233,38 +1621,7 @@ const Flat = ({ onPageChange }) => {
                         {payment.updatedBy}
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 'clamp(0.25rem, 0.5rem, 0.75rem)' }}>
-                        {editingPaymentIndex === index ? (
-                          <>
-                            {/* Save Icon */}
-                            <div className="relative group">
-                              <button 
-                                onClick={handlePaymentSaveClick}
-                                className="flex items-center justify-center rounded-full bg-green-100 hover:bg-green-200 transition-colors" 
-                                style={{ width: 'clamp(1.5rem, 2rem, 2.5rem)', height: 'clamp(1.5rem, 2rem, 2.5rem)' }}
-                              >
-                                <HiCheckCircle style={{ width: 'clamp(0.75rem, 1rem, 1.25rem)', height: 'clamp(0.75rem, 1rem, 1.25rem)' }} className="text-green-600" />
-                              </button>
-                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
-                                Save
-                              </div>
-                            </div>
-                            
-                            {/* Cancel Icon */}
-                            <div className="relative group">
-                              <button 
-                                onClick={handleCancelEdit}
-                                className="flex items-center justify-center rounded-full bg-red-100 hover:bg-red-200 transition-colors" 
-                                style={{ width: 'clamp(1.5rem, 2rem, 2.5rem)', height: 'clamp(1.5rem, 2rem, 2.5rem)' }}
-                              >
-                                <HiX style={{ width: 'clamp(0.75rem, 1rem, 1.25rem)', height: 'clamp(0.75rem, 1rem, 1.25rem)' }} className="text-red-600" />
-                              </button>
-                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
-                                Cancel
-                              </div>
-                            </div>
-                          </>
-                        ) : (
-                          <>
+                        <>
                         {/* Delete Icon */}
                         <div className="relative group">
                               <button 
@@ -1320,8 +1677,7 @@ const Flat = ({ onPageChange }) => {
                             Receipt
                           </div>
                         </div>
-                          </>
-                        )}
+                        </>
                       </div>
                     </div>
                   ))}
@@ -1377,27 +1733,7 @@ const Flat = ({ onPageChange }) => {
                       </div>
                       {/* Action Buttons */}
                       <div className="flex items-center justify-center gap-2 mt-3 pt-3 border-t border-gray-200">
-                        {editingPaymentIndex === index ? (
-                          <>
-                            <button 
-                              onClick={handlePaymentSaveClick}
-                              className="flex items-center justify-center rounded-full bg-green-100 hover:bg-green-200 transition-colors" 
-                              style={{ width: 'clamp(1.5rem, 2rem, 2.5rem)', height: 'clamp(1.5rem, 2rem, 2.5rem)' }}
-                              title="Save"
-                            >
-                              <HiCheckCircle style={{ width: 'clamp(0.75rem, 1rem, 1.25rem)', height: 'clamp(0.75rem, 1rem, 1.25rem)' }} className="text-green-600" />
-                            </button>
-                            <button 
-                              onClick={handleCancelEdit}
-                              className="flex items-center justify-center rounded-full bg-red-100 hover:bg-red-200 transition-colors" 
-                              style={{ width: 'clamp(1.5rem, 2rem, 2.5rem)', height: 'clamp(1.5rem, 2rem, 2.5rem)' }}
-                              title="Cancel"
-                            >
-                              <HiX style={{ width: 'clamp(0.75rem, 1rem, 1.25rem)', height: 'clamp(0.75rem, 1rem, 1.25rem)' }} className="text-red-600" />
-                            </button>
-                          </>
-                        ) : (
-                          <>
+                        <>
                             <button 
                               onClick={() => handlePaymentDelete(index)}
                               className="flex items-center justify-center rounded-full bg-red-100 hover:bg-red-200 transition-colors" 
@@ -1428,10 +1764,9 @@ const Flat = ({ onPageChange }) => {
                               style={{ width: 'clamp(1.5rem, 2rem, 2.5rem)', height: 'clamp(1.5rem, 2rem, 2.5rem)' }}
                               title="Receipt"
                             >
-                          <HiReceiptTax style={{ width: 'clamp(0.75rem, 1rem, 1.25rem)', height: 'clamp(0.75rem, 1rem, 1.25rem)' }} className="text-purple-600" />
-                        </button>
-                          </>
-                        )}
+                              <HiReceiptTax style={{ width: 'clamp(0.75rem, 1rem, 1.25rem)', height: 'clamp(0.75rem, 1rem, 1.25rem)' }} className="text-purple-600" />
+                            </button>
+                        </>
                       </div>
                     </div>
                   ))}
@@ -1531,14 +1866,695 @@ const Flat = ({ onPageChange }) => {
               onClick={handleCloseChannelPartnerPopup}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <HiX className="w-6 h-6" />
             </button>
           </div>
         </div>
       )}
 
+      {/* Send SMS Popup */}
+      {showSMSPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="sms-popup bg-white rounded-lg shadow-xl max-w-md w-full mx-4 relative" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)' }}>
+                Send SMS
+              </h3>
+            </div>
+            
+            <div className="space-y-4">
+              {/* Message Field */}
+              <div>
+                <label className="block font-semibold text-gray-700 mb-2" style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}>
+                  Enter Message <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={smsMessage}
+                  onChange={(e) => setSmsMessage(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)', minHeight: '120px' }}
+                  placeholder="Enter your message here..."
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-center gap-4 mt-6">
+              <button
+                onClick={handleSMSSubmit}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}
+              >
+                Submit
+              </button>
+              <button
+                onClick={handleCloseSMSPopup}
+                className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}
+              >
+                Cancel
+              </button>
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={handleCloseSMSPopup}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <HiX className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Shift Flat Popup */}
+      {showShiftFlatPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="shift-flat-popup bg-white rounded-lg shadow-xl max-w-md w-full mx-4 relative" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)' }}>
+                Shift Flat
+              </h3>
+            </div>
+            
+            <div className="space-y-4">
+              {/* Old Flat No. */}
+              <div className="flex items-center bg-blue-50 rounded-lg p-3">
+                <div className="w-1/3">
+                  <label className="font-semibold text-gray-700" style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}>
+                    Old Flat No.:
+                  </label>
+                </div>
+                <div className="w-2/3">
+                  <input
+                    type="text"
+                    value={shiftFlatData.oldFlatNo}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-100 text-gray-600"
+                    style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}
+                  />
+                </div>
+              </div>
+
+              {/* New Tower */}
+              <div className="flex items-center bg-white rounded-lg p-3 border border-gray-300">
+                <div className="w-1/3">
+                  <label className="font-semibold text-gray-700" style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}>
+                    New Tower <span className="text-red-500">*</span>:
+                  </label>
+                </div>
+                <div className="w-2/3">
+                  <input
+                    type="text"
+                    value={shiftFlatData.newTower}
+                    onChange={(e) => handleShiftFlatInputChange('newTower', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}
+                    placeholder="Enter new tower"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* New Flat */}
+              <div className="flex items-center bg-white rounded-lg p-3 border border-gray-300">
+                <div className="w-1/3">
+                  <label className="font-semibold text-gray-700" style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}>
+                    New Flat <span className="text-red-500">*</span>:
+                  </label>
+                </div>
+                <div className="w-2/3">
+                  <input
+                    type="text"
+                    value={shiftFlatData.newFlat}
+                    onChange={(e) => handleShiftFlatInputChange('newFlat', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}
+                    placeholder="Enter new flat number"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-center gap-4 mt-6">
+              <button
+                onClick={handleShiftFlatSubmit}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}
+              >
+                Submit
+              </button>
+              <button
+                onClick={handleCloseShiftFlatPopup}
+                className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                style={{ fontSize: 'clamp(0.875rem, 1rem, 1.125rem)' }}
+              >
+                Cancel
+              </button>
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={handleCloseShiftFlatPopup}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <HiX className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Flat Popup */}
+      {showCancelFlatPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="cancel-flat-popup bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 relative" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
+            <div className="mb-4">
+              <h3 className="text-lg font-bold text-gray-800">
+                Cancellation for flat no {flatData?.flatNo}
+              </h3>
+            </div>
+            
+            <form onSubmit={(e) => { e.preventDefault(); handleCancelFlatSubmit(); }} className="space-y-3">
+              {/* Grid Layout for Display Fields */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">KYC Id</label>
+                  <input
+                    type="text"
+                    value={flatData?.customerInfo?.kycId || flatData?.customerInfo?.panNo || ''}
+                    readOnly
+                    className="w-full border rounded px-3 py-2 bg-gray-50 text-sm text-gray-600"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">Customer Name</label>
+                  <input
+                    type="text"
+                    value={flatData?.customerInfo?.name || ''}
+                    readOnly
+                    className="w-full border rounded px-3 py-2 bg-gray-50 text-sm text-gray-600"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">Dealer</label>
+                  <input
+                    type="text"
+                    value={flatData?.flatInfo?.channelPartner?.replace(' (Change)', '') || ''}
+                    readOnly
+                    className="w-full border rounded px-3 py-2 bg-gray-50 text-sm text-gray-600"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">Booking Date</label>
+                  <input
+                    type="text"
+                    value={flatData?.flatInfo?.bookingDate || ''}
+                    readOnly
+                    className="w-full border rounded px-3 py-2 bg-gray-50 text-sm text-gray-600"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">Payment Plan</label>
+                  <input
+                    type="text"
+                    value={flatData?.flatInfo?.paymentPlan || ''}
+                    readOnly
+                    className="w-full border rounded px-3 py-2 bg-gray-50 text-sm text-gray-600"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">Company Rate</label>
+                  <input
+                    type="text"
+                    value={flatData?.flatInfo?.companyRate || ''}
+                    readOnly
+                    className="w-full border rounded px-3 py-2 bg-gray-50 text-sm text-gray-600"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">Login Rate</label>
+                  <input
+                    type="text"
+                    value={flatData?.flatInfo?.loginRate || ''}
+                    readOnly
+                    className="w-full border rounded px-3 py-2 bg-gray-50 text-sm text-gray-600"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">Scheme</label>
+                  <input
+                    type="text"
+                    value={flatData?.flatInfo?.scheme || 'NSC'}
+                    readOnly
+                    className="w-full border rounded px-3 py-2 bg-gray-50 text-sm text-gray-600"
+                  />
+                </div>
+              </div>
+
+              {/* Input Fields */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-gray-200">
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">Cancellation Date</label>
+                  <input
+                    type="date"
+                    value={cancelFlatData.cancellationDate}
+                    onChange={(e) => handleCancelFlatInputChange('cancellationDate', e.target.value)}
+                    className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+                
+                <div className="sm:col-span-2">
+                  <label className="block text-xs text-gray-700 mb-1">Remarks <span className="text-red-500">*</span></label>
+                  <textarea
+                    value={cancelFlatData.remarks}
+                    onChange={(e) => handleCancelFlatInputChange('remarks', e.target.value)}
+                    className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    style={{ minHeight: '80px' }}
+                    placeholder="Enter remarks..."
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-center gap-3 pt-3 border-t border-gray-200">
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm font-medium"
+                >
+                  Confirm
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCloseCancelFlatPopup}
+                  className="px-6 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors text-sm font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+
+            {/* Close Button */}
+            <button
+              onClick={handleCloseCancelFlatPopup}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <HiX className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Password Popup */}
+      {showResetPasswordPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="reset-password-popup bg-white rounded-lg shadow-xl max-w-md w-full mx-4 relative" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
+            <div className="mb-4">
+              <h3 className="text-lg font-bold text-gray-800">
+                Reset Password
+              </h3>
+            </div>
+            
+            <form onSubmit={(e) => { e.preventDefault(); handleResetPasswordSubmit(); }} className="space-y-3">
+              <div>
+                <label className="block text-xs text-gray-700 mb-1">Enter Password</label>
+                <input
+                  type="password"
+                  value={resetPasswordData.password}
+                  onChange={(e) => handleResetPasswordInputChange('password', e.target.value)}
+                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter password"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-xs text-gray-700 mb-1">Enter Confirm Password</label>
+                <input
+                  type="password"
+                  value={resetPasswordData.confirmPassword}
+                  onChange={(e) => handleResetPasswordInputChange('confirmPassword', e.target.value)}
+                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Confirm password"
+                  required
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-center gap-3 pt-3 border-t border-gray-200">
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm font-medium"
+                >
+                  Update
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCloseResetPasswordPopup}
+                  className="px-6 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors text-sm font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+
+            {/* Close Button */}
+            <button
+              onClick={handleCloseResetPasswordPopup}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <HiX className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Add Remarks Popup */}
+      {showAddRemarksPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="add-remarks-popup bg-white rounded-lg shadow-xl max-w-md w-full mx-4 relative" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
+            <div className="mb-4">
+              <h3 className="text-lg font-bold text-gray-800">
+                Add Remarks
+              </h3>
+            </div>
+            
+            <form onSubmit={(e) => { e.preventDefault(); handleAddRemarksSubmit(); }} className="space-y-4">
+              {/* Remark Type Selection */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-2">Select Type:</label>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="remarkType"
+                      value="comment"
+                      checked={remarkType === 'comment'}
+                      onChange={(e) => handleRemarkTypeChange('comment')}
+                      className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-700">Comment</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="remarkType"
+                      value="customerNotification"
+                      checked={remarkType === 'customerNotification'}
+                      onChange={(e) => handleRemarkTypeChange('customerNotification')}
+                      className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-700">Customer Notification</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Comment Visibility (only shown when Comment is selected) */}
+              {remarkType === 'comment' && (
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-2">Visibility:</label>
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="commentVisibility"
+                        value="public"
+                        checked={commentVisibility === 'public'}
+                        onChange={(e) => handleCommentVisibilityChange('public')}
+                        className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700">Public</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="commentVisibility"
+                        value="confidential"
+                        checked={commentVisibility === 'confidential'}
+                        onChange={(e) => handleCommentVisibilityChange('confidential')}
+                        className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700">Confidential</span>
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              {/* Enter Remark Field */}
+              {(remarkType === 'comment' && commentVisibility) || remarkType === 'customerNotification' ? (
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Enter Remark <span className="text-red-500">*</span></label>
+                  <textarea
+                    value={remarkText}
+                    onChange={(e) => setRemarkText(e.target.value)}
+                    className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    style={{ minHeight: '100px' }}
+                    placeholder="Enter remark..."
+                    required
+                  />
+                </div>
+              ) : null}
+
+              {/* Action Buttons */}
+              {(remarkType === 'comment' && commentVisibility) || remarkType === 'customerNotification' ? (
+                <div className="flex justify-center gap-3 pt-3 border-t border-gray-200">
+                  <button
+                    type="submit"
+                    className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm font-medium"
+                  >
+                    Submit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCloseAddRemarksPopup}
+                    className="px-6 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors text-sm font-medium"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : null}
+            </form>
+
+            {/* Close Button */}
+            <button
+              onClick={handleCloseAddRemarksPopup}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <HiX className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Upload Documents Popup */}
+      {flatData && (
+        <UploadDocumentPopup
+          isOpen={showUploadDocumentsPopup}
+          onClose={handleCloseUploadDocumentsPopup}
+          documentType={`Documents - ${flatData.flatNo || ''}`}
+        />
+      )}
+
+      {/* Payment Edit Modal */}
+      {showPaymentEditModal && editingPayment && (
+        <PaymentEditModal
+          payment={editingPayment}
+          flatNo={flatData?.flatNo || ''}
+          onClose={handleClosePaymentEditModal}
+          onSave={handlePaymentSaveClick}
+        />
+      )}
+
+    </div>
+  );
+};
+
+// Payment Edit Modal Component
+const PaymentEditModal = ({ payment, flatNo, onClose, onSave }) => {
+  const [formData, setFormData] = useState({
+    flatNo: flatNo || '',
+    chequeNo: payment.chequeNo || '',
+    amount: payment.amount || '',
+    onAccountOf: payment.onAccountOf || '',
+    favor: payment.favor || '',
+    bank: payment.bank || 'HDFC',
+    chequeDate: payment.chequeDate || '',
+    receivingDate: payment.receivingDate || '',
+    chequeStatus: payment.chequeStatus || 'Cleared',
+    clearingDate: payment.clearingDate || '',
+    receiverBank: payment.receiverBank || '',
+    account: payment.account || '',
+    remarks: payment.remarks || ''
+  });
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100]">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose}></div>
+      <div className="absolute left-1/2 -translate-x-1/2 top-8 w-[95%] max-w-6xl bg-white rounded-xl shadow-2xl border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Edit Payment Details</h3>
+        <form onSubmit={handleSubmit} className="overflow-auto">
+          {/* Row 1 */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <div className="md:col-span-2">
+              <label className="block text-xs text-gray-700 mb-1 font-semibold">Flat No.</label>
+              <input 
+                readOnly 
+                value={formData.flatNo} 
+                className="w-full border rounded px-3 h-10 bg-gray-50 text-sm" 
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs text-gray-700 mb-1 font-semibold">Cheque No.</label>
+              <input 
+                value={formData.chequeNo} 
+                onChange={(e) => handleInputChange('chequeNo', e.target.value)}
+                className="w-full border rounded px-3 h-10 text-sm" 
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs text-gray-700 mb-1 font-semibold">Amount</label>
+              <input 
+                value={formData.amount} 
+                onChange={(e) => handleInputChange('amount', e.target.value)}
+                className="w-full border rounded px-3 h-10 text-sm" 
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs text-gray-700 mb-1 font-semibold">On Account</label>
+              <input 
+                value={formData.onAccountOf} 
+                onChange={(e) => handleInputChange('onAccountOf', e.target.value)}
+                className="w-full border rounded px-3 h-10 text-sm" 
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs text-gray-700 mb-1 font-semibold">Favor</label>
+              <input 
+                value={formData.favor} 
+                onChange={(e) => handleInputChange('favor', e.target.value)}
+                className="w-full border rounded px-3 h-10 text-sm" 
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs text-gray-700 mb-1 font-semibold">Bank</label>
+              <select 
+                value={formData.bank} 
+                onChange={(e) => handleInputChange('bank', e.target.value)}
+                className="w-full border rounded px-3 h-10 text-sm"
+              >
+                {['HDFC','ICICI','SBI','PNB','FEDER','SBP'].map(b=>(<option key={b} value={b}>{b}</option>))}
+              </select>
+            </div>
+          </div>
+
+          {/* Row 2 */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end mt-4">
+            <div className="md:col-span-2">
+              <label className="block text-xs text-gray-700 mb-1 font-semibold">Date</label>
+              <input 
+                value={formData.chequeDate} 
+                onChange={(e) => handleInputChange('chequeDate', e.target.value)}
+                type="date"
+                className="w-full border rounded px-3 h-10 text-sm" 
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs text-gray-700 mb-1 font-semibold">Receiving Date</label>
+              <input 
+                value={formData.receivingDate} 
+                onChange={(e) => handleInputChange('receivingDate', e.target.value)}
+                type="date"
+                className="w-full border rounded px-3 h-10 text-sm" 
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs text-gray-700 mb-1 font-semibold">Cheque status</label>
+              <select 
+                value={formData.chequeStatus} 
+                onChange={(e) => handleInputChange('chequeStatus', e.target.value)}
+                className="w-full border rounded px-3 h-10 text-sm"
+              >
+                {['Cleared','Pending','Bounced','Cancelled'].map(s=>(<option key={s} value={s}>{s}</option>))}
+              </select>
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs text-gray-700 mb-1 font-semibold">Clearing Date</label>
+              <input 
+                value={formData.clearingDate} 
+                onChange={(e) => handleInputChange('clearingDate', e.target.value)}
+                type="date"
+                className="w-full border rounded px-3 h-10 text-sm" 
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs text-gray-700 mb-1 font-semibold">Receiver Bank</label>
+              <select 
+                value={formData.receiverBank} 
+                onChange={(e) => handleInputChange('receiverBank', e.target.value)}
+                className="w-full border rounded px-3 h-10 text-sm"
+              >
+                <option value="">Select Receiver</option>
+                {['HDFC','ICICI','SBI','PNB','FEDER','SBP'].map(b=>(<option key={b} value={b}>{b}</option>))}
+              </select>
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs text-gray-700 mb-1 font-semibold">Account</label>
+              <input 
+                value={formData.account} 
+                onChange={(e) => handleInputChange('account', e.target.value)}
+                className="w-full border rounded px-3 h-10 text-sm" 
+              />
+            </div>
+          </div>
+
+          {/* Row 3 - Remarks */}
+          <div className="mt-4">
+            <label className="block text-xs text-gray-700 mb-1 font-semibold">Remarks</label>
+            <input 
+              value={formData.remarks} 
+              onChange={(e) => handleInputChange('remarks', e.target.value)}
+              className="w-full border rounded px-3 h-10 text-sm" 
+            />
+          </div>
+
+          {/* Buttons */}
+          <div className="flex items-center gap-2 mt-6">
+            <button 
+              type="submit" 
+              className="px-4 h-10 rounded border bg-gray-800 text-white text-xs font-medium hover:bg-gray-700 transition-colors"
+            >
+              Update
+            </button>
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="px-4 h-10 rounded border bg-white text-gray-800 text-xs font-medium hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

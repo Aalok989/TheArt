@@ -6,6 +6,11 @@ import { HiChevronDown, HiChevronLeft, HiChevronRight, HiX } from 'react-icons/h
 import { fetchMonths, fetchYears, fetchChequeData } from '../../api/mockData';
 
 const Cheque = ({ onPageChange }) => {
+  // Check if coming from DatewiseReport
+  const [fromDatewiseReport, setFromDatewiseReport] = useState(false);
+  const [reportFromDate, setReportFromDate] = useState('');
+  const [reportToDate, setReportToDate] = useState('');
+  
   const [expandedFilters, setExpandedFilters] = useState(new Set());
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
@@ -44,6 +49,27 @@ const Cheque = ({ onPageChange }) => {
   const statuses = ['In Process', 'Cleared', 'Bounced'];
 
   useEffect(() => {
+    // Check if coming from DatewiseReport FIRST before any other logic
+    const fromReport = sessionStorage.getItem('fromDatewiseReport');
+    const fromDate = sessionStorage.getItem('reportFromDate');
+    const toDate = sessionStorage.getItem('reportToDate');
+    
+    if (fromReport === 'true') {
+      // Coming from DatewiseReport - set simplified view
+      setFromDatewiseReport(true);
+      setReportFromDate(fromDate || '');
+      setReportToDate(toDate || '');
+      // Clear the flag immediately to prevent showing simplified view on subsequent visits
+      sessionStorage.removeItem('fromDatewiseReport');
+      sessionStorage.removeItem('reportFromDate');
+      sessionStorage.removeItem('reportToDate');
+    } else {
+      // Not coming from DatewiseReport - ensure normal view
+      setFromDatewiseReport(false);
+      setReportFromDate('');
+      setReportToDate('');
+    }
+
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -70,6 +96,7 @@ const Cheque = ({ onPageChange }) => {
 
     fetchData();
   }, []);
+
 
   const handleScroll = (ref, direction) => {
     if (ref.current) {
@@ -101,10 +128,30 @@ const Cheque = ({ onPageChange }) => {
     }
   };
 
-  const headers = ['SR. No.', 'Flat No.', 'Customer', 'Payment Plan', 'Channel Partner', 'Cheque No.', 'Cheque Amount', 'Amount', 'On Account Of', 'Bank', 'Date', 'Status', 'Account', 'Remarks', 'Updated By', 'Action'];
+  // Simplified headers for DatewiseReport view
+  const simplifiedHeaders = ['SR. No.', 'Flat No.', 'Cheque No.', 'Amount', 'Received date', 'Cheque Date', 'Cheque Bank'];
+  
+  // Full headers for normal view
+  const fullHeaders = ['SR. No.', 'Flat No.', 'Customer', 'Payment Plan', 'Channel Partner', 'Cheque No.', 'Cheque Amount', 'Amount', 'On Account Of', 'Bank', 'Received date', 'Status', 'Account', 'Remarks', 'Updated By', 'Action'];
+  
+  const headers = fromDatewiseReport ? simplifiedHeaders : fullHeaders;
 
   const filteredData = useMemo(() => {
     let filtered = chequeData;
+
+    // Date range filter for DatewiseReport
+    if (fromDatewiseReport && reportFromDate && reportToDate) {
+      filtered = filtered.filter(item => {
+        const itemDate = new Date(item.date);
+        const fromDate = new Date(reportFromDate);
+        const toDate = new Date(reportToDate);
+        // Set time to start of day for comparison
+        fromDate.setHours(0, 0, 0, 0);
+        toDate.setHours(23, 59, 59, 999);
+        itemDate.setHours(0, 0, 0, 0);
+        return itemDate >= fromDate && itemDate <= toDate;
+      });
+    }
 
     // Status filter
     if (selectedStatus) {
@@ -122,7 +169,7 @@ const Cheque = ({ onPageChange }) => {
     }
 
     return filtered;
-  }, [chequeData, selectedStatus, selectedMonth, selectedYear]);
+  }, [chequeData, selectedStatus, selectedMonth, selectedYear, fromDatewiseReport, reportFromDate, reportToDate]);
 
   const displayedRows = useMemo(() => {
     if (!searchQuery) return filteredData;
@@ -170,9 +217,18 @@ const Cheque = ({ onPageChange }) => {
   }, [searchQuery, pageSize, sortedData.length, selectedStatus, selectedMonth, selectedYear]);
 
   const handleCopy = async () => {
-    const csv = [headers.join('\t'), ...sortedData.map(r => [
-      r.srNo || '', r.flatNo || '', r.customer || '', r.paymentPlan || '', r.channelPartner || '', r.chequeNo || '', r.chequeAmount || '', r.amount || '', r.onAccountOf || '', r.bank || '', r.date || '', r.status || '', r.account || '', r.remarks || '', r.updatedBy || ''
-    ].join('\t'))].join('\n');
+    let csv;
+    if (fromDatewiseReport) {
+      // Simplified columns for DatewiseReport
+      csv = [headers.join('\t'), ...sortedData.map(r => [
+        '', r.flatNo || '', r.chequeNo || '', r.amount || '', r.date || '', r.chequeDate || r.date || '', r.bank || ''
+      ].join('\t'))].join('\n');
+    } else {
+      // Full columns for normal view
+      csv = [headers.join('\t'), ...sortedData.map(r => [
+        r.srNo || '', r.flatNo || '', r.customer || '', r.paymentPlan || '', r.channelPartner || '', r.chequeNo || '', r.chequeAmount || '', r.amount || '', r.onAccountOf || '', r.bank || '', r.date || '', r.status || '', r.account || '', r.remarks || '', r.updatedBy || ''
+      ].join('\t'))].join('\n');
+    }
     try {
       await navigator.clipboard.writeText(csv);
       setCopied(true);
@@ -183,9 +239,18 @@ const Cheque = ({ onPageChange }) => {
   };
 
   const handleExportCSV = () => {
-    const csv = [headers.join(','), ...sortedData.map(r => [
-      r.srNo || '', r.flatNo || '', r.customer || '', r.paymentPlan || '', r.channelPartner || '', r.chequeNo || '', r.chequeAmount || '', r.amount || '', r.onAccountOf || '', r.bank || '', r.date || '', r.status || '', r.account || '', r.remarks || '', r.updatedBy || ''
-    ].map(val => `"${String(val).replace(/"/g,'""')}"`).join(','))].join('\n');
+    let csv;
+    if (fromDatewiseReport) {
+      // Simplified columns for DatewiseReport
+      csv = [headers.join(','), ...sortedData.map(r => [
+        '', r.flatNo || '', r.chequeNo || '', r.amount || '', r.date || '', r.chequeDate || r.date || '', r.bank || ''
+      ].map(val => `"${String(val).replace(/"/g,'""')}"`).join(','))].join('\n');
+    } else {
+      // Full columns for normal view
+      csv = [headers.join(','), ...sortedData.map(r => [
+        r.srNo || '', r.flatNo || '', r.customer || '', r.paymentPlan || '', r.channelPartner || '', r.chequeNo || '', r.chequeAmount || '', r.amount || '', r.onAccountOf || '', r.bank || '', r.date || '', r.status || '', r.account || '', r.remarks || '', r.updatedBy || ''
+      ].map(val => `"${String(val).replace(/"/g,'""')}"`).join(','))].join('\n');
+    }
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -314,6 +379,7 @@ const Cheque = ({ onPageChange }) => {
       `}</style>
       <div className="flex flex-col lg:flex-row h-full bg-white overflow-hidden w-full shadow-sm lg:shadow-md border lg:border-gray-200" style={{ borderRadius: 'clamp(1rem, 1.5rem, 2rem)' }}>
         {/* LEFT SECTION — FILTERS */}
+        {!fromDatewiseReport && (
         <div className="w-full lg:w-[70%] min-w-0 flex flex-col max-h-[50%] lg:max-h-none">
           <div className="flex-shrink-0" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
             <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)', marginBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}>Cheque</h2>
@@ -494,9 +560,10 @@ const Cheque = ({ onPageChange }) => {
             )}
           </div>
         </div>
+        )}
 
         {/* RIGHT SECTION — TABLE */}
-        <div className="w-full lg:w-[80%] min-w-0 bg-[#F3F3F3FE] border-t lg:border-t-0 lg:border-l border-gray-300 flex flex-col flex-1 lg:flex-none overflow-hidden">
+        <div className={`w-full ${fromDatewiseReport ? 'lg:w-full' : 'lg:w-[80%]'} min-w-0 bg-[#F3F3F3FE] border-t lg:border-t-0 ${fromDatewiseReport ? '' : 'lg:border-l'} border-gray-300 flex flex-col flex-1 lg:flex-none overflow-hidden`}>
           <div className="flex-shrink-0" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', paddingBottom: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
             <div className="flex items-center gap-3 flex-wrap">
               <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)' }}>Cheque Detail</h2>
@@ -532,26 +599,39 @@ const Cheque = ({ onPageChange }) => {
           </div>
 
           <div className="flex-1 overflow-auto min-h-0" style={{ paddingLeft: 'clamp(1rem, 1.5rem, 2rem)', paddingRight: 'clamp(1rem, 1.5rem, 2rem)' }}>
-            <div className="min-w-[1400px]">
+            <div className={fromDatewiseReport ? "min-w-[800px]" : "min-w-[1400px]"}>
               <table ref={tableRef} className="w-full border-collapse text-sm">
                 <thead className="sticky top-0 z-10">
                   <tr className="bg-blue-200 text-gray-800">
                     {headers.map((h, idx) => {
-                      const columnKey = idx === 0 ? 'srNo' : 
-                        idx === 1 ? 'flatNo' :
-                        idx === 2 ? 'customer' :
-                        idx === 3 ? 'paymentPlan' :
-                        idx === 4 ? 'channelPartner' :
-                        idx === 5 ? 'chequeNo' :
-                        idx === 6 ? 'chequeAmount' :
-                        idx === 7 ? 'amount' :
-                        idx === 8 ? 'onAccountOf' :
-                        idx === 9 ? 'bank' :
-                        idx === 10 ? 'date' :
-                        idx === 11 ? 'status' :
-                        idx === 12 ? 'account' :
-                        idx === 13 ? 'remarks' :
-                        idx === 14 ? 'updatedBy' : null;
+                      let columnKey = null;
+                      if (fromDatewiseReport) {
+                        // Simplified header mapping
+                        columnKey = idx === 0 ? 'srNo' : 
+                          idx === 1 ? 'flatNo' :
+                          idx === 2 ? 'chequeNo' :
+                          idx === 3 ? 'amount' :
+                          idx === 4 ? 'date' :
+                          idx === 5 ? 'chequeDate' :
+                          idx === 6 ? 'bank' : null;
+                      } else {
+                        // Full header mapping
+                        columnKey = idx === 0 ? 'srNo' : 
+                          idx === 1 ? 'flatNo' :
+                          idx === 2 ? 'customer' :
+                          idx === 3 ? 'paymentPlan' :
+                          idx === 4 ? 'channelPartner' :
+                          idx === 5 ? 'chequeNo' :
+                          idx === 6 ? 'chequeAmount' :
+                          idx === 7 ? 'amount' :
+                          idx === 8 ? 'onAccountOf' :
+                          idx === 9 ? 'bank' :
+                          idx === 10 ? 'date' :
+                          idx === 11 ? 'status' :
+                          idx === 12 ? 'account' :
+                          idx === 13 ? 'remarks' :
+                          idx === 14 ? 'updatedBy' : null;
+                      }
                       
                       return (
                         <th 
@@ -569,34 +649,50 @@ const Cheque = ({ onPageChange }) => {
                   {paginatedRows.length > 0 ? (
                     paginatedRows.map((r, idx) => (
                       <tr key={idx} className="bg-white even:bg-gray-50">
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{(currentPage - 1) * pageSize + idx + 1}</td>
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.flatNo}</td>
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.customer}</td>
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.paymentPlan}</td>
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.channelPartner}</td>
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.chequeNo}</td>
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.chequeAmount}</td>
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.amount}</td>
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.onAccountOf}</td>
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.bank}</td>
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.date}</td>
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.status}</td>
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.account}</td>
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.remarks}</td>
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.updatedBy}</td>
-                        <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">
-                          <button
-                            onClick={() => handleEdit(r)}
-                            className="text-blue-600 hover:text-blue-800 hover:underline"
-                          >
-                            Edit
-                          </button>
-                        </td>
+                        {fromDatewiseReport ? (
+                          // Simplified view columns for DatewiseReport
+                          <>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{(currentPage - 1) * pageSize + idx + 1}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.flatNo}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.chequeNo}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.amount}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.date}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.chequeDate || r.date}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.bank}</td>
+                          </>
+                        ) : (
+                          // Full view columns for normal page
+                          <>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{(currentPage - 1) * pageSize + idx + 1}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.flatNo}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.customer}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.paymentPlan}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.channelPartner}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.chequeNo}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.chequeAmount}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.amount}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.onAccountOf}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.bank}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.date}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.status}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.account}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.remarks}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">{r.updatedBy}</td>
+                            <td className="border border-gray-200 px-3 py-2 whitespace-nowrap">
+                              <button
+                                onClick={() => handleEdit(r)}
+                                className="text-blue-600 hover:text-blue-800 hover:underline"
+                              >
+                                Edit
+                              </button>
+                            </td>
+                          </>
+                        )}
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={16} className="text-center text-gray-500 py-8">No cheque data found for the selected filters.</td>
+                      <td colSpan={fromDatewiseReport ? 7 : 16} className="text-center text-gray-500 py-8">No cheque data found for the selected filters.</td>
                     </tr>
                   )}
                 </tbody>
@@ -772,7 +868,7 @@ const Cheque = ({ onPageChange }) => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-700 mb-1">Date</label>
+                    <label className="block text-xs text-gray-700 mb-1">Received date</label>
                     <input
                       type="date"
                       value={editFormData.date}

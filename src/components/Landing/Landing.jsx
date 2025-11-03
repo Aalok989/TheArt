@@ -369,7 +369,7 @@ function Landing({ onLogin }) {
             <div className="absolute left-2 sm:left-4 lg:left-8 bottom-4 sm:bottom-6 lg:bottom-8 space-y-2 z-10 max-w-[90%] sm:max-w-xs lg:max-w-none overflow-y-auto max-h-[70vh] sm:max-h-[80vh]">
               {userRole === 'user' ? (
                 /* Take a Tour Card for Regular Users */
-                <div className="bg-gray-100/90 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-5 lg:p-6 w-full sm:w-60 lg:w-80">
+                <div className="bg-gray-100/90 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-5 lg:p-6 w-full sm:w-80 lg:w-96">
                    {/* Take a Tour Section */}
                    <div className="flex items-center justify-between mb-3 sm:mb-4">
                      <span className="text-gray-800 text-2xl sm:text-3xl lg:text-4xl font-medium font-poly">Take a Tour</span>
@@ -379,14 +379,17 @@ function Landing({ onLogin }) {
                    {/* Dashed Separator */}
                    <div className="border-t-2 border-dashed border-gray-300 mb-4 sm:mb-5 lg:mb-6"></div>
                    
-                   {/* Book a Demo Button - Right aligned */}
-                   <div className="flex justify-end">
+                   {/* Book a Demo and Dashboard Buttons */}
+                   <div className="flex flex-row space-x-2">
                      <button 
                        onClick={() => setShowContactsPopup(true)}
-                       className="py-2 sm:py-2.5 lg:py-3 px-3 sm:px-3.5 lg:px-4 rounded-full text-white font-semibold text-base sm:text-lg lg:text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-poppins w-32 sm:w-36 lg:w-40" 
+                       className="flex-1 py-2 sm:py-2.5 lg:py-3 px-3 sm:px-3.5 lg:px-4 rounded-full text-white font-semibold text-base sm:text-lg lg:text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-poppins" 
                        style={{background: 'linear-gradient(180deg, #FC7117, #96430E)'}}
                      >
-                       Book a Demo
+                       Book Demo
+                     </button>
+                     <button className="flex-1 py-2 sm:py-2.5 lg:py-3 px-4 sm:px-5 lg:px-6 rounded-full text-white font-semibold text-base sm:text-lg lg:text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-poppins" style={{background: 'linear-gradient(180deg, #FC7117, #96430E)'}}>
+                       Dashboard
                      </button>
                    </div>
                 </div>

@@ -378,7 +378,12 @@ const ConstructionStages = ({ onPageChange }) => {
                               <td className="px-4 py-3 text-sm text-gray-900">{installment.completionDate}</td>
                               <td className="px-4 py-3 text-sm">
                                 <button
-                                  onClick={() => handleEdit(installment)}
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleEdit(installment);
+                                  }}
                                   className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-xs font-medium"
                                 >
                                   Edit
@@ -407,11 +412,22 @@ const ConstructionStages = ({ onPageChange }) => {
 
       {/* Edit Form Popup */}
       {editFormOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 shadow-xl max-w-md w-full mx-4">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              handleCloseEditForm();
+            }
+          }}
+        >
+          <div 
+            className="bg-white rounded-lg p-6 shadow-xl max-w-md w-full mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-gray-800">Edit Installment</h3>
               <button
+                type="button"
                 onClick={handleCloseEditForm}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >

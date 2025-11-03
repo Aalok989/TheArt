@@ -58,6 +58,16 @@ import Projects from "./Dashboard_Admin/Projects";
 import NewProject from "./Dashboard_Admin/NewProject";
 import AddPartner from "./Dashboard_Admin/AddPartner";
 import ViewAll from "./Dashboard_Admin/ViewAll";
+import FlatDetail_CP from "./Dashboard_Admin/FlatDetail_CP";
+import CP_Detail from "./Dashboard_Admin/CP_Detail";
+import ReleaseCommission from "./Dashboard_Admin/ReleaseCommission";
+import PaidCommission from "./Dashboard_Admin/PaidCommission";
+import ViewCoupons from "./Dashboard_Admin/ViewCoupons";
+import InstallmentReport from "./Dashboard_Admin/InstallmentReport";
+import CLPReport from "./Dashboard_Admin/CLPReport";
+import FinalReport from "./Dashboard_Admin/FinalReport";
+import TodayReport from "./Dashboard_Admin/TodayReport";
+import DatewiseReport from "./Dashboard_Admin/DatewiseReport";
 import Dashboard from "./Dashboard_Admin/Dashboard";
 import CommonDocs from "./Dashboard_Admin/CommonDocs";
 import FlatDocs from "./Dashboard_Admin/FlatDocs";
@@ -918,6 +928,110 @@ const Layout = ({
               />
             </div>
           );
+        case "releaseCommission":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <ReleaseCommission
+                key={`releaseCommission-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "paidCommission":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <PaidCommission
+                key={`paidCommission-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "viewCoupons":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <ViewCoupons
+                key={`viewCoupons-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "installmentReport":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <InstallmentReport
+                key={`installmentReport-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "clpReport":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <CLPReport
+                key={`clpReport-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "finalReport":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <FinalReport
+                key={`finalReport-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "todayReport":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <TodayReport
+                key={`todayReport-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "datewiseReport":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <DatewiseReport
+                key={`datewiseReport-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
         case "viewAll":
           return (
             <div
@@ -927,6 +1041,32 @@ const Layout = ({
             >
               <ViewAll
                 key={`viewAll-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "flatDetailCP":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <FlatDetail_CP
+                key={`flatDetailCP-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "cpDetail":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <CP_Detail
+                key={`cpDetail-${animationKey}`}
                 onPageChange={onPageChange}
               />
             </div>
@@ -953,7 +1093,7 @@ const Layout = ({
               }`}
             >
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <FlatDocs key={`flatDocs-${animationKey}`} />
+                <FlatDocs key={`flatDocs-${animationKey}`} onPageChange={onPageChange} />
               </div>
             </div>
           );
@@ -977,7 +1117,7 @@ const Layout = ({
               }`}
             >
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <FlatLegalDocs key={`flatLegalDocs-${animationKey}`} />
+                <FlatLegalDocs key={`flatLegalDocs-${animationKey}`} onPageChange={onPageChange} />
               </div>
             </div>
           );

@@ -74,7 +74,7 @@ const NEFT = ({ onPageChange }) => {
     }
   };
 
-  const headers = ['SR. No.', 'Flat No.', 'Amount', 'Date', 'Neft No', 'Remarks', 'Account', 'Updated By', 'Action'];
+  const headers = ['SR. No.', 'Flat No.', 'Amount', 'Received date', 'Neft No', 'Remarks', 'Account', 'Updated By', 'Action'];
 
   const filteredData = useMemo(() => {
     let filtered = neftData;
@@ -565,7 +565,7 @@ const NEFT = ({ onPageChange }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-700 mb-1">Date</label>
+                    <label className="block text-xs text-gray-700 mb-1">Received date</label>
                     <input
                       type="date"
                       value={editFormData.date}

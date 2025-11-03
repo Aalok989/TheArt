@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { HiX, HiUpload } from 'react-icons/hi';
 
 const UploadDocumentPopup = ({ isOpen, onClose, documentType = "Document" }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [documentName, setDocumentName] = useState('');
   const [category, setCategory] = useState('');
+
+  // Log when popup should be visible
+  useEffect(() => {
+    console.log('UploadDocumentPopup - isOpen changed:', isOpen, 'documentType:', documentType);
+  }, [isOpen, documentType]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -42,16 +48,29 @@ const UploadDocumentPopup = ({ isOpen, onClose, documentType = "Document" }) => 
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <>
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-black bg-opacity-50 z-50"
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+        style={{ zIndex: 99999 }}
         onClick={handleCancel}
-      ></div>
-
-      {/* Popup */}
-      <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white shadow-xl z-50" style={{ borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)', width: 'clamp(20rem, 30rem, 35rem)', maxWidth: '90vw', maxHeight: '90vh', overflow: 'auto' }}>
+      >
+        {/* Popup */}
+        <div 
+          className="bg-white shadow-xl relative"
+          style={{ 
+            borderRadius: 'clamp(0.75rem, 1rem, 1.25rem)', 
+            width: 'clamp(20rem, 30rem, 35rem)', 
+            maxWidth: '90vw', 
+            maxHeight: '90vh', 
+            overflow: 'auto',
+            zIndex: 100000
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)' }}>
           <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)' }}>
@@ -168,8 +187,10 @@ const UploadDocumentPopup = ({ isOpen, onClose, documentType = "Document" }) => 
             </button>
           </div>
         </div>
+        </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 };
 

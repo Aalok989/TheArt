@@ -91,7 +91,7 @@ const Cash = ({ onPageChange }) => {
     }
   };
 
-  const headers = ['SR. No.', 'Flat No.', 'Channel Partner', 'Amount', 'Date', 'Received By', 'Remarks', 'Account', 'Updated By', 'Action', 'Status'];
+  const headers = ['SR. No.', 'Flat No.', 'Channel Partner', 'Amount', 'Received date', 'Received By', 'Remarks', 'Account', 'Updated By', 'Action', 'Status'];
 
   const filteredData = useMemo(() => {
     let filtered = cashData;
@@ -623,7 +623,7 @@ const Cash = ({ onPageChange }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-700 mb-1">Date</label>
+                    <label className="block text-xs text-gray-700 mb-1">Received date</label>
                     <input
                       type="date"
                       value={editFormData.date}
