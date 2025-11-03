@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { FiCopy } from 'react-icons/fi';
 import { FaFileExcel, FaFilePdf } from 'react-icons/fa';
 import { HiChevronDown, HiChevronLeft, HiChevronRight, HiX } from 'react-icons/hi';
-import { fetchMonths, fetchYears } from '../../api/mockData';
+import { fetchMonths, fetchYears, fetchCashData } from '../../api/mockData';
 
 const Cash = ({ onPageChange }) => {
   const [expandedFilters, setExpandedFilters] = useState(new Set());
@@ -33,22 +33,14 @@ const Cash = ({ onPageChange }) => {
     account: ''
   });
 
-  // Mock data
-  const mockCashData = [
-    { srNo: 1, flatNo: 'A103', channelPartner: 'GHPL', amount: '17867', date: '2021-05-12', receivedBy: 'John Doe', remarks: '', account: '', updatedBy: 'bhavani', status: 'Yes' },
-    { srNo: 2, flatNo: 'A501', channelPartner: 'GHPL', amount: '62527', date: '2021-07-10', receivedBy: 'Jane Smith', remarks: '', account: '007605004803', updatedBy: 'bhavani', status: 'No' },
-    { srNo: 3, flatNo: 'A102', channelPartner: 'GHPL', amount: '25000', date: '2021-06-15', receivedBy: 'Mike Johnson', remarks: '', account: '007605004802', updatedBy: 'admin', status: 'Yes' },
-    { srNo: 4, flatNo: 'B201', channelPartner: 'GHPL', amount: '50000', date: '2021-08-20', receivedBy: 'Sarah Williams', remarks: 'Cash payment', account: '', updatedBy: 'admin', status: 'No' },
-    { srNo: 5, flatNo: 'C301', channelPartner: 'GHPL', amount: '30000', date: '2021-09-05', receivedBy: 'Tom Brown', remarks: '', account: '007605004804', updatedBy: 'bhavani', status: 'Yes' },
-  ];
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [monthsRes, yearsRes] = await Promise.all([
+        const [monthsRes, yearsRes, cashRes] = await Promise.all([
           fetchMonths(),
-          fetchYears()
+          fetchYears(),
+          fetchCashData()
         ]);
         if (monthsRes.success) {
           setMonths(monthsRes.data || []);
@@ -56,8 +48,9 @@ const Cash = ({ onPageChange }) => {
         if (yearsRes.success) {
           setYears(yearsRes.data || []);
         }
-        // Set mock data
-        setCashData(mockCashData);
+        if (cashRes.success) {
+          setCashData(cashRes.data || []);
+        }
       } catch (error) {
         console.error('Error fetching cash data:', error);
       } finally {

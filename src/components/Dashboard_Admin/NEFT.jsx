@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { FiCopy } from 'react-icons/fi';
 import { FaFileExcel, FaFilePdf } from 'react-icons/fa';
 import { HiChevronDown, HiX } from 'react-icons/hi';
-import { fetchMonths, fetchYears } from '../../api/mockData';
+import { fetchMonths, fetchYears, fetchNeftData } from '../../api/mockData';
 
 const NEFT = ({ onPageChange }) => {
   const [expandedFilters, setExpandedFilters] = useState(new Set());
@@ -31,22 +31,14 @@ const NEFT = ({ onPageChange }) => {
     account: ''
   });
 
-  // Mock data
-  const mockNeftData = [
-    { srNo: 1, flatNo: 'A103', amount: '17867', date: '2021-05-12', neftNo: 'NEFT001234', remarks: '', account: '', updatedBy: 'bhavani' },
-    { srNo: 2, flatNo: 'A501', amount: '62527', date: '2021-07-10', neftNo: 'NEFT001235', remarks: '', account: '007605004803', updatedBy: 'bhavani' },
-    { srNo: 3, flatNo: 'A102', amount: '25000', date: '2021-06-15', neftNo: 'NEFT001236', remarks: '', account: '007605004802', updatedBy: 'admin' },
-    { srNo: 4, flatNo: 'B201', amount: '50000', date: '2021-08-20', neftNo: 'NEFT001237', remarks: 'NEFT payment', account: '', updatedBy: 'admin' },
-    { srNo: 5, flatNo: 'C301', amount: '30000', date: '2021-09-05', neftNo: 'NEFT001238', remarks: '', account: '007605004804', updatedBy: 'bhavani' },
-  ];
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [monthsRes, yearsRes] = await Promise.all([
+        const [monthsRes, yearsRes, neftRes] = await Promise.all([
           fetchMonths(),
-          fetchYears()
+          fetchYears(),
+          fetchNeftData()
         ]);
         if (monthsRes.success) {
           setMonths(monthsRes.data || []);
@@ -54,8 +46,9 @@ const NEFT = ({ onPageChange }) => {
         if (yearsRes.success) {
           setYears(yearsRes.data || []);
         }
-        // Set mock data
-        setNeftData(mockNeftData);
+        if (neftRes.success) {
+          setNeftData(neftRes.data || []);
+        }
       } catch (error) {
         console.error('Error fetching NEFT data:', error);
       } finally {

@@ -1,274 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import { HiChevronRight, HiChevronDown } from 'react-icons/hi';
+import {
+  fetchManageUserCategories,
+  fetchManageUserRoles,
+  fetchManageUserRoleDefaults,
+  getManageUserUsernamesForRole
+} from '../../api/mockData';
 
 const ManageUser = ({ onPageChange }) => {
   const [selectedFilter, setSelectedFilter] = useState(null);
   const [selectedRole, setSelectedRole] = useState('');
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+  const [addUserForm, setAddUserForm] = useState({
+    userName: '',
+    password: '',
+    confirmPassword: '',
+    userLevel: ''
+  });
+  const [showAddUserDropdown, setShowAddUserDropdown] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  
+  // Disable User state
+  const [disableUserAction, setDisableUserAction] = useState(null); // 'enable' or 'disable'
+  const [disableUserRole, setDisableUserRole] = useState('');
+  const [showDisableUserRoleDropdown, setShowDisableUserRoleDropdown] = useState(false);
+  const [disableUserUsername, setDisableUserUsername] = useState('');
+  const [showDisableUserUsernameDropdown, setShowDisableUserUsernameDropdown] = useState(false);
+  const [showDisableUserSuccess, setShowDisableUserSuccess] = useState(false);
 
-  // Define all categories with their subcategories as flat arrays
-  const categoriesData = [
-    // Column 1 - Manage (with complex nesting)
-    {
-      id: 'manage',
-      name: 'Manage',
-      hasSubcategories: true,
-      subcategories: [
-        {
-          name: 'Manage Bank',
-          hasSubcategories: true,
-          subcategories: ['Favouring Bank']
-        },
-        {
-          name: 'Manage User',
-          hasSubcategories: true,
-          subcategories: ['Access Roles', 'Add User', 'Disable User']
-        },
-        { name: 'Manage Channel Partner', hasSubcategories: false, subcategories: [] },
-        {
-          name: 'Manage Commission',
-          hasSubcategories: true,
-          subcategories: ['Add Commission']
-        },
-        { name: 'Calculate Interest', hasSubcategories: false, subcategories: [] },
-        { name: 'Construction Stages', hasSubcategories: false, subcategories: [] }
-      ]
-    },
-    // Column 2 - New Booking (no subcategories)
-    {
-      id: 'newBooking',
-      name: 'New Booking',
-      hasSubcategories: false,
-      subcategories: []
-    },
-    // Block Inventory (with subcategories)
-    {
-      id: 'blockInventory',
-      name: 'Block Inventory',
-      hasSubcategories: true,
-      subcategories: [
-        { name: 'Floor wise', hasSubcategories: false, subcategories: [] },
-        { name: 'Block wise', hasSubcategories: false, subcategories: [] },
-        { name: 'Size wise', hasSubcategories: false, subcategories: [] }
-      ]
-    },
-    // Customer (with subcategories)
-    {
-      id: 'customer',
-      name: 'Customer',
-      hasSubcategories: true,
-      subcategories: [
-        { name: 'No Discount', hasSubcategories: false, subcategories: [] },
-        { name: 'Extra Discount', hasSubcategories: false, subcategories: [] },
-        { name: 'Extra Payment', hasSubcategories: false, subcategories: [] },
-        { name: 'Signed BBA', hasSubcategories: false, subcategories: [] },
-        { name: 'Unsigned BBA', hasSubcategories: false, subcategories: [] }
-      ]
-    },
-    // Channel Partners (with subcategories)
-    {
-      id: 'channelPartners',
-      name: 'Channel Partners',
-      hasSubcategories: true,
-      subcategories: [
-        { name: 'Add Channel Partner', hasSubcategories: false, subcategories: [] },
-        { name: 'View All', hasSubcategories: false, subcategories: [] },
-        { name: 'Release Commission', hasSubcategories: false, subcategories: [] },
-        { name: 'Paid Commission', hasSubcategories: false, subcategories: [] }
-      ]
-    },
-    // Booked Flats (with subcategories)
-    {
-      id: 'bookedFlats',
-      name: 'Booked Flats',
-      hasSubcategories: true,
-      subcategories: [
-        { name: 'Floor Wise', hasSubcategories: false, subcategories: [] },
-        { name: 'Block Wise', hasSubcategories: false, subcategories: [] },
-        { name: 'Size Wise', hasSubcategories: false, subcategories: [] },
-        { name: 'Month Wise', hasSubcategories: false, subcategories: [] },
-        { name: 'View All', hasSubcategories: false, subcategories: [] }
-      ]
-    },
-    // Blocked Flats (with subcategories)
-    {
-      id: 'blockedFlats',
-      name: 'Blocked Flats',
-      hasSubcategories: true,
-      subcategories: [
-        { name: 'Floor Wise', hasSubcategories: false, subcategories: [] },
-        { name: 'Block Wise', hasSubcategories: false, subcategories: [] },
-        { name: 'Size Wise', hasSubcategories: false, subcategories: [] },
-        { name: 'View All', hasSubcategories: false, subcategories: [] }
-      ]
-    },
-    // Cancelled Flats (with subcategories)
-    {
-      id: 'cancelledFlats',
-      name: 'Cancelled Flats',
-      hasSubcategories: true,
-      subcategories: [
-        { name: 'Month Wise', hasSubcategories: false, subcategories: [] },
-        { name: 'Block Wise', hasSubcategories: false, subcategories: [] },
-        { name: 'View All', hasSubcategories: false, subcategories: [] },
-        { name: 'Refunded Flats', hasSubcategories: false, subcategories: [] },
-        { name: 'Refunded Cheques', hasSubcategories: false, subcategories: [] }
-      ]
-    },
-    // Payment Received (with nested subcategories)
-    {
-      id: 'paymentReceived',
-      name: 'Payment Received',
-      hasSubcategories: true,
-      subcategories: [
-        {
-          name: 'Cheques',
-          hasSubcategories: true,
-          subcategories: ['In Process', 'Cleared', 'Bounced', 'Month Wise', 'View All']
-        },
-        {
-          name: 'Cash',
-          hasSubcategories: true,
-          subcategories: ['Month Wise', 'View All', 'Adjustment']
-        },
-        {
-          name: 'NEFT',
-          hasSubcategories: true,
-          subcategories: ['Month Wise', 'View All']
+  // Define state for data from mockData
+  const [categoriesData, setCategoriesData] = useState([]);
+  const [userRoles, setUserRoles] = useState(['--Select User Level--']);
+  const [roleDefaults, setRoleDefaults] = useState({});
+
+  // Load data from mockData
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [categoriesRes, rolesRes, roleDefaultsRes] = await Promise.all([
+          fetchManageUserCategories(),
+          fetchManageUserRoles(),
+          fetchManageUserRoleDefaults()
+        ]);
+        
+        if (categoriesRes.success) {
+          setCategoriesData(categoriesRes.data);
         }
-      ]
-    },
-    // Payment Status (with subcategories)
-    {
-      id: 'paymentStatus',
-      name: 'Payment Status',
-      hasSubcategories: true,
-      subcategories: [
-        { name: 'Complete Payment', hasSubcategories: false, subcategories: [] },
-        { name: 'Balance Payment', hasSubcategories: false, subcategories: [] },
-        { name: 'No Payment', hasSubcategories: false, subcategories: [] }
-      ]
-    },
-    // Flats Verification (no subcategories)
-    {
-      id: 'flatsVerification',
-      name: 'Flats Verification',
-      hasSubcategories: false,
-      subcategories: []
-    },
-    // Loan (with nested subcategories)
-    {
-      id: 'loan',
-      name: 'Loan',
-      hasSubcategories: true,
-      subcategories: [
-        {
-          name: 'Loaned Flats',
-          hasSubcategories: true,
-          subcategories: ['All', 'Month Wise']
-        },
-        { name: 'Loan Documents', hasSubcategories: false, subcategories: [] }
-      ]
-    },
-    // Flats Status (with subcategories)
-    {
-      id: 'flatsStatus',
-      name: 'Flats Status',
-      hasSubcategories: true,
-      subcategories: [
-        { name: 'Floor Wise', hasSubcategories: false, subcategories: [] },
-        { name: 'Block Wise', hasSubcategories: false, subcategories: [] },
-        { name: 'Size Wise', hasSubcategories: false, subcategories: [] },
-        { name: 'Mortgaged', hasSubcategories: false, subcategories: [] },
-        { name: 'View All', hasSubcategories: false, subcategories: [] }
-      ]
-    },
-    // Flats Summary (no subcategories)
-    {
-      id: 'flatsSummary',
-      name: 'Flats Summary',
-      hasSubcategories: false,
-      subcategories: []
-    },
-    // Project Snapshot (with subcategories)
-    {
-      id: 'projectSnapshot',
-      name: 'Project Snapshot',
-      hasSubcategories: true,
-      subcategories: [
-        { name: 'View Coupons', hasSubcategories: false, subcategories: [] },
-        { name: 'Installment Report', hasSubcategories: false, subcategories: [] },
-        { name: 'CLP Report', hasSubcategories: false, subcategories: [] },
-        { name: 'Final Report', hasSubcategories: false, subcategories: [] },
-        { name: 'Today Report', hasSubcategories: false, subcategories: [] },
-        { name: 'Datewise Report', hasSubcategories: false, subcategories: [] }
-      ]
-    },
-    // Set Reminder (no subcategories)
-    {
-      id: 'setReminder',
-      name: 'Set Reminder',
-      hasSubcategories: false,
-      subcategories: []
-    },
-    // Construction Updates (no subcategories)
-    {
-      id: 'constructionUpdates',
-      name: 'Construction Updates',
-      hasSubcategories: false,
-      subcategories: []
-    },
-    // Flat Customization (with subcategories)
-    {
-      id: 'flatCustomization',
-      name: 'Flat Customization',
-      hasSubcategories: true,
-      subcategories: [
-        { name: 'Activity Type', hasSubcategories: false, subcategories: [] },
-        { name: 'View Activities', hasSubcategories: false, subcategories: [] },
-        { name: 'Customize', hasSubcategories: false, subcategories: [] },
-        { name: 'View Customization', hasSubcategories: false, subcategories: [] }
-      ]
-    },
-    // Handover Activities (with subcategories)
-    {
-      id: 'handoverActivities',
-      name: 'Handover Activities',
-      hasSubcategories: true,
-      subcategories: [
-        { name: 'Add Activity', hasSubcategories: false, subcategories: [] },
-        { name: 'Add Subactivity', hasSubcategories: false, subcategories: [] },
-        { name: 'View Activities', hasSubcategories: false, subcategories: [] },
-        { name: 'Flat H.over Activity', hasSubcategories: false, subcategories: [] },
-        { name: 'View Flat H.A.', hasSubcategories: false, subcategories: [] }
-      ]
-    },
-    // Documents Section (with subcategories)
-    {
-      id: 'documentsSection',
-      name: 'Documents Section',
-      hasSubcategories: true,
-      subcategories: [
-        { name: 'Upload Common Docs', hasSubcategories: false, subcategories: [] },
-        { name: 'View Common Docs', hasSubcategories: false, subcategories: [] },
-        { name: 'Upload Flat Docs', hasSubcategories: false, subcategories: [] },
-        { name: 'View Flat Docs', hasSubcategories: false, subcategories: [] },
-        { name: 'Upload Legal Docs', hasSubcategories: false, subcategories: [] },
-        { name: 'View Legal Docs', hasSubcategories: false, subcategories: [] },
-        { name: 'Upload Flat Legal Docs', hasSubcategories: false, subcategories: [] },
-        { name: 'View Flat Legal Docs', hasSubcategories: false, subcategories: [] }
-      ]
-    },
-    // Reports (with subcategories)
-    {
-      id: 'reports',
-      name: 'Reports',
-      hasSubcategories: true,
-      subcategories: [
-        { name: 'User Logs', hasSubcategories: false, subcategories: [] }
-      ]
-    }
-  ];
+        if (rolesRes.success) {
+          setUserRoles(rolesRes.data);
+        }
+        if (roleDefaultsRes.success) {
+          setRoleDefaults(roleDefaultsRes.data);
+        }
+      } catch (error) {
+        console.error('Error loading manage user data:', error);
+      }
+    };
+    
+    loadData();
+  }, []);
 
   // Initialize checkbox states - flatten everything
   const getInitialCheckboxStates = () => {
@@ -320,8 +110,16 @@ const ManageUser = ({ onPageChange }) => {
     return states;
   };
 
-  const [checkboxStates, setCheckboxStates] = useState(getInitialCheckboxStates());
-  const [subCheckboxStates, setSubCheckboxStates] = useState(getInitialSubCheckboxStates());
+  const [checkboxStates, setCheckboxStates] = useState({});
+  const [subCheckboxStates, setSubCheckboxStates] = useState({});
+
+  // Initialize states when categoriesData loads
+  useEffect(() => {
+    if (categoriesData.length > 0) {
+      setCheckboxStates(getInitialCheckboxStates());
+      setSubCheckboxStates(getInitialSubCheckboxStates());
+    }
+  }, [categoriesData]);
 
   // Auto-update parent checkbox when all subcategories change
   useEffect(() => {
@@ -348,30 +146,7 @@ const ManageUser = ({ onPageChange }) => {
       
       return newCheckboxStates;
     });
-  }, [subCheckboxStates]);
-
-  const userRoles = [
-    '--Select User Level--',
-    'Super Administrator',
-    'Administrator',
-    'Lower Administrator',
-    'Accounts',
-    'Customer',
-    'Channel Partner',
-    'Flat Customization',
-    'Legal'
-  ];
-
-  const roleDefaults = {
-    'Super Administrator': { manage: true, 'Manage Bank': true, 'Favouring Bank': true, 'Manage User': true, 'Access Roles': true, 'Add User': true, 'Disable User': true, 'Manage Channel Partner': true, 'Manage Commission': true, 'Add Commission': true, 'Calculate Interest': true, 'Construction Stages': true, newBooking: true, blockInventory: true, 'Floor wise': true, 'Block wise': true, 'Size wise': true, customer: true, 'No Discount': true, 'Extra Discount': true, 'Extra Payment': true, 'Signed BBA': true, 'Unsigned BBA': true, channelPartners: true, 'Add Channel Partner': true, 'View All': true, 'Release Commission': true, 'Paid Commission': true, bookedFlats: true, 'Floor Wise': true, 'Block Wise': true, 'Size Wise': true, 'Month Wise': true, blockedFlats: true, cancelledFlats: true, 'Refunded Flats': true, 'Refunded Cheques': true, paymentReceived: true, Cheques: true, Cash: true, NEFT: true, 'In Process': true, Cleared: true, Bounced: true, Adjustment: true, paymentStatus: true, 'Complete Payment': true, 'Balance Payment': true, 'No Payment': true, flatsVerification: true, loan: true, 'Loaned Flats': true, 'Loan Documents': true, All: true, flatsStatus: true, Mortgaged: true, flatsSummary: true, projectSnapshot: true, 'View Coupons': true, 'Installment Report': true, 'CLP Report': true, 'Final Report': true, 'Today Report': true, 'Datewise Report': true, setReminder: true, constructionUpdates: true, flatCustomization: true, 'Activity Type': true, Customize: true, 'View Customization': true, handoverActivities: true, 'Add Activity': true, 'Add Subactivity': true, 'Flat H.over Activity': true, 'View Flat H.A.': true, documentsSection: true, 'Upload Common Docs': true, 'View Common Docs': true, 'Upload Flat Docs': true, 'View Flat Docs': true, 'Upload Legal Docs': true, 'View Legal Docs': true, 'Upload Flat Legal Docs': true, 'View Flat Legal Docs': true, reports: true, 'User Logs': true },
-    'Administrator': { manage: false, 'Manage Bank': true, 'Favouring Bank': true, 'Manage User': true, 'Access Roles': true, 'Add User': true, 'Disable User': true, 'Manage Channel Partner': true, 'Manage Commission': false, 'Add Commission': false, 'Calculate Interest': true, 'Construction Stages': true, newBooking: true, blockInventory: true, 'Floor wise': true, 'Block wise': true, 'Size wise': true, customer: true, 'No Discount': true, 'Extra Discount': true, 'Extra Payment': true, 'Signed BBA': true, 'Unsigned BBA': true, channelPartners: true, 'Add Channel Partner': true, 'View All': true, 'Release Commission': true, 'Paid Commission': true, bookedFlats: true, 'Floor Wise': true, 'Block Wise': true, 'Size Wise': true, 'Month Wise': true, blockedFlats: true, cancelledFlats: true, 'Refunded Flats': true, 'Refunded Cheques': true, paymentReceived: true, Cheques: true, Cash: true, NEFT: true, 'In Process': true, Cleared: true, Bounced: true, Adjustment: true, paymentStatus: true, 'Complete Payment': true, 'Balance Payment': true, 'No Payment': true, flatsVerification: true, loan: true, 'Loaned Flats': true, 'Loan Documents': true, All: true, flatsStatus: true, Mortgaged: true, flatsSummary: true, projectSnapshot: true, 'View Coupons': true, 'Installment Report': true, 'CLP Report': true, 'Final Report': true, 'Today Report': true, 'Datewise Report': true, setReminder: true, constructionUpdates: true, flatCustomization: true, 'Activity Type': true, Customize: true, 'View Customization': true, handoverActivities: true, 'Add Activity': true, 'Add Subactivity': true, 'Flat H.over Activity': true, 'View Flat H.A.': true, documentsSection: true, 'Upload Common Docs': true, 'View Common Docs': true, 'Upload Flat Docs': true, 'View Flat Docs': true, 'Upload Legal Docs': true, 'View Legal Docs': true, 'Upload Flat Legal Docs': true, 'View Flat Legal Docs': true, reports: true, 'User Logs': true },
-    'Lower Administrator': { manage: false, 'Manage Bank': false, 'Favouring Bank': false, 'Manage User': false, 'Access Roles': false, 'Add User': false, 'Disable User': false, 'Manage Channel Partner': true, 'Manage Commission': false, 'Add Commission': false, 'Calculate Interest': false, 'Construction Stages': true, newBooking: true, blockInventory: true, 'Floor wise': true, 'Block wise': true, 'Size wise': true, customer: true, 'No Discount': false, 'Extra Discount': false, 'Extra Payment': false, 'Signed BBA': false, 'Unsigned BBA': false, channelPartners: true, 'Add Channel Partner': false, 'View All': false, 'Release Commission': false, 'Paid Commission': false, bookedFlats: true, 'Floor Wise': false, 'Block Wise': false, 'Size Wise': false, 'Month Wise': false, blockedFlats: true, cancelledFlats: false, 'Refunded Flats': false, 'Refunded Cheques': false, paymentReceived: true, Cheques: false, Cash: false, NEFT: false, 'In Process': false, Cleared: false, Bounced: false, Adjustment: false, paymentStatus: false, 'Complete Payment': false, 'Balance Payment': false, 'No Payment': false, flatsVerification: false, loan: false, 'Loaned Flats': false, 'Loan Documents': false, All: false, flatsStatus: true, Mortgaged: false, flatsSummary: true, projectSnapshot: true, 'View Coupons': false, 'Installment Report': false, 'CLP Report': false, 'Final Report': false, 'Today Report': false, 'Datewise Report': false, setReminder: true, constructionUpdates: true, flatCustomization: true, 'Activity Type': false, Customize: false, 'View Customization': false, handoverActivities: true, 'Add Activity': false, 'Add Subactivity': false, 'Flat H.over Activity': false, 'View Flat H.A.': false, documentsSection: true, 'Upload Common Docs': false, 'View Common Docs': false, 'Upload Flat Docs': false, 'View Flat Docs': false, 'Upload Legal Docs': false, 'View Legal Docs': false, 'Upload Flat Legal Docs': false, 'View Flat Legal Docs': false, reports: true, 'User Logs': false },
-    'Accounts': { manage: false, 'Manage Bank': false, 'Favouring Bank': false, 'Manage User': false, 'Access Roles': false, 'Add User': false, 'Disable User': false, 'Manage Channel Partner': false, 'Manage Commission': true, 'Add Commission': true, 'Calculate Interest': true, 'Construction Stages': false, newBooking: false, blockInventory: true, 'Floor wise': false, 'Block wise': false, 'Size wise': false, customer: true, 'No Discount': false, 'Extra Discount': false, 'Extra Payment': true, 'Signed BBA': false, 'Unsigned BBA': false, channelPartners: false, 'Add Channel Partner': false, 'View All': false, 'Release Commission': false, 'Paid Commission': false, bookedFlats: false, 'Floor Wise': false, 'Block Wise': false, 'Size Wise': false, 'Month Wise': false, blockedFlats: false, cancelledFlats: true, 'Refunded Flats': true, 'Refunded Cheques': true, paymentReceived: true, Cheques: true, Cash: true, NEFT: true, 'In Process': true, Cleared: true, Bounced: true, Adjustment: true, paymentStatus: true, 'Complete Payment': true, 'Balance Payment': true, 'No Payment': true, flatsVerification: false, loan: false, 'Loaned Flats': false, 'Loan Documents': false, All: false, flatsStatus: false, Mortgaged: false, flatsSummary: false, projectSnapshot: false, 'View Coupons': false, 'Installment Report': false, 'CLP Report': false, 'Final Report': false, 'Today Report': false, 'Datewise Report': false, setReminder: false, constructionUpdates: false, flatCustomization: false, 'Activity Type': false, Customize: false, 'View Customization': false, handoverActivities: false, 'Add Activity': false, 'Add Subactivity': false, 'Flat H.over Activity': false, 'View Flat H.A.': false, documentsSection: false, 'Upload Common Docs': false, 'View Common Docs': false, 'Upload Flat Docs': false, 'View Flat Docs': false, 'Upload Legal Docs': false, 'View Legal Docs': false, 'Upload Flat Legal Docs': false, 'View Flat Legal Docs': false, reports: false, 'User Logs': false },
-    'Customer': { manage: false, 'Manage Bank': false, 'Favouring Bank': false, 'Manage User': false, 'Access Roles': false, 'Add User': false, 'Disable User': false, 'Manage Channel Partner': false, 'Manage Commission': false, 'Add Commission': false, 'Calculate Interest': false, 'Construction Stages': false, newBooking: false, blockInventory: false, 'Floor wise': false, 'Block wise': false, 'Size wise': false, customer: true, 'No Discount': false, 'Extra Discount': false, 'Extra Payment': false, 'Signed BBA': false, 'Unsigned BBA': false, channelPartners: false, 'Add Channel Partner': false, 'View All': false, 'Release Commission': false, 'Paid Commission': false, bookedFlats: false, 'Floor Wise': false, 'Block Wise': false, 'Size Wise': false, 'Month Wise': false, blockedFlats: false, cancelledFlats: false, 'Refunded Flats': false, 'Refunded Cheques': false, paymentReceived: false, Cheques: false, Cash: false, NEFT: false, 'In Process': false, Cleared: false, Bounced: false, Adjustment: false, paymentStatus: false, 'Complete Payment': false, 'Balance Payment': false, 'No Payment': false, flatsVerification: false, loan: false, 'Loaned Flats': false, 'Loan Documents': false, All: false, flatsStatus: false, Mortgaged: false, flatsSummary: false, projectSnapshot: false, 'View Coupons': false, 'Installment Report': false, 'CLP Report': false, 'Final Report': false, 'Today Report': false, 'Datewise Report': false, setReminder: false, constructionUpdates: false, flatCustomization: false, 'Activity Type': false, Customize: false, 'View Customization': false, handoverActivities: false, 'Add Activity': false, 'Add Subactivity': false, 'Flat H.over Activity': false, 'View Flat H.A.': false, documentsSection: false, 'Upload Common Docs': false, 'View Common Docs': false, 'Upload Flat Docs': false, 'View Flat Docs': false, 'Upload Legal Docs': false, 'View Legal Docs': false, 'Upload Flat Legal Docs': false, 'View Flat Legal Docs': false, reports: false, 'User Logs': false },
-    'Channel Partner': { manage: false, 'Manage Bank': false, 'Favouring Bank': false, 'Manage User': false, 'Access Roles': false, 'Add User': false, 'Disable User': false, 'Manage Channel Partner': true, 'Manage Commission': false, 'Add Commission': false, 'Calculate Interest': false, 'Construction Stages': false, newBooking: true, blockInventory: true, 'Floor wise': false, 'Block wise': false, 'Size wise': false, customer: true, 'No Discount': true, 'Extra Discount': true, 'Extra Payment': false, 'Signed BBA': false, 'Unsigned BBA': false, channelPartners: true, 'Add Channel Partner': false, 'View All': true, 'Release Commission': false, 'Paid Commission': false, bookedFlats: true, 'Floor Wise': false, 'Block Wise': false, 'Size Wise': false, 'Month Wise': false, blockedFlats: true, cancelledFlats: false, 'Refunded Flats': false, 'Refunded Cheques': false, paymentReceived: false, Cheques: false, Cash: false, NEFT: false, 'In Process': false, Cleared: false, Bounced: false, Adjustment: false, paymentStatus: false, 'Complete Payment': false, 'Balance Payment': false, 'No Payment': false, flatsVerification: false, loan: false, 'Loaned Flats': false, 'Loan Documents': false, All: false, flatsStatus: false, Mortgaged: false, flatsSummary: false, projectSnapshot: false, 'View Coupons': false, 'Installment Report': false, 'CLP Report': false, 'Final Report': false, 'Today Report': false, 'Datewise Report': false, setReminder: false, constructionUpdates: false, flatCustomization: false, 'Activity Type': false, Customize: false, 'View Customization': false, handoverActivities: false, 'Add Activity': false, 'Add Subactivity': false, 'Flat H.over Activity': false, 'View Flat H.A.': false, documentsSection: false, 'Upload Common Docs': false, 'View Common Docs': false, 'Upload Flat Docs': false, 'View Flat Docs': false, 'Upload Legal Docs': false, 'View Legal Docs': false, 'Upload Flat Legal Docs': false, 'View Flat Legal Docs': false, reports: false, 'User Logs': false },
-    'Flat Customization': { manage: false, 'Manage Bank': false, 'Favouring Bank': false, 'Manage User': false, 'Access Roles': false, 'Add User': false, 'Disable User': false, 'Manage Channel Partner': false, 'Manage Commission': false, 'Add Commission': false, 'Calculate Interest': false, 'Construction Stages': true, newBooking: false, blockInventory: true, 'Floor wise': true, 'Block wise': true, 'Size wise': true, customer: false, 'No Discount': false, 'Extra Discount': false, 'Extra Payment': false, 'Signed BBA': false, 'Unsigned BBA': false, channelPartners: false, 'Add Channel Partner': false, 'View All': false, 'Release Commission': false, 'Paid Commission': false, bookedFlats: false, 'Floor Wise': false, 'Block Wise': false, 'Size Wise': false, 'Month Wise': false, blockedFlats: false, cancelledFlats: false, 'Refunded Flats': false, 'Refunded Cheques': false, paymentReceived: false, Cheques: false, Cash: false, NEFT: false, 'In Process': false, Cleared: false, Bounced: false, Adjustment: false, paymentStatus: false, 'Complete Payment': false, 'Balance Payment': false, 'No Payment': false, flatsVerification: true, loan: false, 'Loaned Flats': false, 'Loan Documents': false, All: false, flatsStatus: false, Mortgaged: false, flatsSummary: false, projectSnapshot: false, 'View Coupons': false, 'Installment Report': false, 'CLP Report': false, 'Final Report': false, 'Today Report': false, 'Datewise Report': false, setReminder: false, constructionUpdates: false, flatCustomization: true, 'Activity Type': true, Customize: true, 'View Customization': true, handoverActivities: false, 'Add Activity': false, 'Add Subactivity': false, 'Flat H.over Activity': false, 'View Flat H.A.': false, documentsSection: false, 'Upload Common Docs': false, 'View Common Docs': false, 'Upload Flat Docs': false, 'View Flat Docs': false, 'Upload Legal Docs': false, 'View Legal Docs': false, 'Upload Flat Legal Docs': false, 'View Flat Legal Docs': false, reports: false, 'User Logs': false },
-    'Legal': { manage: false, 'Manage Bank': true, 'Favouring Bank': true, 'Manage User': false, 'Access Roles': false, 'Add User': false, 'Disable User': false, 'Manage Channel Partner': false, 'Manage Commission': false, 'Add Commission': false, 'Calculate Interest': false, 'Construction Stages': false, newBooking: false, blockInventory: false, 'Floor wise': false, 'Block wise': false, 'Size wise': false, customer: false, 'No Discount': false, 'Extra Discount': false, 'Extra Payment': false, 'Signed BBA': false, 'Unsigned BBA': false, channelPartners: false, 'Add Channel Partner': false, 'View All': false, 'Release Commission': false, 'Paid Commission': false, bookedFlats: false, 'Floor Wise': false, 'Block Wise': false, 'Size Wise': false, 'Month Wise': false, blockedFlats: false, cancelledFlats: false, 'Refunded Flats': false, 'Refunded Cheques': false, paymentReceived: false, Cheques: false, Cash: false, NEFT: false, 'In Process': false, Cleared: false, Bounced: false, Adjustment: false, paymentStatus: false, 'Complete Payment': false, 'Balance Payment': false, 'No Payment': false, flatsVerification: false, loan: true, 'Loaned Flats': true, 'Loan Documents': true, All: true, flatsStatus: false, Mortgaged: false, flatsSummary: false, projectSnapshot: false, 'View Coupons': false, 'Installment Report': false, 'CLP Report': false, 'Final Report': false, 'Today Report': false, 'Datewise Report': false, setReminder: false, constructionUpdates: false, flatCustomization: false, 'Activity Type': false, Customize: false, 'View Customization': false, handoverActivities: false, 'Add Activity': false, 'Add Subactivity': false, 'Flat H.over Activity': false, 'View Flat H.A.': false, documentsSection: true, 'Upload Common Docs': true, 'View Common Docs': true, 'Upload Flat Docs': true, 'View Flat Docs': true, 'Upload Legal Docs': true, 'View Legal Docs': true, 'Upload Flat Legal Docs': true, 'View Flat Legal Docs': true, reports: false, 'User Logs': false }
-  };
+  }, [subCheckboxStates, categoriesData]);
 
   const handleRoleSelect = (role) => {
     setSelectedRole(role);
@@ -500,6 +275,63 @@ const ManageUser = ({ onPageChange }) => {
     }
   };
 
+  const handleAddUserInputChange = (field, value) => {
+    setAddUserForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleAddUserSubmit = (e) => {
+    e.preventDefault();
+    // Validate form
+    if (!addUserForm.userName || !addUserForm.password || !addUserForm.confirmPassword || !addUserForm.userLevel) {
+      alert('Please fill in all fields');
+      return;
+    }
+    if (addUserForm.password !== addUserForm.confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
+    // TODO: Add user to the system
+    console.log('Adding user:', addUserForm);
+    // Reset form
+    setAddUserForm({
+      userName: '',
+      password: '',
+      confirmPassword: '',
+      userLevel: ''
+    });
+    // Show success message
+    setShowSuccessMessage(true);
+    // Hide message after 3 seconds
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+    }, 3000);
+  };
+
+  const handleDisableUserSubmit = (e) => {
+    e.preventDefault();
+    // Validate form
+    if (!disableUserAction || !disableUserRole || !disableUserUsername) {
+      alert('Please fill in all fields');
+      return;
+    }
+    // TODO: Enable/Disable user in the system
+    console.log('User action:', disableUserAction, disableUserRole, disableUserUsername);
+    // Reset form
+    setDisableUserAction(null);
+    setDisableUserRole('');
+    setDisableUserUsername('');
+    // Show success message
+    setShowDisableUserSuccess(true);
+    // Hide message after 3 seconds
+    setTimeout(() => {
+      setShowDisableUserSuccess(false);
+    }, 3000);
+  };
+
+
   const getHeaderTitle = () => {
     switch (selectedFilter) {
       case 'accessRoles':
@@ -507,7 +339,7 @@ const ManageUser = ({ onPageChange }) => {
       case 'addUser':
         return 'Add User';
       case 'disableUser':
-        return 'Disable User';
+        return 'Manage Action';
       default:
         return 'User Management';
     }
@@ -614,7 +446,7 @@ const ManageUser = ({ onPageChange }) => {
                 const filterLabels = {
                   accessRoles: 'Access Roles',
                   addUser: 'Add User',
-                  disableUser: 'Disable User'
+                  disableUser: 'Activation'
                 };
 
                 return (
@@ -745,10 +577,269 @@ const ManageUser = ({ onPageChange }) => {
               </div>
             )}
             
-            {selectedFilter && selectedFilter !== 'accessRoles' && (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center">
-                  <p className="text-gray-500 text-lg">Content for {selectedFilter} will be added here</p>
+            {selectedFilter === 'addUser' && (
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="w-full max-w-2xl">
+                  <form onSubmit={handleAddUserSubmit} className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+                  {/* User Name */}
+                  <div className="mb-4">
+                    <label className="block text-gray-800 font-semibold mb-2" style={{ fontSize: '0.9rem' }}>
+                      User Name
+                    </label>
+                    <input
+                      type="text"
+                      value={addUserForm.userName}
+                      onChange={(e) => handleAddUserInputChange('userName', e.target.value)}
+                      className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      placeholder="Enter user name"
+                    />
+                  </div>
+
+                  {/* Password */}
+                  <div className="mb-4">
+                    <label className="block text-gray-800 font-semibold mb-2" style={{ fontSize: '0.9rem' }}>
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      value={addUserForm.password}
+                      onChange={(e) => handleAddUserInputChange('password', e.target.value)}
+                      className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      placeholder="Enter password"
+                    />
+                  </div>
+
+                  {/* Confirm Password */}
+                  <div className="mb-4">
+                    <label className="block text-gray-800 font-semibold mb-2" style={{ fontSize: '0.9rem' }}>
+                      Confirm Password
+                    </label>
+                    <input
+                      type="password"
+                      value={addUserForm.confirmPassword}
+                      onChange={(e) => handleAddUserInputChange('confirmPassword', e.target.value)}
+                      className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      placeholder="Confirm password"
+                    />
+                  </div>
+
+                  {/* Select User Level */}
+                  <div className="mb-6">
+                    <label className="block text-gray-800 font-semibold mb-2" style={{ fontSize: '0.9rem' }}>
+                      Select User Level
+                    </label>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setShowAddUserDropdown(!showAddUserDropdown)}
+                        className="w-full text-left bg-white border-2 border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm hover:shadow"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className={`text-sm ${addUserForm.userLevel ? 'text-gray-900' : 'text-gray-500'}`}>
+                            {addUserForm.userLevel || '--Select User Level--'}
+                          </span>
+                          <HiChevronDown className={`text-gray-600 transition-transform duration-200 ${showAddUserDropdown ? 'rotate-180' : ''}`} size={16} />
+                        </div>
+                      </button>
+                      
+                      {showAddUserDropdown && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-auto">
+                          {userRoles.filter(role => role !== '--Select User Level--').map((role, index) => (
+                            <button
+                              key={index}
+                              type="button"
+                              onClick={() => {
+                                handleAddUserInputChange('userLevel', role);
+                                setShowAddUserDropdown(false);
+                              }}
+                              className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                                addUserForm.userLevel === role 
+                                  ? 'bg-blue-50 text-blue-700 font-medium' 
+                                  : 'hover:bg-gray-50 text-gray-700'
+                              }`}
+                            >
+                              {role}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Success Message */}
+                  {showSuccessMessage && (
+                    <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-green-800 text-sm">User added successfully!</p>
+                    </div>
+                  )}
+
+                  {/* Submit Button */}
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      className="bg-gray-800 hover:bg-gray-900 text-white font-medium py-2 px-6 rounded-lg transition-colors text-sm"
+                    >
+                      SUBMIT
+                    </button>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {selectedFilter === 'disableUser' && (
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="w-full max-w-2xl">
+                  <form onSubmit={handleDisableUserSubmit} className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+                    {/* Enable/Disable User Checkboxes */}
+                    <div className="mb-6">
+                      <label className="block text-gray-800 font-semibold mb-3" style={{ fontSize: '0.9rem' }}>
+                        Select Action
+                      </label>
+                      <div className="flex gap-6">
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            id="enableUser"
+                            checked={disableUserAction === 'enable'}
+                            onChange={() => setDisableUserAction(disableUserAction === 'enable' ? null : 'enable')}
+                            className="w-4 h-4 cursor-pointer"
+                          />
+                          <label htmlFor="enableUser" className="ml-2 text-gray-700 cursor-pointer">
+                            Enable User
+                          </label>
+                        </div>
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            id="disableUserAction"
+                            checked={disableUserAction === 'disable'}
+                            onChange={() => {
+                              if (disableUserAction !== 'disable') {
+                                setDisableUserAction('disable');
+                              } else {
+                                setDisableUserAction(null);
+                              }
+                            }}
+                            className="w-4 h-4 cursor-pointer"
+                          />
+                          <label htmlFor="disableUserAction" className="ml-2 text-gray-700 cursor-pointer">
+                            Disable User
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Select User Level */}
+                    {disableUserAction && (
+                      <div className="mb-4">
+                        <label className="block text-gray-800 font-semibold mb-2" style={{ fontSize: '0.9rem' }}>
+                          Select User Level
+                        </label>
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => setShowDisableUserRoleDropdown(!showDisableUserRoleDropdown)}
+                            className="w-full text-left bg-white border-2 border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm hover:shadow"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className={`text-sm ${disableUserRole ? 'text-gray-900' : 'text-gray-500'}`}>
+                                {disableUserRole || '--Select User Level--'}
+                              </span>
+                              <HiChevronDown className={`text-gray-600 transition-transform duration-200 ${showDisableUserRoleDropdown ? 'rotate-180' : ''}`} size={16} />
+                            </div>
+                          </button>
+                          
+                          {showDisableUserRoleDropdown && (
+                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-auto">
+                              {userRoles.filter(role => role !== '--Select User Level--').map((role, index) => (
+                                <button
+                                  key={index}
+                                  type="button"
+                                  onClick={() => {
+                                    setDisableUserRole(role);
+                                    setShowDisableUserRoleDropdown(false);
+                                    setDisableUserUsername(''); // Reset username when role changes
+                                  }}
+                                  className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                                    disableUserRole === role 
+                                      ? 'bg-blue-50 text-blue-700 font-medium' 
+                                      : 'hover:bg-gray-50 text-gray-700'
+                                  }`}
+                                >
+                                  {role}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Select Username */}
+                    {disableUserAction && disableUserRole && (
+                      <div className="mb-6">
+                        <label className="block text-gray-800 font-semibold mb-2" style={{ fontSize: '0.9rem' }}>
+                          Select Username
+                        </label>
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => setShowDisableUserUsernameDropdown(!showDisableUserUsernameDropdown)}
+                            className="w-full text-left bg-white border-2 border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm hover:shadow"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className={`text-sm ${disableUserUsername ? 'text-gray-900' : 'text-gray-500'}`}>
+                                {disableUserUsername || '--Select Username--'}
+                              </span>
+                              <HiChevronDown className={`text-gray-600 transition-transform duration-200 ${showDisableUserUsernameDropdown ? 'rotate-180' : ''}`} size={16} />
+                            </div>
+                          </button>
+                          
+                          {showDisableUserUsernameDropdown && (
+                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-auto">
+                              {getManageUserUsernamesForRole(disableUserRole).map((username, index) => (
+                                <button
+                                  key={index}
+                                  type="button"
+                                  onClick={() => {
+                                    setDisableUserUsername(username);
+                                    setShowDisableUserUsernameDropdown(false);
+                                  }}
+                                  className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                                    disableUserUsername === username 
+                                      ? 'bg-blue-50 text-blue-700 font-medium' 
+                                      : 'hover:bg-gray-50 text-gray-700'
+                                  }`}
+                                >
+                                  {username}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Success Message */}
+                    {showDisableUserSuccess && (
+                      <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <p className="text-green-800 text-sm">User {disableUserAction === 'enable' ? 'enabled' : 'disabled'} successfully!</p>
+                      </div>
+                    )}
+
+                    {/* Submit Button */}
+                    {disableUserAction && disableUserRole && disableUserUsername && (
+                      <div className="flex justify-end">
+                        <button
+                          type="submit"
+                          className="bg-gray-800 hover:bg-gray-900 text-white font-medium py-2 px-6 rounded-lg transition-colors text-sm"
+                        >
+                          SUBMIT
+                        </button>
+                      </div>
+                    )}
+                  </form>
                 </div>
               </div>
             )}

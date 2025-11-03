@@ -41,13 +41,23 @@ import UploadLoanDoc from "./Dashboard_Admin/UploadLoanDoc";
 import CompletePayment from "./Dashboard_Admin/CompletePayment";
 import BalancePayment from "./Dashboard_Admin/BalancePayment";
 import NoPayment from "./Dashboard_Admin/NoPayment";
+import NoDiscount from "./Dashboard_Admin/NoDiscount";
+import ExtraDiscount from "./Dashboard_Admin/ExtraDiscount";
+import ExtraPayment from "./Dashboard_Admin/ExtraPayment";
+import BBASigned from "./Dashboard_Admin/BBASigned";
+import UnsignedBBA from "./Dashboard_Admin/UnsignedBBA";
 import Cheque from "./Dashboard_Admin/Cheque";
 import Cash from "./Dashboard_Admin/Cash";
 import NEFT from "./Dashboard_Admin/NEFT";
 import ManageBank from "./Dashboard_Admin/ManageBank";
 import ManageUser from "./Dashboard_Admin/ManageUser";
+import ManageCommission from "./Dashboard_Admin/ManageCommission";
+import ConstructionStages from "./Dashboard_Admin/ConstructionStages";
 import Flat from "./Dashboard_Admin/Flat";
 import Projects from "./Dashboard_Admin/Projects";
+import NewProject from "./Dashboard_Admin/NewProject";
+import AddPartner from "./Dashboard_Admin/AddPartner";
+import ViewAll from "./Dashboard_Admin/ViewAll";
 import Dashboard from "./Dashboard_Admin/Dashboard";
 import CommonDocs from "./Dashboard_Admin/CommonDocs";
 import FlatDocs from "./Dashboard_Admin/FlatDocs";
@@ -433,8 +443,8 @@ const Layout = ({
         alert('New Staff feature - Coming soon!');
         break;
       case 'new-projects':
-        // Navigate to projects page or open project popup
-        onPageChange('projects');
+        // Navigate to new project page
+        onPageChange('newProject');
         break;
       default:
         console.log(`Quick tool clicked: ${tool}`);
@@ -642,6 +652,16 @@ const Layout = ({
               </div>
             </div>
           );
+        case "newProject":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <NewProject key={`newProject-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
         case "userLogs":
           return (
             <div
@@ -671,12 +691,10 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <LoanDocument
-                  key={`loanDocument-${animationKey}`}
-                  onPageChange={onPageChange}
-                />
-              </div>
+              <LoanDocument
+                key={`loanDocument-${animationKey}`}
+                onPageChange={onPageChange}
+              />
             </div>
           );
         case "uploadLoanDoc":
@@ -686,12 +704,10 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <UploadLoanDoc
-                  key={`uploadLoanDoc-${animationKey}`}
-                  onPageChange={onPageChange}
-                />
-              </div>
+              <UploadLoanDoc
+                key={`uploadLoanDoc-${animationKey}`}
+                onPageChange={onPageChange}
+              />
             </div>
           );
         case "completePayment":
@@ -701,12 +717,10 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <CompletePayment
-                  key={`completePayment-${animationKey}`}
-                  onPageChange={onPageChange}
-                />
-              </div>
+              <CompletePayment
+                key={`completePayment-${animationKey}`}
+                onPageChange={onPageChange}
+              />
             </div>
           );
         case "balancePayment":
@@ -716,12 +730,10 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <BalancePayment
-                  key={`balancePayment-${animationKey}`}
-                  onPageChange={onPageChange}
-                />
-              </div>
+              <BalancePayment
+                key={`balancePayment-${animationKey}`}
+                onPageChange={onPageChange}
+              />
             </div>
           );
         case "noPayment":
@@ -731,12 +743,75 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <NoPayment
-                  key={`noPayment-${animationKey}`}
-                  onPageChange={onPageChange}
-                />
-              </div>
+              <NoPayment
+                key={`noPayment-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "noDiscount":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <NoDiscount
+                key={`noDiscount-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "extraDiscount":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <ExtraDiscount
+                key={`extraDiscount-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "extraPayment":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <ExtraPayment
+                key={`extraPayment-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "signedBBA":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <BBASigned
+                key={`signedBBA-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "unsignedBBA":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <UnsignedBBA
+                key={`unsignedBBA-${animationKey}`}
+                onPageChange={onPageChange}
+              />
             </div>
           );
         case "cheque":
@@ -746,12 +821,10 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <Cheque
-                  key={`cheque-${animationKey}`}
-                  onPageChange={onPageChange}
-                />
-              </div>
+              <Cheque
+                key={`cheque-${animationKey}`}
+                onPageChange={onPageChange}
+              />
             </div>
           );
         case "cash":
@@ -761,12 +834,10 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <Cash
-                  key={`cash-${animationKey}`}
-                  onPageChange={onPageChange}
-                />
-              </div>
+              <Cash
+                key={`cash-${animationKey}`}
+                onPageChange={onPageChange}
+              />
             </div>
           );
         case "neft":
@@ -776,12 +847,10 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <NEFT
-                  key={`neft-${animationKey}`}
-                  onPageChange={onPageChange}
-                />
-              </div>
+              <NEFT
+                key={`neft-${animationKey}`}
+                onPageChange={onPageChange}
+              />
             </div>
           );
         case "manageBank":
@@ -791,12 +860,10 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <ManageBank
-                  key={`manageBank-${animationKey}`}
-                  onPageChange={onPageChange}
-                />
-              </div>
+              <ManageBank
+                key={`manageBank-${animationKey}`}
+                onPageChange={onPageChange}
+              />
             </div>
           );
         case "manageUser":
@@ -806,12 +873,62 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <ManageUser
-                  key={`manageUser-${animationKey}`}
-                  onPageChange={onPageChange}
-                />
-              </div>
+              <ManageUser
+                key={`manageUser-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "manageCommission":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <ManageCommission
+                key={`manageCommission-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "constructionStages":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <ConstructionStages
+                key={`constructionStages-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "addPartner":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <AddPartner
+                key={`addPartner-${animationKey}`}
+                onPageChange={onPageChange}
+              />
+            </div>
+          );
+        case "viewAll":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <ViewAll
+                key={`viewAll-${animationKey}`}
+                onPageChange={onPageChange}
+              />
             </div>
           );
         case "documents":

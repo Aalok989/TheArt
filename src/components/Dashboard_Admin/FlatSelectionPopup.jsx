@@ -1,22 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HiX } from 'react-icons/hi';
+import { fetchBlocks, fetchFlatStatus } from '../../api/mockData';
 
 const FlatSelectionPopup = ({ isOpen, onClose, onSelect }) => {
   const [selectedBlock, setSelectedBlock] = useState('');
   const [selectedFlat, setSelectedFlat] = useState('');
+  const [blocks, setBlocks] = useState([]);
+  const [flats, setFlats] = useState({});
 
-  // Sample blocks and flats - can be fetched from API
-  const blocks = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-  const flats = {
-    'A': ['A101', 'A102', 'A103', 'A104', 'A201', 'A202', 'A203', 'A204'],
-    'B': ['B101', 'B102', 'B103', 'B104', 'B201', 'B202', 'B203', 'B204'],
-    'C': ['C101', 'C102', 'C103', 'C104', 'C201', 'C202', 'C203', 'C204'],
-    'D': ['D101', 'D102', 'D103', 'D104', 'D201', 'D202', 'D203', 'D204'],
-    'E': ['E101', 'E102', 'E103', 'E104', 'E201', 'E202', 'E203', 'E204'],
-    'F': ['F101', 'F102', 'F103', 'F104', 'F201', 'F202', 'F203', 'F204'],
-    'G': ['G101', 'G102', 'G103', 'G104', 'G201', 'G202', 'G203', 'G204'],
-    'H': ['H101', 'H102', 'H103', 'H104', 'H201', 'H202', 'H203', 'H204'],
-  };
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [blocksRes, flatStatusRes] = await Promise.all([
+          fetchBlocks(),
+          fetchFlatStatus()
+        ]);
+        
+        if (blocksRes.success) {
+          setBlocks(blocksRes.data || []);
+        }
+        
+        if (flatStatusRes.success && flatStatusRes.data) {
+          const flatsMap = {};
+          (flatStatusRes.data.flats || []).forEach(flat => {
+            if (!flatsMap[flat.block]) {
+              flatsMap[flat.block] = [];
+            }
+            if (!flatsMap[flat.block].includes(flat.flatNo)) {
+              flatsMap[flat.block].push(flat.flatNo);
+            }
+          });
+          setFlats(flatsMap);
+        }
+      } catch (error) {
+        console.error('Error loading flat selection data:', error);
+      }
+    };
+    
+    if (isOpen) {
+      loadData();
+    }
+  }, [isOpen]);
 
   const handleProceed = () => {
     if (!selectedBlock || !selectedFlat) {

@@ -74,44 +74,59 @@ const Megamenu = ({ isOpen, onClose, triggerRef, type = 'services', onPageChange
                 <div className="border-t border-gray-200 mb-3"></div>
                  <ul className="space-y-1">
                    <li>
-                     <a
-                       href="#"
-                       className="text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat block py-1 px-2 rounded hover:bg-gray-50"
+                     <button
+                       onClick={() => {
+                         onPageChange('noDiscount');
+                         onClose();
+                       }}
+                       className="block w-full text-left text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat py-1 px-2 rounded hover:bg-gray-50"
                      >
                        No Discount
-                     </a>
+                     </button>
                    </li>
                    <li>
-                     <a
-                       href="#"
-                       className="text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat block py-1 px-2 rounded hover:bg-gray-50"
+                     <button
+                       onClick={() => {
+                         onPageChange('extraDiscount');
+                         onClose();
+                       }}
+                       className="block w-full text-left text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat py-1 px-2 rounded hover:bg-gray-50"
                      >
                        Extra Discount
-                     </a>
+                     </button>
                    </li>
                    <li>
-                     <a
-                       href="#"
-                       className="text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat block py-1 px-2 rounded hover:bg-gray-50"
+                     <button
+                       onClick={() => {
+                         onPageChange('extraPayment');
+                         onClose();
+                       }}
+                       className="block w-full text-left text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat py-1 px-2 rounded hover:bg-gray-50"
                      >
                        Extra Payment
-                     </a>
+                     </button>
                    </li>
                    <li>
-                     <a
-                       href="#"
-                       className="text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat block py-1 px-2 rounded hover:bg-gray-50"
+                     <button
+                       onClick={() => {
+                         onPageChange('signedBBA');
+                         onClose();
+                       }}
+                       className="block w-full text-left text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat py-1 px-2 rounded hover:bg-gray-50"
                      >
                        Signed BBA
-                     </a>
+                     </button>
                    </li>
                    <li>
-                     <a
-                       href="#"
-                       className="text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat block py-1 px-2 rounded hover:bg-gray-50"
+                     <button
+                       onClick={() => {
+                         onPageChange('unsignedBBA');
+                         onClose();
+                       }}
+                       className="block w-full text-left text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat py-1 px-2 rounded hover:bg-gray-50"
                      >
                        Unsigned BBA
-                     </a>
+                     </button>
                    </li>
                  </ul>
               </div>
@@ -126,20 +141,26 @@ const Megamenu = ({ isOpen, onClose, triggerRef, type = 'services', onPageChange
                 <div className="border-t border-gray-200 mb-3"></div>
                  <ul className="space-y-1">
                    <li>
-                     <a
-                       href="#"
-                       className="text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat block py-1 px-2 rounded hover:bg-gray-50"
+                     <button
+                       onClick={() => {
+                         onPageChange('addPartner');
+                         onClose();
+                       }}
+                       className="block w-full text-left text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat py-1 px-2 rounded hover:bg-gray-50"
                      >
                        Add Partner
-                     </a>
+                     </button>
                    </li>
                    <li>
-                     <a
-                       href="#"
-                       className="text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat block py-1 px-2 rounded hover:bg-gray-50"
+                     <button
+                       onClick={() => {
+                         onPageChange('viewAll');
+                         onClose();
+                       }}
+                       className="block w-full text-left text-sm text-gray-700 hover:text-orange-600 transition-colors duration-200 font-montserrat py-1 px-2 rounded hover:bg-gray-50"
                      >
                        View All
-                     </a>
+                     </button>
                    </li>
                    <li>
                      <a

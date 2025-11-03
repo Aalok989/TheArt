@@ -66,6 +66,58 @@ class SimpleApiClient {
     });
   }
 
+  async postFormData(endpoint, formData) {
+    const url = `${this.baseURL}${endpoint}`;
+    
+    const config = {
+      method: 'POST',
+      body: formData,
+      // Don't set Content-Type header - browser will set it automatically with boundary for FormData
+    };
+
+    // Add auth token if available
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers = {
+        Authorization: `Token ${token}`,
+      };
+    }
+
+    try {
+      const response = await fetch(url, config);
+      
+      if (!response.ok) {
+        let errorMessage = `HTTP ${response.status}`;
+        
+        try {
+          const errorData = await response.json();
+          if (errorData.non_field_errors) {
+            errorMessage = errorData.non_field_errors.join(', ');
+          } else if (errorData.detail) {
+            errorMessage = errorData.detail;
+          } else {
+            // Collect all field errors
+            const fieldErrors = Object.entries(errorData)
+              .map(([field, errors]) => `${field}: ${Array.isArray(errors) ? errors.join(', ') : errors}`)
+              .join('; ');
+            if (fieldErrors) {
+              errorMessage = fieldErrors;
+            }
+          }
+        } catch {
+          errorMessage = response.statusText || `HTTP ${response.status}`;
+        }
+        
+        throw new Error(errorMessage);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
+  }
+
   async get(endpoint) {
     return this.request(endpoint, { method: 'GET' });
   }
@@ -190,6 +242,71 @@ export const customerAPI = {
 
   async getDocuments() {
     return api.get('/customer/booking-documents/');
+  }
+};
+
+// Properties/Projects API methods
+export const propertiesAPI = {
+  async getProjects() {
+    const response = await api.get('/properties/projects/');
+    // Transform API response to match component expectations
+    const projects = Array.isArray(response) ? response : (response ? [response] : []);
+    return projects.map(project => ({
+      id: project.id,
+      name: project.name,
+      location: project.location,
+      builder: project.builder || '',
+      description: project.description || '',
+      startDate: project.start_date || '',
+      endDate: project.end_date || '',
+      isActive: project.is_active !== undefined ? project.is_active : true,
+      createdAt: project.created_at || '',
+      logo: project.logo,
+      headerImage: project.header,
+      footerImage: project.footer,
+      projectType: project.project_type,
+      unitType: project.unit_type,
+      blocks: project.blocks || [] // If blocks come from API
+    }));
+  },
+
+  async createProject(projectData) {
+    const formData = new FormData();
+    
+    // Add text fields
+    formData.append('name', projectData.name);
+    formData.append('location', projectData.location);
+    formData.append('description', projectData.description || '');
+    
+    // Add optional fields if provided
+    if (projectData.projectType) {
+      formData.append('project_type', projectData.projectType);
+    }
+    if (projectData.unitType) {
+      formData.append('unit_type', projectData.unitType);
+    }
+    if (projectData.startDate) {
+      formData.append('start_date', projectData.startDate);
+    }
+    if (projectData.endDate) {
+      formData.append('end_date', projectData.endDate);
+    }
+    if (projectData.isActive !== undefined) {
+      formData.append('is_active', projectData.isActive);
+    }
+    
+    // Add file uploads if provided
+    if (projectData.logo && projectData.logo instanceof File) {
+      formData.append('logo', projectData.logo);
+    }
+    if (projectData.headerImage && projectData.headerImage instanceof File) {
+      formData.append('header', projectData.headerImage);
+    }
+    if (projectData.footerImage && projectData.footerImage instanceof File) {
+      formData.append('footer', projectData.footerImage);
+    }
+    
+    return api.postFormData('/properties/projects/', formData);
   }
 };
 

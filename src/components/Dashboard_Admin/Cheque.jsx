@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { FiCopy } from 'react-icons/fi';
 import { FaFileExcel, FaFilePdf } from 'react-icons/fa';
 import { HiChevronDown, HiChevronLeft, HiChevronRight, HiX } from 'react-icons/hi';
-import { fetchMonths, fetchYears } from '../../api/mockData';
+import { fetchMonths, fetchYears, fetchChequeData } from '../../api/mockData';
 
 const Cheque = ({ onPageChange }) => {
   const [expandedFilters, setExpandedFilters] = useState(new Set());
@@ -41,24 +41,16 @@ const Cheque = ({ onPageChange }) => {
 
   const statusScrollRef = useRef(null);
 
-  // Mock data
-  const mockChequeData = [
-    { srNo: 1, flatNo: 'A103', customer: 'RAJ KUMAR REDDY KOMMIDI', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '277726', chequeAmount: '17867', amount: '17867', onAccountOf: 'Service Tax', bank: 'HDFC', date: '2021-05-12', status: 'In Process', account: '', remarks: '', updatedBy: 'bhavani', favor: 'ORCHID', receivingDate: '', clearingDate: '', receiverBank: 'NA' },
-    { srNo: 2, flatNo: 'A501', customer: 'BIKUMALLA ASHOK', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '000018', chequeAmount: '62527', amount: '62527', onAccountOf: 'Service Tax', bank: 'ICICI', date: '2021-07-10', status: 'In Process', account: '007605004803', remarks: '', updatedBy: 'bhavani', favor: 'ORCHID', receivingDate: '', clearingDate: '', receiverBank: 'NA' },
-    { srNo: 3, flatNo: 'A102', customer: 'PRIYA SHARMA', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '277727', chequeAmount: '25000', amount: '25000', onAccountOf: 'Booking Advance', bank: 'HDFC', date: '2021-06-15', status: 'Cleared', account: '007605004802', remarks: '', updatedBy: 'admin', favor: 'ORCHID', receivingDate: '', clearingDate: '', receiverBank: 'NA' },
-    { srNo: 4, flatNo: 'B201', customer: 'AMIT SINGH', paymentPlan: 'Regular', channelPartner: 'GHPL', chequeNo: '000019', chequeAmount: '50000', amount: '50000', onAccountOf: 'Agreement Sale', bank: 'ICICI', date: '2021-08-20', status: 'Bounced', account: '', remarks: 'Insufficient funds', updatedBy: 'admin', favor: 'ORCHID', receivingDate: '', clearingDate: '', receiverBank: 'NA' },
-    { srNo: 5, flatNo: 'C301', customer: 'SUNITA DEVI', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '277728', chequeAmount: '30000', amount: '30000', onAccountOf: 'Installment', bank: 'HDFC', date: '2021-09-05', status: 'Cleared', account: '007605004804', remarks: '', updatedBy: 'bhavani', favor: 'ORCHID', receivingDate: '', clearingDate: '', receiverBank: 'NA' },
-  ];
-
   const statuses = ['In Process', 'Cleared', 'Bounced'];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [monthsRes, yearsRes] = await Promise.all([
+        const [monthsRes, yearsRes, chequeRes] = await Promise.all([
           fetchMonths(),
-          fetchYears()
+          fetchYears(),
+          fetchChequeData()
         ]);
         if (monthsRes.success) {
           setMonths(monthsRes.data || []);
@@ -66,8 +58,9 @@ const Cheque = ({ onPageChange }) => {
         if (yearsRes.success) {
           setYears(yearsRes.data || []);
         }
-        // Set mock data
-        setChequeData(mockChequeData);
+        if (chequeRes.success) {
+          setChequeData(chequeRes.data || []);
+        }
       } catch (error) {
         console.error('Error fetching cheque data:', error);
       } finally {

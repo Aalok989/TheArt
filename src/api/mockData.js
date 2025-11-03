@@ -497,6 +497,36 @@ const bookedFlatsDetails = [
   },
   {
     flatNo: 'C302', customerName: 'CHILUKURI RAMA KRISHNA', coApplicantName: '—', email: 'hrkrishna@gmail.com', contactNo: '8463924759', panNo: 'AEHPC6394L', bookingDate: '07-01-2022', dealer: 'GHPL', paymentPlan: 'CLP', area: '1500', companyRate: '5000', loginRate: '5500', totalCost: '56584500', dueAmount: '6819000', pendingAmount: '6819000', paidAmount: '0', cleared: '0', dueTax: '340953', pendingTax: '340953', paidTax: '0', clearedTax: '0', totalPending: '7159953'
+  },
+  {
+    flatNo: 'B117', customerName: 'RAGHAVENDER YADGIRKAR', coApplicantName: '—', email: 'yadgirkar_y@rediffmail.com', contactNo: '9849037894', panNo: 'AYPYG1234L', bookingDate: '16-04-2021', dealer: 'GHPL', paymentPlan: 'CLP', area: '1171', companyRate: '5000', loginRate: '5000', totalCost: '5855000', dueAmount: '5000000', pendingAmount: '500000', paidAmount: '855000', cleared: '855000', dueTax: '250000', pendingTax: '25000', paidTax: '42750', clearedTax: '42750', totalPending: '525000'
+  },
+  {
+    flatNo: 'A201', customerName: 'PRASAD REDDY', coApplicantName: '—', email: 'prasad.reddy@gmail.com', contactNo: '9876543211', panNo: 'ABCPR1234A', bookingDate: '15-03-2021', dealer: 'GHPL', paymentPlan: 'CLP', area: '1171', companyRate: '5000', loginRate: '5000', totalCost: '5855000', dueAmount: '4500000', pendingAmount: '350000', paidAmount: '1355000', cleared: '1355000', dueTax: '225000', pendingTax: '17500', paidTax: '67750', clearedTax: '67750', totalPending: '367500'
+  },
+  {
+    flatNo: 'B205', customerName: 'KAVITHA SHARMA', coApplicantName: 'RAJESH SHARMA', email: 'kavitha.sharma@yahoo.com', contactNo: '9765432109', panNo: 'DEFKS5678B', bookingDate: '22-05-2021', dealer: 'GHPL', paymentPlan: 'CLP', area: '1231', companyRate: '5000', loginRate: '5000', totalCost: '6155000', dueAmount: '4800000', pendingAmount: '800000', paidAmount: '1355000', cleared: '1355000', dueTax: '240000', pendingTax: '40000', paidTax: '67750', clearedTax: '67750', totalPending: '840000'
+  },
+  {
+    flatNo: 'C401', customerName: 'ANAND KUMAR', coApplicantName: '—', email: 'anand.kumar@email.com', contactNo: '9654321098', panNo: 'GHIAK9012C', bookingDate: '08-07-2021', dealer: 'HDFC', paymentPlan: 'EMI', area: '1386', companyRate: '5000', loginRate: '5000', totalCost: '6930000', dueAmount: '5200000', pendingAmount: '300000', paidAmount: '1730000', cleared: '1730000', dueTax: '260000', pendingTax: '15000', paidTax: '86500', clearedTax: '86500', totalPending: '315000'
+  },
+  {
+    flatNo: 'A306', customerName: 'SUNITA DEVI', coApplicantName: 'MOHAN LAL', email: 'sunita.devi@gmail.com', contactNo: '9543210987', panNo: 'JKLSM3456D', bookingDate: '14-09-2021', dealer: 'GHPL', paymentPlan: 'CLP', area: '1500', companyRate: '5000', loginRate: '5000', totalCost: '7500000', dueAmount: '5500000', pendingAmount: '1000000', paidAmount: '2000000', cleared: '2000000', dueTax: '275000', pendingTax: '50000', paidTax: '100000', clearedTax: '100000', totalPending: '1050000'
+  },
+  {
+    flatNo: 'B312', customerName: 'VIKRAM SINGH', coApplicantName: '—', email: 'vikram.singh@email.com', contactNo: '9432109876', panNo: 'MNOVI7890E', bookingDate: '25-11-2021', dealer: 'GHPL', paymentPlan: 'CLP', area: '1171', companyRate: '5000', loginRate: '5000', totalCost: '5855000', dueAmount: '4200000', pendingAmount: '650000', paidAmount: '1655000', cleared: '1655000', dueTax: '210000', pendingTax: '32500', paidTax: '82750', clearedTax: '82750', totalPending: '682500'
+  },
+  {
+    flatNo: 'C203', customerName: 'PRIYA PATEL', coApplicantName: 'AMIT PATEL', email: 'priya.patel@gmail.com', contactNo: '9321098765', panNo: 'PQRPP2345F', bookingDate: '03-01-2022', dealer: 'GHPL', paymentPlan: 'CLP', area: '1231', companyRate: '5000', loginRate: '5000', totalCost: '6155000', dueAmount: '4400000', pendingAmount: '900000', paidAmount: '1755000', cleared: '1755000', dueTax: '220000', pendingTax: '45000', paidTax: '87750', clearedTax: '87750', totalPending: '945000'
+  },
+  {
+    flatNo: 'A408', customerName: 'RAJENDRA KUMAR', coApplicantName: '—', email: 'rajendra.kumar@yahoo.com', contactNo: '9210987654', panNo: 'STURK4567G', bookingDate: '18-02-2022', dealer: 'HDFC', paymentPlan: 'EMI', area: '1386', companyRate: '5000', loginRate: '5000', totalCost: '6930000', dueAmount: '5000000', pendingAmount: '1200000', paidAmount: '1930000', cleared: '1930000', dueTax: '250000', pendingTax: '60000', paidTax: '96500', clearedTax: '96500', totalPending: '1260000'
+  },
+  {
+    flatNo: 'B109', customerName: 'LAKSHMI NARAYANAN', coApplicantName: 'SURESH NARAYANAN', email: 'lakshmi.n@gmail.com', contactNo: '9109876543', panNo: 'VWXLN5678H', bookingDate: '12-04-2022', dealer: 'GHPL', paymentPlan: 'CLP', area: '1500', companyRate: '5000', loginRate: '5000', totalCost: '7500000', dueAmount: '5300000', pendingAmount: '700000', paidAmount: '2200000', cleared: '2200000', dueTax: '265000', pendingTax: '35000', paidTax: '110000', clearedTax: '110000', totalPending: '735000'
+  },
+  {
+    flatNo: 'C305', customerName: 'MAHESH REDDY', coApplicantName: '—', email: 'mahesh.reddy@email.com', contactNo: '9098765432', panNo: 'YZAMR6789I', bookingDate: '30-06-2022', dealer: 'GHPL', paymentPlan: 'CLP', area: '1171', companyRate: '5000', loginRate: '5000', totalCost: '5855000', dueAmount: '4100000', pendingAmount: '550000', paidAmount: '1755000', cleared: '1755000', dueTax: '205000', pendingTax: '27500', paidTax: '87750', clearedTax: '87750', totalPending: '577500'
   }
 ];
 
@@ -687,6 +717,112 @@ export const fetchCompletePayment = async () => {
   return {
     success: true,
     data: completePaymentData
+  };
+};
+
+// ==================== ADMIN: NO DISCOUNT DATA ====================
+// NoDiscount means flats where Company Rate equals Login Rate (no discount given)
+const noDiscountData = bookedFlatsDetails.filter(flat => 
+  flat.companyRate === flat.loginRate
+).map((flat, idx) => ({
+  srNo: idx + 1,
+  flatNo: flat.flatNo,
+  name: flat.customerName,
+  email: flat.email,
+  contactNo: flat.contactNo,
+  paymentPlan: flat.paymentPlan,
+  dealer: flat.dealer,
+  companyRate: flat.companyRate,
+  loginRate: flat.loginRate,
+  bookingDate: flat.bookingDate
+}));
+
+export const fetchNoDiscount = async () => {
+  return {
+    success: true,
+    data: noDiscountData
+  };
+};
+
+// ==================== ADMIN: EXTRA DISCOUNT DATA ====================
+// ExtraDiscount means flats where Company Rate does NOT equal Login Rate (discount given)
+const extraDiscountData = bookedFlatsDetails.filter(flat => 
+  flat.companyRate !== flat.loginRate
+).map((flat, idx) => ({
+  srNo: idx + 1,
+  flatNo: flat.flatNo,
+  name: flat.customerName,
+  email: flat.email,
+  contactNo: flat.contactNo,
+  paymentPlan: flat.paymentPlan,
+  dealer: flat.dealer,
+  companyRate: flat.companyRate,
+  loginRate: flat.loginRate,
+  bookingDate: flat.bookingDate
+}));
+
+export const fetchExtraDiscount = async () => {
+  return {
+    success: true,
+    data: extraDiscountData
+  };
+};
+
+// ==================== ADMIN: EXTRA PAYMENT DATA ====================
+// ExtraPayment shows flats with payment details (due amount, paid amount, taxes)
+const extraPaymentData = bookedFlatsDetails.map((flat, idx) => ({
+  srNo: idx + 1,
+  flatNo: flat.flatNo,
+  name: flat.customerName,
+  email: flat.email,
+  contactNo: flat.contactNo,
+  dueAmount: flat.dueAmount || '0',
+  paidAmount: flat.paidAmount || '0',
+  dueTax: flat.dueTax || '0',
+  paidTax: flat.paidTax || '0',
+  pendingTax: flat.pendingTax || '0'
+}));
+
+export const fetchExtraPayment = async () => {
+  return {
+    success: true,
+    data: extraPaymentData
+  };
+};
+
+// ==================== ADMIN: BBA SIGNED DATA ====================
+// BBASigned shows flats where BBA (Builder Buyer Agreement) is signed
+const bbaSignedData = loanDocumentsData.loans.filter(loan => 
+  loan.bbaSigned === 'Yes'
+).map((loan, idx) => ({
+  srNo: idx + 1,
+  flatNo: loan.flatNo,
+  name: loan.name,
+  contactNo: loan.contactNo
+}));
+
+export const fetchBBASigned = async () => {
+  return {
+    success: true,
+    data: bbaSignedData
+  };
+};
+
+// ==================== ADMIN: UNSIGNED BBA DATA ====================
+// UnsignedBBA shows flats where BBA (Builder Buyer Agreement) is not signed
+const unsignedBBAData = loanDocumentsData.loans.filter(loan => 
+  loan.bbaSigned === 'No'
+).map((loan, idx) => ({
+  srNo: idx + 1,
+  flatNo: loan.flatNo,
+  name: loan.name,
+  contactNo: loan.contactNo
+}));
+
+export const fetchUnsignedBBA = async () => {
+  return {
+    success: true,
+    data: unsignedBBAData
   };
 };
 
@@ -1248,6 +1384,67 @@ export const fetchBlocks = async () => {
   };
 };
 
+// Fetch blocks by project ID
+export const fetchBlocksByProject = async (projectId) => {
+  // Find project by ID
+  const project = projectsData.find(p => p.id === projectId || p.name === projectId);
+  if (project && project.blocks) {
+    return {
+      success: true,
+      data: project.blocks
+    };
+  }
+  // Fallback to default blocks if project not found
+  return {
+    success: true,
+    data: [
+      { id: 1, name: 'Block A' },
+      { id: 2, name: 'Block B' },
+      { id: 3, name: 'Block C' }
+    ]
+  };
+};
+
+// ==================== ADMIN: FLAT TEMPLATES DATA ====================
+const flatTemplatesData = [
+  {
+    id: 1,
+    name: 'Standard 2BHK',
+    flats: [
+      { flatNumber: '101', type: '2BHK', area: '1171' },
+      { flatNumber: '102', type: '2BHK', area: '1171' },
+      { flatNumber: '103', type: '2BHK', area: '1231' },
+      { flatNumber: '104', type: '2BHK', area: '1231' }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Mixed Floor',
+    flats: [
+      { flatNumber: '101', type: '2BHK', area: '1171' },
+      { flatNumber: '102', type: '3BHK', area: '1500' },
+      { flatNumber: '103', type: '2BHK', area: '1231' },
+      { flatNumber: '104', type: '3BHK', area: '1650' }
+    ]
+  },
+  {
+    id: 3,
+    name: 'Luxury Floor',
+    flats: [
+      { flatNumber: '101', type: '4BHK', area: '2000' },
+      { flatNumber: '102', type: '4BHK', area: '2100' },
+      { flatNumber: '103', type: '4BHK', area: '2200' }
+    ]
+  }
+];
+
+export const fetchFlatTemplates = async () => {
+  return {
+    success: true,
+    data: flatTemplatesData
+  };
+};
+
 // ==================== ADMIN: CUSTOMIZATION TYPES DATA ====================
 const customizationTypesData = ['Flooring', 'Painting', 'Plumbing', 'Electrical', 'Other'];
 
@@ -1291,6 +1488,468 @@ export const fetchYears = async () => {
   };
 };
 
+// ==================== ADMIN: CASH DATA ====================
+const cashData = [
+  { srNo: 1, flatNo: 'A103', channelPartner: 'GHPL', amount: '17867', date: '2021-05-12', receivedBy: 'John Doe', remarks: '', account: '', updatedBy: 'bhavani', status: 'Yes' },
+  { srNo: 2, flatNo: 'A501', channelPartner: 'GHPL', amount: '62527', date: '2021-07-10', receivedBy: 'Jane Smith', remarks: '', account: '007605004803', updatedBy: 'bhavani', status: 'No' },
+  { srNo: 3, flatNo: 'A102', channelPartner: 'GHPL', amount: '25000', date: '2021-06-15', receivedBy: 'Mike Johnson', remarks: '', account: '007605004802', updatedBy: 'admin', status: 'Yes' },
+  { srNo: 4, flatNo: 'B201', channelPartner: 'GHPL', amount: '50000', date: '2021-08-20', receivedBy: 'Sarah Williams', remarks: 'Cash payment', account: '', updatedBy: 'admin', status: 'No' },
+  { srNo: 5, flatNo: 'C301', channelPartner: 'GHPL', amount: '30000', date: '2021-09-05', receivedBy: 'Tom Brown', remarks: '', account: '007605004804', updatedBy: 'bhavani', status: 'Yes' },
+];
+
+export const fetchCashData = async () => {
+  return {
+    success: true,
+    data: cashData
+  };
+};
+
+// ==================== ADMIN: NEFT DATA ====================
+const neftData = [
+  { srNo: 1, flatNo: 'A103', amount: '17867', date: '2021-05-12', neftNo: 'NEFT001234', remarks: '', account: '', updatedBy: 'bhavani' },
+  { srNo: 2, flatNo: 'A501', amount: '62527', date: '2021-07-10', neftNo: 'NEFT001235', remarks: '', account: '007605004803', updatedBy: 'bhavani' },
+  { srNo: 3, flatNo: 'A102', amount: '25000', date: '2021-06-15', neftNo: 'NEFT001236', remarks: '', account: '007605004802', updatedBy: 'admin' },
+  { srNo: 4, flatNo: 'B201', amount: '50000', date: '2021-08-20', neftNo: 'NEFT001237', remarks: 'NEFT payment', account: '', updatedBy: 'admin' },
+  { srNo: 5, flatNo: 'C301', amount: '30000', date: '2021-09-05', neftNo: 'NEFT001238', remarks: '', account: '007605004804', updatedBy: 'bhavani' },
+];
+
+export const fetchNeftData = async () => {
+  return {
+    success: true,
+    data: neftData
+  };
+};
+
+// ==================== ADMIN: CHEQUE DATA ====================
+const chequeData = [
+  { srNo: 1, flatNo: 'A103', customer: 'RAJ KUMAR REDDY KOMMIDI', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '277726', chequeAmount: '17867', amount: '17867', onAccountOf: 'Service Tax', bank: 'HDFC', date: '2021-05-12', status: 'In Process', account: '', remarks: '', updatedBy: 'bhavani', favor: 'ORCHID', receivingDate: '', clearingDate: '', receiverBank: 'NA' },
+  { srNo: 2, flatNo: 'A501', customer: 'BIKUMALLA ASHOK', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '000018', chequeAmount: '62527', amount: '62527', onAccountOf: 'Service Tax', bank: 'ICICI', date: '2021-07-10', status: 'In Process', account: '007605004803', remarks: '', updatedBy: 'bhavani', favor: 'ORCHID', receivingDate: '', clearingDate: '', receiverBank: 'NA' },
+  { srNo: 3, flatNo: 'A102', customer: 'PRIYA SHARMA', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '277727', chequeAmount: '25000', amount: '25000', onAccountOf: 'Booking Advance', bank: 'HDFC', date: '2021-06-15', status: 'Cleared', account: '007605004802', remarks: '', updatedBy: 'admin', favor: 'ORCHID', receivingDate: '', clearingDate: '', receiverBank: 'NA' },
+  { srNo: 4, flatNo: 'B201', customer: 'AMIT SINGH', paymentPlan: 'Regular', channelPartner: 'GHPL', chequeNo: '000019', chequeAmount: '50000', amount: '50000', onAccountOf: 'Agreement Sale', bank: 'ICICI', date: '2021-08-20', status: 'Bounced', account: '', remarks: 'Insufficient funds', updatedBy: 'admin', favor: 'ORCHID', receivingDate: '', clearingDate: '', receiverBank: 'NA' },
+  { srNo: 5, flatNo: 'C301', customer: 'SUNITA DEVI', paymentPlan: 'CLP', channelPartner: 'GHPL', chequeNo: '277728', chequeAmount: '30000', amount: '30000', onAccountOf: 'Installment', bank: 'HDFC', date: '2021-09-05', status: 'Cleared', account: '007605004804', remarks: '', updatedBy: 'bhavani', favor: 'ORCHID', receivingDate: '', clearingDate: '', receiverBank: 'NA' },
+];
+
+export const fetchChequeData = async () => {
+  return {
+    success: true,
+    data: chequeData
+  };
+};
+
+// ==================== ADMIN: MANAGE USER DATA ====================
+const manageUserCategoriesData = [
+  {
+    id: 'manage',
+    name: 'Manage',
+    hasSubcategories: true,
+    subcategories: [
+      {
+        name: 'Manage Bank',
+        hasSubcategories: true,
+        subcategories: ['Favouring Bank']
+      },
+      {
+        name: 'Manage User',
+        hasSubcategories: true,
+        subcategories: ['Access Roles', 'Add User', 'Disable User']
+      },
+      { name: 'Manage Channel Partner', hasSubcategories: false, subcategories: [] },
+      {
+        name: 'Manage Commission',
+        hasSubcategories: true,
+        subcategories: ['Add Commission']
+      },
+      { name: 'Calculate Interest', hasSubcategories: false, subcategories: [] },
+      { name: 'Construction Stages', hasSubcategories: false, subcategories: [] }
+    ]
+  },
+  {
+    id: 'newBooking',
+    name: 'New Booking',
+    hasSubcategories: false,
+    subcategories: []
+  },
+  {
+    id: 'blockInventory',
+    name: 'Block Inventory',
+    hasSubcategories: true,
+    subcategories: [
+      { name: 'Floor wise', hasSubcategories: false, subcategories: [] },
+      { name: 'Block wise', hasSubcategories: false, subcategories: [] },
+      { name: 'Size wise', hasSubcategories: false, subcategories: [] }
+    ]
+  },
+  {
+    id: 'customer',
+    name: 'Customer',
+    hasSubcategories: true,
+    subcategories: [
+      { name: 'No Discount', hasSubcategories: false, subcategories: [] },
+      { name: 'Extra Discount', hasSubcategories: false, subcategories: [] },
+      { name: 'Extra Payment', hasSubcategories: false, subcategories: [] },
+      { name: 'Signed BBA', hasSubcategories: false, subcategories: [] },
+      { name: 'Unsigned BBA', hasSubcategories: false, subcategories: [] }
+    ]
+  },
+  {
+    id: 'channelPartners',
+    name: 'Channel Partners',
+    hasSubcategories: true,
+    subcategories: [
+      { name: 'Add Channel Partner', hasSubcategories: false, subcategories: [] },
+      { name: 'View All', hasSubcategories: false, subcategories: [] },
+      { name: 'Release Commission', hasSubcategories: false, subcategories: [] },
+      { name: 'Paid Commission', hasSubcategories: false, subcategories: [] }
+    ]
+  },
+  {
+    id: 'bookedFlats',
+    name: 'Booked Flats',
+    hasSubcategories: true,
+    subcategories: [
+      { name: 'Floor Wise', hasSubcategories: false, subcategories: [] },
+      { name: 'Block Wise', hasSubcategories: false, subcategories: [] },
+      { name: 'Size Wise', hasSubcategories: false, subcategories: [] },
+      { name: 'Month Wise', hasSubcategories: false, subcategories: [] },
+      { name: 'View All', hasSubcategories: false, subcategories: [] }
+    ]
+  },
+  {
+    id: 'blockedFlats',
+    name: 'Blocked Flats',
+    hasSubcategories: true,
+    subcategories: [
+      { name: 'Floor Wise', hasSubcategories: false, subcategories: [] },
+      { name: 'Block Wise', hasSubcategories: false, subcategories: [] },
+      { name: 'Size Wise', hasSubcategories: false, subcategories: [] },
+      { name: 'View All', hasSubcategories: false, subcategories: [] }
+    ]
+  },
+  {
+    id: 'cancelledFlats',
+    name: 'Cancelled Flats',
+    hasSubcategories: true,
+    subcategories: [
+      { name: 'Month Wise', hasSubcategories: false, subcategories: [] },
+      { name: 'Block Wise', hasSubcategories: false, subcategories: [] },
+      { name: 'View All', hasSubcategories: false, subcategories: [] },
+      { name: 'Refunded Flats', hasSubcategories: false, subcategories: [] },
+      { name: 'Refunded Cheques', hasSubcategories: false, subcategories: [] }
+    ]
+  },
+  {
+    id: 'paymentReceived',
+    name: 'Payment Received',
+    hasSubcategories: true,
+    subcategories: [
+      {
+        name: 'Cheques',
+        hasSubcategories: true,
+        subcategories: ['In Process', 'Cleared', 'Bounced', 'Month Wise', 'View All']
+      },
+      {
+        name: 'Cash',
+        hasSubcategories: true,
+        subcategories: ['Month Wise', 'View All', 'Adjustment']
+      },
+      {
+        name: 'NEFT',
+        hasSubcategories: true,
+        subcategories: ['Month Wise', 'View All']
+      }
+    ]
+  },
+  {
+    id: 'paymentStatus',
+    name: 'Payment Status',
+    hasSubcategories: true,
+    subcategories: [
+      { name: 'Complete Payment', hasSubcategories: false, subcategories: [] },
+      { name: 'Balance Payment', hasSubcategories: false, subcategories: [] },
+      { name: 'No Payment', hasSubcategories: false, subcategories: [] }
+    ]
+  },
+  {
+    id: 'flatsVerification',
+    name: 'Flats Verification',
+    hasSubcategories: false,
+    subcategories: []
+  },
+  {
+    id: 'loan',
+    name: 'Loan',
+    hasSubcategories: true,
+    subcategories: [
+      {
+        name: 'Loaned Flats',
+        hasSubcategories: true,
+        subcategories: ['All', 'Month Wise']
+      },
+      { name: 'Loan Documents', hasSubcategories: false, subcategories: [] }
+    ]
+  },
+  {
+    id: 'flatsStatus',
+    name: 'Flats Status',
+    hasSubcategories: true,
+    subcategories: [
+      { name: 'Floor Wise', hasSubcategories: false, subcategories: [] },
+      { name: 'Block Wise', hasSubcategories: false, subcategories: [] },
+      { name: 'Size Wise', hasSubcategories: false, subcategories: [] },
+      { name: 'Mortgaged', hasSubcategories: false, subcategories: [] },
+      { name: 'View All', hasSubcategories: false, subcategories: [] }
+    ]
+  },
+  {
+    id: 'flatsSummary',
+    name: 'Flats Summary',
+    hasSubcategories: false,
+    subcategories: []
+  },
+  {
+    id: 'projectSnapshot',
+    name: 'Project Snapshot',
+    hasSubcategories: true,
+    subcategories: [
+      { name: 'View Coupons', hasSubcategories: false, subcategories: [] },
+      { name: 'Installment Report', hasSubcategories: false, subcategories: [] },
+      { name: 'CLP Report', hasSubcategories: false, subcategories: [] },
+      { name: 'Final Report', hasSubcategories: false, subcategories: [] },
+      { name: 'Today Report', hasSubcategories: false, subcategories: [] },
+      { name: 'Datewise Report', hasSubcategories: false, subcategories: [] }
+    ]
+  },
+  {
+    id: 'setReminder',
+    name: 'Set Reminder',
+    hasSubcategories: false,
+    subcategories: []
+  },
+  {
+    id: 'constructionUpdates',
+    name: 'Construction Updates',
+    hasSubcategories: false,
+    subcategories: []
+  },
+  {
+    id: 'flatCustomization',
+    name: 'Flat Customization',
+    hasSubcategories: true,
+    subcategories: [
+      { name: 'Activity Type', hasSubcategories: false, subcategories: [] },
+      { name: 'View Activities', hasSubcategories: false, subcategories: [] },
+      { name: 'Customize', hasSubcategories: false, subcategories: [] },
+      { name: 'View Customization', hasSubcategories: false, subcategories: [] }
+    ]
+  },
+  {
+    id: 'handoverActivities',
+    name: 'Handover Activities',
+    hasSubcategories: true,
+    subcategories: [
+      { name: 'Add Activity', hasSubcategories: false, subcategories: [] },
+      { name: 'Add Subactivity', hasSubcategories: false, subcategories: [] },
+      { name: 'View Activities', hasSubcategories: false, subcategories: [] },
+      { name: 'Flat H.over Activity', hasSubcategories: false, subcategories: [] },
+      { name: 'View Flat H.A.', hasSubcategories: false, subcategories: [] }
+    ]
+  },
+  {
+    id: 'documentsSection',
+    name: 'Documents Section',
+    hasSubcategories: true,
+    subcategories: [
+      { name: 'Upload Common Docs', hasSubcategories: false, subcategories: [] },
+      { name: 'View Common Docs', hasSubcategories: false, subcategories: [] },
+      { name: 'Upload Flat Docs', hasSubcategories: false, subcategories: [] },
+      { name: 'View Flat Docs', hasSubcategories: false, subcategories: [] },
+      { name: 'Upload Legal Docs', hasSubcategories: false, subcategories: [] },
+      { name: 'View Legal Docs', hasSubcategories: false, subcategories: [] },
+      { name: 'Upload Flat Legal Docs', hasSubcategories: false, subcategories: [] },
+      { name: 'View Flat Legal Docs', hasSubcategories: false, subcategories: [] }
+    ]
+  },
+  {
+    id: 'reports',
+    name: 'Reports',
+    hasSubcategories: true,
+    subcategories: [
+      { name: 'User Logs', hasSubcategories: false, subcategories: [] }
+    ]
+  }
+];
+
+const manageUserRoles = [
+  '--Select User Level--',
+  'Super Administrator',
+  'Administrator',
+  'Lower Administrator',
+  'Accounts',
+  'Customer',
+  'Channel Partner',
+  'Flat Customization',
+  'Legal'
+];
+
+const manageUserRoleDefaults = {
+  'Super Administrator': { manage: true, 'Manage Bank': true, 'Favouring Bank': true, 'Manage User': true, 'Access Roles': true, 'Add User': true, 'Disable User': true, 'Manage Channel Partner': true, 'Manage Commission': true, 'Add Commission': true, 'Calculate Interest': true, 'Construction Stages': true, newBooking: true, blockInventory: true, 'Floor wise': true, 'Block wise': true, 'Size wise': true, customer: true, 'No Discount': true, 'Extra Discount': true, 'Extra Payment': true, 'Signed BBA': true, 'Unsigned BBA': true, channelPartners: true, 'Add Channel Partner': true, 'View All': true, 'Release Commission': true, 'Paid Commission': true, bookedFlats: true, 'Floor Wise': true, 'Block Wise': true, 'Size Wise': true, 'Month Wise': true, blockedFlats: true, cancelledFlats: true, 'Refunded Flats': true, 'Refunded Cheques': true, paymentReceived: true, Cheques: true, Cash: true, NEFT: true, 'In Process': true, Cleared: true, Bounced: true, Adjustment: true, paymentStatus: true, 'Complete Payment': true, 'Balance Payment': true, 'No Payment': true, flatsVerification: true, loan: true, 'Loaned Flats': true, 'Loan Documents': true, All: true, flatsStatus: true, Mortgaged: true, flatsSummary: true, projectSnapshot: true, 'View Coupons': true, 'Installment Report': true, 'CLP Report': true, 'Final Report': true, 'Today Report': true, 'Datewise Report': true, setReminder: true, constructionUpdates: true, flatCustomization: true, 'Activity Type': true, Customize: true, 'View Customization': true, handoverActivities: true, 'Add Activity': true, 'Add Subactivity': true, 'Flat H.over Activity': true, 'View Flat H.A.': true, documentsSection: true, 'Upload Common Docs': true, 'View Common Docs': true, 'Upload Flat Docs': true, 'View Flat Docs': true, 'Upload Legal Docs': true, 'View Legal Docs': true, 'Upload Flat Legal Docs': true, 'View Flat Legal Docs': true, reports: true, 'User Logs': true },
+  'Administrator': { manage: false, 'Manage Bank': true, 'Favouring Bank': true, 'Manage User': true, 'Access Roles': true, 'Add User': true, 'Disable User': true, 'Manage Channel Partner': true, 'Manage Commission': false, 'Add Commission': false, 'Calculate Interest': true, 'Construction Stages': true, newBooking: true, blockInventory: true, 'Floor wise': true, 'Block wise': true, 'Size wise': true, customer: true, 'No Discount': true, 'Extra Discount': true, 'Extra Payment': true, 'Signed BBA': true, 'Unsigned BBA': true, channelPartners: true, 'Add Channel Partner': true, 'View All': true, 'Release Commission': true, 'Paid Commission': true, bookedFlats: true, 'Floor Wise': true, 'Block Wise': true, 'Size Wise': true, 'Month Wise': true, blockedFlats: true, cancelledFlats: true, 'Refunded Flats': true, 'Refunded Cheques': true, paymentReceived: true, Cheques: true, Cash: true, NEFT: true, 'In Process': true, Cleared: true, Bounced: true, Adjustment: true, paymentStatus: true, 'Complete Payment': true, 'Balance Payment': true, 'No Payment': true, flatsVerification: true, loan: true, 'Loaned Flats': true, 'Loan Documents': true, All: true, flatsStatus: true, Mortgaged: true, flatsSummary: true, projectSnapshot: true, 'View Coupons': true, 'Installment Report': true, 'CLP Report': true, 'Final Report': true, 'Today Report': true, 'Datewise Report': true, setReminder: true, constructionUpdates: true, flatCustomization: true, 'Activity Type': true, Customize: true, 'View Customization': true, handoverActivities: true, 'Add Activity': true, 'Add Subactivity': true, 'Flat H.over Activity': true, 'View Flat H.A.': true, documentsSection: true, 'Upload Common Docs': true, 'View Common Docs': true, 'Upload Flat Docs': true, 'View Flat Docs': true, 'Upload Legal Docs': true, 'View Legal Docs': true, 'Upload Flat Legal Docs': true, 'View Flat Legal Docs': true, reports: true, 'User Logs': true },
+  'Lower Administrator': { manage: false, 'Manage Bank': false, 'Favouring Bank': false, 'Manage User': false, 'Access Roles': false, 'Add User': false, 'Disable User': false, 'Manage Channel Partner': true, 'Manage Commission': false, 'Add Commission': false, 'Calculate Interest': false, 'Construction Stages': true, newBooking: true, blockInventory: true, 'Floor wise': true, 'Block wise': true, 'Size wise': true, customer: true, 'No Discount': false, 'Extra Discount': false, 'Extra Payment': false, 'Signed BBA': false, 'Unsigned BBA': false, channelPartners: true, 'Add Channel Partner': false, 'View All': false, 'Release Commission': false, 'Paid Commission': false, bookedFlats: true, 'Floor Wise': false, 'Block Wise': false, 'Size Wise': false, 'Month Wise': false, blockedFlats: true, cancelledFlats: false, 'Refunded Flats': false, 'Refunded Cheques': false, paymentReceived: true, Cheques: false, Cash: false, NEFT: false, 'In Process': false, Cleared: false, Bounced: false, Adjustment: false, paymentStatus: false, 'Complete Payment': false, 'Balance Payment': false, 'No Payment': false, flatsVerification: false, loan: false, 'Loaned Flats': false, 'Loan Documents': false, All: false, flatsStatus: true, Mortgaged: false, flatsSummary: true, projectSnapshot: true, 'View Coupons': false, 'Installment Report': false, 'CLP Report': false, 'Final Report': false, 'Today Report': false, 'Datewise Report': false, setReminder: true, constructionUpdates: true, flatCustomization: true, 'Activity Type': false, Customize: false, 'View Customization': false, handoverActivities: true, 'Add Activity': false, 'Add Subactivity': false, 'Flat H.over Activity': false, 'View Flat H.A.': false, documentsSection: true, 'Upload Common Docs': false, 'View Common Docs': false, 'Upload Flat Docs': false, 'View Flat Docs': false, 'Upload Legal Docs': false, 'View Legal Docs': false, 'Upload Flat Legal Docs': false, 'View Flat Legal Docs': false, reports: true, 'User Logs': false },
+  'Accounts': { manage: false, 'Manage Bank': false, 'Favouring Bank': false, 'Manage User': false, 'Access Roles': false, 'Add User': false, 'Disable User': false, 'Manage Channel Partner': false, 'Manage Commission': true, 'Add Commission': true, 'Calculate Interest': true, 'Construction Stages': false, newBooking: false, blockInventory: true, 'Floor wise': false, 'Block wise': false, 'Size wise': false, customer: true, 'No Discount': false, 'Extra Discount': false, 'Extra Payment': true, 'Signed BBA': false, 'Unsigned BBA': false, channelPartners: false, 'Add Channel Partner': false, 'View All': false, 'Release Commission': false, 'Paid Commission': false, bookedFlats: false, 'Floor Wise': false, 'Block Wise': false, 'Size Wise': false, 'Month Wise': false, blockedFlats: false, cancelledFlats: true, 'Refunded Flats': true, 'Refunded Cheques': true, paymentReceived: true, Cheques: true, Cash: true, NEFT: true, 'In Process': true, Cleared: true, Bounced: true, Adjustment: true, paymentStatus: true, 'Complete Payment': true, 'Balance Payment': true, 'No Payment': true, flatsVerification: false, loan: false, 'Loaned Flats': false, 'Loan Documents': false, All: false, flatsStatus: false, Mortgaged: false, flatsSummary: false, projectSnapshot: false, 'View Coupons': false, 'Installment Report': false, 'CLP Report': false, 'Final Report': false, 'Today Report': false, 'Datewise Report': false, setReminder: false, constructionUpdates: false, flatCustomization: false, 'Activity Type': false, Customize: false, 'View Customization': false, handoverActivities: false, 'Add Activity': false, 'Add Subactivity': false, 'Flat H.over Activity': false, 'View Flat H.A.': false, documentsSection: false, 'Upload Common Docs': false, 'View Common Docs': false, 'Upload Flat Docs': false, 'View Flat Docs': false, 'Upload Legal Docs': false, 'View Legal Docs': false, 'Upload Flat Legal Docs': false, 'View Flat Legal Docs': false, reports: false, 'User Logs': false },
+  'Customer': { manage: false, 'Manage Bank': false, 'Favouring Bank': false, 'Manage User': false, 'Access Roles': false, 'Add User': false, 'Disable User': false, 'Manage Channel Partner': false, 'Manage Commission': false, 'Add Commission': false, 'Calculate Interest': false, 'Construction Stages': false, newBooking: false, blockInventory: false, 'Floor wise': false, 'Block wise': false, 'Size wise': false, customer: true, 'No Discount': false, 'Extra Discount': false, 'Extra Payment': false, 'Signed BBA': false, 'Unsigned BBA': false, channelPartners: false, 'Add Channel Partner': false, 'View All': false, 'Release Commission': false, 'Paid Commission': false, bookedFlats: false, 'Floor Wise': false, 'Block Wise': false, 'Size Wise': false, 'Month Wise': false, blockedFlats: false, cancelledFlats: false, 'Refunded Flats': false, 'Refunded Cheques': false, paymentReceived: false, Cheques: false, Cash: false, NEFT: false, 'In Process': false, Cleared: false, Bounced: false, Adjustment: false, paymentStatus: false, 'Complete Payment': false, 'Balance Payment': false, 'No Payment': false, flatsVerification: false, loan: false, 'Loaned Flats': false, 'Loan Documents': false, All: false, flatsStatus: false, Mortgaged: false, flatsSummary: false, projectSnapshot: false, 'View Coupons': false, 'Installment Report': false, 'CLP Report': false, 'Final Report': false, 'Today Report': false, 'Datewise Report': false, setReminder: false, constructionUpdates: false, flatCustomization: false, 'Activity Type': false, Customize: false, 'View Customization': false, handoverActivities: false, 'Add Activity': false, 'Add Subactivity': false, 'Flat H.over Activity': false, 'View Flat H.A.': false, documentsSection: false, 'Upload Common Docs': false, 'View Common Docs': false, 'Upload Flat Docs': false, 'View Flat Docs': false, 'Upload Legal Docs': false, 'View Legal Docs': false, 'Upload Flat Legal Docs': false, 'View Flat Legal Docs': false, reports: false, 'User Logs': false },
+  'Channel Partner': { manage: false, 'Manage Bank': false, 'Favouring Bank': false, 'Manage User': false, 'Access Roles': false, 'Add User': false, 'Disable User': false, 'Manage Channel Partner': true, 'Manage Commission': false, 'Add Commission': false, 'Calculate Interest': false, 'Construction Stages': false, newBooking: true, blockInventory: true, 'Floor wise': false, 'Block wise': false, 'Size wise': false, customer: true, 'No Discount': true, 'Extra Discount': true, 'Extra Payment': false, 'Signed BBA': false, 'Unsigned BBA': false, channelPartners: true, 'Add Channel Partner': false, 'View All': true, 'Release Commission': false, 'Paid Commission': false, bookedFlats: true, 'Floor Wise': false, 'Block Wise': false, 'Size Wise': false, 'Month Wise': false, blockedFlats: true, cancelledFlats: false, 'Refunded Flats': false, 'Refunded Cheques': false, paymentReceived: false, Cheques: false, Cash: false, NEFT: false, 'In Process': false, Cleared: false, Bounced: false, Adjustment: false, paymentStatus: false, 'Complete Payment': false, 'Balance Payment': false, 'No Payment': false, flatsVerification: false, loan: false, 'Loaned Flats': false, 'Loan Documents': false, All: false, flatsStatus: false, Mortgaged: false, flatsSummary: false, projectSnapshot: false, 'View Coupons': false, 'Installment Report': false, 'CLP Report': false, 'Final Report': false, 'Today Report': false, 'Datewise Report': false, setReminder: false, constructionUpdates: false, flatCustomization: false, 'Activity Type': false, Customize: false, 'View Customization': false, handoverActivities: false, 'Add Activity': false, 'Add Subactivity': false, 'Flat H.over Activity': false, 'View Flat H.A.': false, documentsSection: false, 'Upload Common Docs': false, 'View Common Docs': false, 'Upload Flat Docs': false, 'View Flat Docs': false, 'Upload Legal Docs': false, 'View Legal Docs': false, 'Upload Flat Legal Docs': false, 'View Flat Legal Docs': false, reports: false, 'User Logs': false },
+  'Flat Customization': { manage: false, 'Manage Bank': false, 'Favouring Bank': false, 'Manage User': false, 'Access Roles': false, 'Add User': false, 'Disable User': false, 'Manage Channel Partner': false, 'Manage Commission': false, 'Add Commission': false, 'Calculate Interest': false, 'Construction Stages': true, newBooking: false, blockInventory: true, 'Floor wise': true, 'Block wise': true, 'Size wise': true, customer: false, 'No Discount': false, 'Extra Discount': false, 'Extra Payment': false, 'Signed BBA': false, 'Unsigned BBA': false, channelPartners: false, 'Add Channel Partner': false, 'View All': false, 'Release Commission': false, 'Paid Commission': false, bookedFlats: false, 'Floor Wise': false, 'Block Wise': false, 'Size Wise': false, 'Month Wise': false, blockedFlats: false, cancelledFlats: false, 'Refunded Flats': false, 'Refunded Cheques': false, paymentReceived: false, Cheques: false, Cash: false, NEFT: false, 'In Process': false, Cleared: false, Bounced: false, Adjustment: false, paymentStatus: false, 'Complete Payment': false, 'Balance Payment': false, 'No Payment': false, flatsVerification: true, loan: false, 'Loaned Flats': false, 'Loan Documents': false, All: false, flatsStatus: false, Mortgaged: false, flatsSummary: false, projectSnapshot: false, 'View Coupons': false, 'Installment Report': false, 'CLP Report': false, 'Final Report': false, 'Today Report': false, 'Datewise Report': false, setReminder: false, constructionUpdates: false, flatCustomization: true, 'Activity Type': true, Customize: true, 'View Customization': true, handoverActivities: false, 'Add Activity': false, 'Add Subactivity': false, 'Flat H.over Activity': false, 'View Flat H.A.': false, documentsSection: false, 'Upload Common Docs': false, 'View Common Docs': false, 'Upload Flat Docs': false, 'View Flat Docs': false, 'Upload Legal Docs': false, 'View Legal Docs': false, 'Upload Flat Legal Docs': false, 'View Flat Legal Docs': false, reports: false, 'User Logs': false },
+  'Legal': { manage: false, 'Manage Bank': true, 'Favouring Bank': true, 'Manage User': false, 'Access Roles': false, 'Add User': false, 'Disable User': false, 'Manage Channel Partner': false, 'Manage Commission': false, 'Add Commission': false, 'Calculate Interest': false, 'Construction Stages': false, newBooking: false, blockInventory: false, 'Floor wise': false, 'Block wise': false, 'Size wise': false, customer: false, 'No Discount': false, 'Extra Discount': false, 'Extra Payment': false, 'Signed BBA': false, 'Unsigned BBA': false, channelPartners: false, 'Add Channel Partner': false, 'View All': false, 'Release Commission': false, 'Paid Commission': false, bookedFlats: false, 'Floor Wise': false, 'Block Wise': false, 'Size Wise': false, 'Month Wise': false, blockedFlats: false, cancelledFlats: false, 'Refunded Flats': false, 'Refunded Cheques': false, paymentReceived: false, Cheques: false, Cash: false, NEFT: false, 'In Process': false, Cleared: false, Bounced: false, Adjustment: false, paymentStatus: false, 'Complete Payment': false, 'Balance Payment': false, 'No Payment': false, flatsVerification: false, loan: true, 'Loaned Flats': true, 'Loan Documents': true, All: true, flatsStatus: false, Mortgaged: false, flatsSummary: false, projectSnapshot: false, 'View Coupons': false, 'Installment Report': false, 'CLP Report': false, 'Final Report': false, 'Today Report': false, 'Datewise Report': false, setReminder: false, constructionUpdates: false, flatCustomization: false, 'Activity Type': false, Customize: false, 'View Customization': false, handoverActivities: false, 'Add Activity': false, 'Add Subactivity': false, 'Flat H.over Activity': false, 'View Flat H.A.': false, documentsSection: true, 'Upload Common Docs': true, 'View Common Docs': true, 'Upload Flat Docs': true, 'View Flat Docs': true, 'Upload Legal Docs': true, 'View Legal Docs': true, 'Upload Flat Legal Docs': true, 'View Flat Legal Docs': true, reports: false, 'User Logs': false }
+};
+
+const manageUserUsernamesByRole = {
+  'Super Administrator': ['admin', 'super_admin_1', 'root'],
+  'Administrator': ['admin1', 'manager', 'admin_user'],
+  'Lower Administrator': ['lower_admin1', 'lower_admin2', 'assistant'],
+  'Accounts': ['accountant1', 'accountant2', 'finance_user'],
+  'Customer': ['customer1', 'customer2', 'guest_user'],
+  'Channel Partner': ['partner1', 'partner2', 'channel_user'],
+  'Flat Customization': ['custom1', 'custom2', 'customization_user'],
+  'Legal': ['legal1', 'legal2', 'legal_user']
+};
+
+export const fetchManageUserCategories = async () => ({
+  success: true,
+  data: manageUserCategoriesData
+});
+
+export const fetchManageUserRoles = async () => ({
+  success: true,
+  data: manageUserRoles
+});
+
+export const fetchManageUserRoleDefaults = async () => ({
+  success: true,
+  data: manageUserRoleDefaults
+});
+
+export const fetchManageUserUsernamesByRole = async () => ({
+  success: true,
+  data: manageUserUsernamesByRole
+});
+
+export const getManageUserUsernamesForRole = (role) => {
+  return manageUserUsernamesByRole[role] || [];
+};
+
+// ==================== ADMIN: CHANNEL PARTNERS DATA ====================
+const channelPartnersData = [
+  {
+    id: 'CP001',
+    userId: 'USER001',
+    name: 'John Smith',
+    companyName: 'GHPL Constructions',
+    flatTypes: ['2BHK_1171', '2BHK_1298', '2BHK_1386', '2BHK_1231', '2BHK_1308', '2BHK_753', '2BHK_1271', '2BHK_1355', '3BHK_1534', '3BHK_1554', '3BHK_1611', '3BHK_1646', '3BHK_1535', '3BHK_1584', '3BHK_1614', '3BHK_1649', '3BHK_1475', '3BHK_1552', '3BHK_1604', '3BHK_1618', '3BHK_1694']
+  },
+  {
+    id: 'CP002',
+    userId: 'USER002',
+    name: 'Sarah Johnson',
+    companyName: 'HDFC Realty',
+    flatTypes: ['2BHK_1171', '2BHK_1298', '2BHK_1386', '2BHK_1231', '2BHK_1308', '2BHK_753', '2BHK_1271', '2BHK_1355', '3BHK_1534', '3BHK_1554', '3BHK_1611', '3BHK_1646', '3BHK_1535', '3BHK_1584', '3BHK_1614', '3BHK_1649', '3BHK_1475', '3BHK_1552', '3BHK_1604', '3BHK_1618', '3BHK_1694']
+  },
+  {
+    id: 'CP003',
+    userId: 'USER003',
+    name: 'Michael Chen',
+    companyName: 'ICICI Properties',
+    flatTypes: ['2BHK_1171', '2BHK_1298', '2BHK_1386', '2BHK_1231', '2BHK_1308', '2BHK_753', '2BHK_1271', '2BHK_1355', '3BHK_1534', '3BHK_1554', '3BHK_1611', '3BHK_1646', '3BHK_1535', '3BHK_1584', '3BHK_1614', '3BHK_1649', '3BHK_1475', '3BHK_1552', '3BHK_1604', '3BHK_1618', '3BHK_1694']
+  },
+  {
+    id: 'CP004',
+    userId: 'USER004',
+    name: 'Priya Sharma',
+    companyName: 'Axis Real Estate',
+    flatTypes: ['2BHK_1171', '2BHK_1298', '2BHK_1386', '2BHK_1231', '2BHK_1308', '2BHK_753', '2BHK_1271', '2BHK_1355', '3BHK_1534', '3BHK_1554', '3BHK_1611', '3BHK_1646', '3BHK_1535', '3BHK_1584', '3BHK_1614', '3BHK_1649', '3BHK_1475', '3BHK_1552', '3BHK_1604', '3BHK_1618', '3BHK_1694']
+  },
+  {
+    id: 'CP005',
+    userId: 'USER005',
+    name: 'Raj Kumar',
+    companyName: 'SBI Housing',
+    flatTypes: ['2BHK_1171', '2BHK_1298', '2BHK_1386', '2BHK_1231', '2BHK_1308', '2BHK_753', '2BHK_1271', '2BHK_1355', '3BHK_1534', '3BHK_1554', '3BHK_1611', '3BHK_1646', '3BHK_1535', '3BHK_1584', '3BHK_1614', '3BHK_1649', '3BHK_1475', '3BHK_1552', '3BHK_1604', '3BHK_1618', '3BHK_1694']
+  }
+];
+
+export const fetchChannelPartners = async () => {
+  return {
+    success: true,
+    data: channelPartnersData
+  };
+};
+
+// ==================== ADMIN: CONSTRUCTION STAGES DATA ====================
+const paymentPlansData = ['CLP', 'PR', 'EMI', 'Regular'];
+const loanBanksData = ['Self', 'PNB', 'SBI', 'HDFC', 'ICICI', 'Axis Bank'];
+const constructionStagesBlocksData = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+const constructionStagesInstallmentsData = {
+  CLP: [
+    { installmentNo: 1, description: 'Booking Advance', amount: '10% of (BSP+Amenities+Car Parking)', status: 'Cleared', completionDate: '30-11-0001' },
+    { installmentNo: 2, description: 'At the time of Agreement of Sale', amount: '20% of (BSP+Amenities+Car Parking)', status: 'Cleared', completionDate: '30-11-0001' },
+    { installmentNo: 3, description: 'Completion of Cellar Slab', amount: '15% of (BSP+Amenities+Car Parking)', status: 'Cleared', completionDate: '06-12-2019' },
+    { installmentNo: 4, description: 'Completion of 5th Slab', amount: '25% of (BSP+Amenities+Car Parking)', status: 'Cleared', completionDate: '14-01-2020' },
+    { installmentNo: 5, description: 'Completion of First Stage of Internal works', amount: '5% of (BSP+Amenities+Car Parking)', status: 'Cleared', completionDate: '28-02-2020' },
+    { installmentNo: 6, description: 'Completion of 2nd Stage of Internal works', amount: '5% of (BSP+Amenities+Car Parking)', status: 'In Process', completionDate: '30-11-0001' },
+    { installmentNo: 7, description: 'Completion of external works', amount: '5% of (BSP+Amenities+Car Parking)', status: 'In Process', completionDate: '30-11-0001' },
+    { installmentNo: 8, description: 'Completion of hardware works', amount: '10% of (BSP+Amenities+Car Parking)', status: 'In Process', completionDate: '30-11-0001' },
+    { installmentNo: 9, description: 'At the time of registration', amount: '5% of (BSP+Amenities+Car Parking)', status: 'In Process', completionDate: '30-11-0001' },
+    { installmentNo: 10, description: 'At the time of registration', amount: '100% EWSW Cost', status: 'In Process', completionDate: '30-11-0001' },
+    { installmentNo: 11, description: 'At the time of registration', amount: '100% of Home Automation Cost', status: 'In Process', completionDate: '30-11-0001' },
+    { installmentNo: 12, description: 'Corpus Fund', amount: '100% Corpus Fund', status: 'In Process', completionDate: '30-11-0001' },
+    { installmentNo: 13, description: 'Maintenance for 1st year', amount: '100% Maintenance Charges', status: 'In Process', completionDate: '30-11-0001' },
+    { installmentNo: 14, description: 'Maintenance for 2nd year', amount: '100% Maintenance Charges', status: 'In Process', completionDate: '30-11-0001' }
+  ],
+  PR: [
+    { installmentNo: 1, description: 'Booking Advance', amount: '10% of (BSP+Amenities+Car Parking)', status: 'Cleared', completionDate: '30-11-0001' },
+    { installmentNo: 2, description: 'At the time of Agreement of Sale', amount: '20% of (BSP+Amenities+Car Parking)', status: 'In Process', completionDate: '30-11-0001' },
+    { installmentNo: 3, description: 'Completion of Cellar Slab', amount: '15% of (BSP+Amenities+Car Parking)', status: 'In Process', completionDate: '30-11-0001' }
+  ],
+  EMI: [
+    { installmentNo: 1, description: 'Booking Advance', amount: '10% of (BSP+Amenities+Car Parking)', status: 'Cleared', completionDate: '30-11-0001' },
+    { installmentNo: 2, description: 'At the time of Agreement of Sale', amount: '20% of (BSP+Amenities+Car Parking)', status: 'Cleared', completionDate: '30-11-0001' },
+    { installmentNo: 3, description: 'Monthly EMI', amount: 'As per EMI schedule', status: 'In Process', completionDate: '30-11-0001' }
+  ],
+  Regular: [
+    { installmentNo: 1, description: 'Booking Advance', amount: '10% of (BSP+Amenities+Car Parking)', status: 'Cleared', completionDate: '30-11-0001' },
+    { installmentNo: 2, description: 'At the time of Agreement of Sale', amount: '20% of (BSP+Amenities+Car Parking)', status: 'In Process', completionDate: '30-11-0001' },
+    { installmentNo: 3, description: 'Regular Payment', amount: 'As per payment schedule', status: 'In Process', completionDate: '30-11-0001' }
+  ]
+};
+
+export const fetchPaymentPlans = async () => {
+  return {
+    success: true,
+    data: paymentPlansData
+  };
+};
+
+export const fetchLoanBanks = async () => {
+  return {
+    success: true,
+    data: loanBanksData
+  };
+};
+
+export const fetchConstructionStagesBlocks = async () => {
+  return {
+    success: true,
+    data: constructionStagesBlocksData
+  };
+};
+
+export const fetchConstructionStagesInstallments = async (paymentPlan) => {
+  return {
+    success: true,
+    data: constructionStagesInstallmentsData[paymentPlan] || []
+  };
+};
+
 export default {
   fetchUserProfile,
   fetchDetailedInformation,
@@ -1326,5 +1985,18 @@ export default {
   fetchDealerIds,
   fetchMonths,
   fetchYears,
+  fetchCashData,
+  fetchNeftData,
+  fetchChequeData,
+  fetchManageUserCategories,
+  fetchManageUserRoles,
+  fetchManageUserRoleDefaults,
+  fetchManageUserUsernamesByRole,
+  getManageUserUsernamesForRole,
+  fetchChannelPartners,
+  fetchPaymentPlans,
+  fetchLoanBanks,
+  fetchConstructionStagesBlocks,
+  fetchConstructionStagesInstallments,
 };
 
