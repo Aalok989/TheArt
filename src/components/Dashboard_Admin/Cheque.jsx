@@ -6,10 +6,16 @@ import { HiChevronDown, HiChevronLeft, HiChevronRight, HiX } from 'react-icons/h
 import { fetchMonths, fetchYears, fetchChequeData } from '../../api/mockData';
 
 const Cheque = ({ onPageChange }) => {
-  // Check if coming from DatewiseReport
-  const [fromDatewiseReport, setFromDatewiseReport] = useState(false);
-  const [reportFromDate, setReportFromDate] = useState('');
-  const [reportToDate, setReportToDate] = useState('');
+  // Check if coming from DatewiseReport - initialize from sessionStorage
+  const [fromDatewiseReport, setFromDatewiseReport] = useState(() => {
+    return sessionStorage.getItem('fromDatewiseReport') === 'true';
+  });
+  const [reportFromDate, setReportFromDate] = useState(() => {
+    return sessionStorage.getItem('reportFromDate') || '';
+  });
+  const [reportToDate, setReportToDate] = useState(() => {
+    return sessionStorage.getItem('reportToDate') || '';
+  });
   
   const [expandedFilters, setExpandedFilters] = useState(new Set());
   const [selectedStatus, setSelectedStatus] = useState(null);
@@ -49,27 +55,7 @@ const Cheque = ({ onPageChange }) => {
   const statuses = ['In Process', 'Cleared', 'Bounced'];
 
   useEffect(() => {
-    // Check if coming from DatewiseReport FIRST before any other logic
-    const fromReport = sessionStorage.getItem('fromDatewiseReport');
-    const fromDate = sessionStorage.getItem('reportFromDate');
-    const toDate = sessionStorage.getItem('reportToDate');
-    
-    if (fromReport === 'true') {
-      // Coming from DatewiseReport - set simplified view
-      setFromDatewiseReport(true);
-      setReportFromDate(fromDate || '');
-      setReportToDate(toDate || '');
-      // Clear the flag immediately to prevent showing simplified view on subsequent visits
-      sessionStorage.removeItem('fromDatewiseReport');
-      sessionStorage.removeItem('reportFromDate');
-      sessionStorage.removeItem('reportToDate');
-    } else {
-      // Not coming from DatewiseReport - ensure normal view
-      setFromDatewiseReport(false);
-      setReportFromDate('');
-      setReportToDate('');
-    }
-
+    // Fetch data on mount
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -96,6 +82,19 @@ const Cheque = ({ onPageChange }) => {
 
     fetchData();
   }, []);
+
+  // Clear sessionStorage flags after component has rendered with simplified view
+  useEffect(() => {
+    if (fromDatewiseReport) {
+      // Use setTimeout to ensure state has been applied and component has rendered
+      const timer = setTimeout(() => {
+        sessionStorage.removeItem('fromDatewiseReport');
+        sessionStorage.removeItem('reportFromDate');
+        sessionStorage.removeItem('reportToDate');
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [fromDatewiseReport]);
 
 
   const handleScroll = (ref, direction) => {

@@ -209,6 +209,10 @@ const DatewiseReport = ({ onPageChange }) => {
                     <button 
                       onClick={() => {
                         if (onPageChange) {
+                          // Store date range and filter flag for BookedFlats page
+                          sessionStorage.setItem('fromDatewiseReport', 'true');
+                          sessionStorage.setItem('reportFromDate', fromDate);
+                          sessionStorage.setItem('reportToDate', toDate);
                           onPageChange('bookedFlats');
                         }
                       }}
@@ -223,6 +227,10 @@ const DatewiseReport = ({ onPageChange }) => {
                     <button 
                       onClick={() => {
                         if (onPageChange) {
+                          // Store date range and filter flag for BlockedFlats page
+                          sessionStorage.setItem('fromDatewiseReport', 'true');
+                          sessionStorage.setItem('reportFromDate', fromDate);
+                          sessionStorage.setItem('reportToDate', toDate);
                           onPageChange('blockedFlats');
                         }
                       }}
@@ -286,6 +294,10 @@ const DatewiseReport = ({ onPageChange }) => {
                     <button 
                       onClick={() => {
                         if (onPageChange) {
+                          // Store date range and filter flag for Cash page
+                          sessionStorage.setItem('fromDatewiseReport', 'true');
+                          sessionStorage.setItem('reportFromDate', fromDate);
+                          sessionStorage.setItem('reportToDate', toDate);
                           onPageChange('cash');
                         }
                       }}
@@ -300,6 +312,10 @@ const DatewiseReport = ({ onPageChange }) => {
                     <button 
                       onClick={() => {
                         if (onPageChange) {
+                          // Store date range and filter flag for NEFT page
+                          sessionStorage.setItem('fromDatewiseReport', 'true');
+                          sessionStorage.setItem('reportFromDate', fromDate);
+                          sessionStorage.setItem('reportToDate', toDate);
                           onPageChange('neft');
                         }
                       }}

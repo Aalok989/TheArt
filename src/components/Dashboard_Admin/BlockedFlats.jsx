@@ -5,6 +5,17 @@ import { FaFileExcel, FaFilePdf } from 'react-icons/fa';
 import { fetchFlatStatus, fetchBlockedFlatsDetails } from '../../api/mockData';
 
 const BlockedFlats = ({ onPageChange }) => {
+  // Check if coming from DatewiseReport - initialize from sessionStorage
+  const [fromDatewiseReport, setFromDatewiseReport] = useState(() => {
+    return sessionStorage.getItem('fromDatewiseReport') === 'true';
+  });
+  const [reportFromDate, setReportFromDate] = useState(() => {
+    return sessionStorage.getItem('reportFromDate') || '';
+  });
+  const [reportToDate, setReportToDate] = useState(() => {
+    return sessionStorage.getItem('reportToDate') || '';
+  });
+
   const [expandedFilters, setExpandedFilters] = useState(new Set());
   const [selectedFloor, setSelectedFloor] = useState(null);
   const [selectedBlock, setSelectedBlock] = useState(null);
@@ -44,6 +55,19 @@ const BlockedFlats = ({ onPageChange }) => {
     getData();
   }, []);
 
+  // Clear sessionStorage flags after component has rendered with simplified view
+  useEffect(() => {
+    if (fromDatewiseReport) {
+      // Use setTimeout to ensure state has been applied and component has rendered
+      const timer = setTimeout(() => {
+        sessionStorage.removeItem('fromDatewiseReport');
+        sessionStorage.removeItem('reportFromDate');
+        sessionStorage.removeItem('reportToDate');
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [fromDatewiseReport]);
+
   const handleScroll = (ref, direction) => {
     if (ref.current) {
       const scrollAmount = 200;
@@ -71,13 +95,41 @@ const BlockedFlats = ({ onPageChange }) => {
   const filteredFlatsData = useMemo(() => {
     if (!flatStatusData) return [];
     let filtered = flatStatusData.flats.filter(f => f.status === 'Blocked');
+
+    // Date range filter for DatewiseReport - filter by booking date
+    if (fromDatewiseReport && reportFromDate && reportToDate) {
+      filtered = filtered.filter(flat => {
+        const detail = details.find(b => b.flatNo === flat.flatNo);
+        if (!detail || !detail.bookingDate) return false;
+        
+        // Parse booking date (format: DD-MM-YYYY)
+        const [day, month, year] = detail.bookingDate.split('-');
+        const bookingDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        const fromDate = new Date(reportFromDate);
+        const toDate = new Date(reportToDate);
+        
+        // Set time to start of day for comparison
+        fromDate.setHours(0, 0, 0, 0);
+        toDate.setHours(23, 59, 59, 999);
+        bookingDate.setHours(0, 0, 0, 0);
+        
+        return bookingDate >= fromDate && bookingDate <= toDate;
+      });
+    }
+
     if (selectedFloor !== null) filtered = filtered.filter(f => f.floor === selectedFloor);
     if (selectedBlock !== null) filtered = filtered.filter(f => f.block === selectedBlock);
     if (selectedSize !== null) filtered = filtered.filter(f => f.size === selectedSize);
     return filtered;
-  }, [flatStatusData, selectedFloor, selectedBlock, selectedSize]);
+  }, [flatStatusData, selectedFloor, selectedBlock, selectedSize, fromDatewiseReport, reportFromDate, reportToDate, details]);
 
-  const headers = ['Sr. No.','Flat No.','Customer Name','Contact No.','Booking Date','Dealer','Action'];
+  // Simplified headers for DatewiseReport view
+  const simplifiedHeaders = ['Sr. No.', 'Flat No.', 'Name', 'Contact No.', 'Dealer'];
+  
+  // Full headers for normal view
+  const fullHeaders = ['Sr. No.','Flat No.','Customer Name','Contact No.','Booking Date','Dealer','Action'];
+  
+  const headers = fromDatewiseReport ? simplifiedHeaders : fullHeaders;
 
   const mergedRows = useMemo(() => {
     return filteredFlatsData.map((flat, idx) => {
@@ -106,11 +158,25 @@ const BlockedFlats = ({ onPageChange }) => {
   useEffect(() => setCurrentPage(1), [searchQuery, pageSize, mergedRows.length]);
 
   const handleCopy = async () => {
-    const csv = [headers.join('\t'), ...displayedRows.map(r => [r.srno, r.flatNo, r.customerName, r.contactNo, r.bookingDate, r.dealer, ''].join('\t'))].join('\n');
+    let csv;
+    if (fromDatewiseReport) {
+      // Simplified columns for DatewiseReport
+      csv = [headers.join('\t'), ...displayedRows.map(r => [r.srno, r.flatNo, r.customerName, r.contactNo, r.dealer].join('\t'))].join('\n');
+    } else {
+      // Full columns for normal view
+      csv = [headers.join('\t'), ...displayedRows.map(r => [r.srno, r.flatNo, r.customerName, r.contactNo, r.bookingDate, r.dealer, ''].join('\t'))].join('\n');
+    }
     try { await navigator.clipboard.writeText(csv); setCopied(true); setTimeout(()=>setCopied(false),1500);} catch(e){ console.error(e); }
   };
   const handleExportCSV = () => {
-    const csv = [headers.join(','), ...displayedRows.map(r => [r.srno, r.flatNo, r.customerName, r.contactNo, r.bookingDate, r.dealer, ''].map(val=>`"${String(val).replace(/"/g,'""')}"`).join(','))].join('\n');
+    let csv;
+    if (fromDatewiseReport) {
+      // Simplified columns for DatewiseReport
+      csv = [headers.join(','), ...displayedRows.map(r => [r.srno, r.flatNo, r.customerName, r.contactNo, r.dealer].map(val=>`"${String(val).replace(/"/g,'""')}"`).join(','))].join('\n');
+    } else {
+      // Full columns for normal view
+      csv = [headers.join(','), ...displayedRows.map(r => [r.srno, r.flatNo, r.customerName, r.contactNo, r.bookingDate, r.dealer, ''].map(val=>`"${String(val).replace(/"/g,'""')}"`).join(','))].join('\n');
+    }
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='blocked-flats.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
   };
@@ -140,6 +206,7 @@ const BlockedFlats = ({ onPageChange }) => {
       <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}`}</style>
       <div className="flex flex-col lg:flex-row h-full bg-white overflow-hidden w-full shadow-sm lg:shadow-md border lg:border-gray-200" style={{ borderRadius: 'clamp(1rem, 1.5rem, 2rem)' }}>
         {/* LEFT FILTERS - same behavior as Booked */}
+        {!fromDatewiseReport && (
         <div className="w-full lg:w-[70%] min-w-0 flex flex-col max-h-[50%] lg:max-h-none">
           <div className="flex-shrink-0" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
             <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)' }}>Blocked Flats</h2>
@@ -214,9 +281,10 @@ const BlockedFlats = ({ onPageChange }) => {
             )}
           </div>
         </div>
+        )}
 
         {/* RIGHT: Header + Table */}
-        <div className="w-full lg:w-[80%] min-w-0 bg-[#F3F3F3FE] border-t lg:border-t-0 lg:border-l border-gray-300 flex flex-col flex-1 lg:flex-none overflow-hidden">
+        <div className={`w-full ${fromDatewiseReport ? 'lg:w-full' : 'lg:w-[80%]'} min-w-0 bg-[#F3F3F3FE] border-t lg:border-t-0 ${fromDatewiseReport ? '' : 'lg:border-l'} border-gray-300 flex flex-col flex-1 lg:flex-none overflow-hidden`}>
           <div className="flex-shrink-0" style={{ padding:'clamp(1rem,1.5rem,2rem)', paddingBottom:'clamp(0.5rem,0.75rem,1rem)' }}>
             <div className="flex items-center gap-3 flex-wrap">
               <h2 className="font-bold text-gray-800" style={{ fontSize:'clamp(1rem,1.25rem,1.5rem)' }}>Blocked Flats Detail</h2>
@@ -235,7 +303,7 @@ const BlockedFlats = ({ onPageChange }) => {
           </div>
 
           <div className="flex-1 overflow-auto min-h-0" style={{ paddingLeft:'clamp(1rem,1.5rem,2rem)', paddingRight:'clamp(1rem,1.5rem,2rem)' }}>
-            <div className="min-w-[900px]">
+            <div className={fromDatewiseReport ? "min-w-[600px]" : "min-w-[900px]"}>
               <table ref={tableRef} className="w-full border-collapse text-sm">
                 <thead className="sticky top-0 z-10">
                   <tr className="bg-blue-200 text-gray-800">
@@ -246,13 +314,27 @@ const BlockedFlats = ({ onPageChange }) => {
                   {paginatedRows.length>0 ? (
                     paginatedRows.map((r, idx) => (
                       <tr key={idx} className="bg-white even:bg-gray-50">
-                        <td className="border border-gray-200 px-3 py-2">{(currentPage-1)*pageSize+idx+1}</td>
-                        <td className="border border-gray-200 px-3 py-2 text-blue-600 font-medium"><button onClick={()=>handleFlatClick({ flatNo: r.flatNo })} className="hover:underline">{r.flatNo}</button></td>
-                        <td className="border border-gray-200 px-3 py-2">{r.customerName}</td>
-                        <td className="border border-gray-200 px-3 py-2">{r.contactNo}</td>
-                        <td className="border border-gray-200 px-3 py-2">{r.bookingDate}</td>
-                        <td className="border border-gray-200 px-3 py-2">{r.dealer}</td>
-                        <td className="border border-gray-200 px-3 py-2"><button onClick={()=>handleUnblock(r.flatNo)} className="px-3 py-1 rounded border text-sm bg-white hover:bg-gray-100">Unblock</button></td>
+                        {fromDatewiseReport ? (
+                          // Simplified view columns for DatewiseReport
+                          <>
+                            <td className="border border-gray-200 px-3 py-2">{(currentPage-1)*pageSize+idx+1}</td>
+                            <td className="border border-gray-200 px-3 py-2 text-blue-600 font-medium"><button onClick={()=>handleFlatClick({ flatNo: r.flatNo })} className="hover:underline">{r.flatNo}</button></td>
+                            <td className="border border-gray-200 px-3 py-2">{r.customerName}</td>
+                            <td className="border border-gray-200 px-3 py-2">{r.contactNo}</td>
+                            <td className="border border-gray-200 px-3 py-2">{r.dealer}</td>
+                          </>
+                        ) : (
+                          // Full view columns for normal page
+                          <>
+                            <td className="border border-gray-200 px-3 py-2">{(currentPage-1)*pageSize+idx+1}</td>
+                            <td className="border border-gray-200 px-3 py-2 text-blue-600 font-medium"><button onClick={()=>handleFlatClick({ flatNo: r.flatNo })} className="hover:underline">{r.flatNo}</button></td>
+                            <td className="border border-gray-200 px-3 py-2">{r.customerName}</td>
+                            <td className="border border-gray-200 px-3 py-2">{r.contactNo}</td>
+                            <td className="border border-gray-200 px-3 py-2">{r.bookingDate}</td>
+                            <td className="border border-gray-200 px-3 py-2">{r.dealer}</td>
+                            <td className="border border-gray-200 px-3 py-2"><button onClick={()=>handleUnblock(r.flatNo)} className="px-3 py-1 rounded border text-sm bg-white hover:bg-gray-100">Unblock</button></td>
+                          </>
+                        )}
                       </tr>
                     ))
                   ) : (

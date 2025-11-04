@@ -5,6 +5,17 @@ import { HiChevronDown, HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import { fetchFlatStatus, fetchBookedFlatsDetails, fetchMonths, fetchYears } from '../../api/mockData';
 
 const BookedFlats = ({ onPageChange }) => {
+  // Check if coming from DatewiseReport - initialize from sessionStorage
+  const [fromDatewiseReport, setFromDatewiseReport] = useState(() => {
+    return sessionStorage.getItem('fromDatewiseReport') === 'true';
+  });
+  const [reportFromDate, setReportFromDate] = useState(() => {
+    return sessionStorage.getItem('reportFromDate') || '';
+  });
+  const [reportToDate, setReportToDate] = useState(() => {
+    return sessionStorage.getItem('reportToDate') || '';
+  });
+
   const [expandedFilters, setExpandedFilters] = useState(new Set());
   const [selectedFloor, setSelectedFloor] = useState(null);
   const [selectedBlock, setSelectedBlock] = useState(null);
@@ -57,6 +68,19 @@ const BookedFlats = ({ onPageChange }) => {
 
     getFlatStatus();
   }, []);
+
+  // Clear sessionStorage flags after component has rendered with simplified view
+  useEffect(() => {
+    if (fromDatewiseReport) {
+      // Use setTimeout to ensure state has been applied and component has rendered
+      const timer = setTimeout(() => {
+        sessionStorage.removeItem('fromDatewiseReport');
+        sessionStorage.removeItem('reportFromDate');
+        sessionStorage.removeItem('reportToDate');
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [fromDatewiseReport]);
   
   const handleScroll = (ref, direction) => {
     if (ref.current) {
@@ -93,6 +117,27 @@ const BookedFlats = ({ onPageChange }) => {
     if (!flatStatusData) return [];
     let filtered = flatStatusData.flats.filter(f => f.status === 'Booked');
 
+    // Date range filter for DatewiseReport - filter by booking date
+    if (fromDatewiseReport && reportFromDate && reportToDate) {
+      filtered = filtered.filter(flat => {
+        const detail = bookedDetails.find(b => b.flatNo === flat.flatNo);
+        if (!detail || !detail.bookingDate) return false;
+        
+        // Parse booking date (format: DD-MM-YYYY)
+        const [day, month, year] = detail.bookingDate.split('-');
+        const bookingDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        const fromDate = new Date(reportFromDate);
+        const toDate = new Date(reportToDate);
+        
+        // Set time to start of day for comparison
+        fromDate.setHours(0, 0, 0, 0);
+        toDate.setHours(23, 59, 59, 999);
+        bookingDate.setHours(0, 0, 0, 0);
+        
+        return bookingDate >= fromDate && bookingDate <= toDate;
+      });
+    }
+
     if (selectedFloor !== null) {
       filtered = filtered.filter(flat => flat.floor === selectedFloor);
     }
@@ -104,9 +149,15 @@ const BookedFlats = ({ onPageChange }) => {
     }
 
     return filtered;
-  }, [flatStatusData, selectedFloor, selectedBlock, selectedSize]);
+  }, [flatStatusData, selectedFloor, selectedBlock, selectedSize, fromDatewiseReport, reportFromDate, reportToDate, bookedDetails]);
 
-  const headers = ['Sr. No.','Flat No.','Customer Name','Co-Applicant Name','Email Id','Contact No.','PAN No.','Booking Date','Dealer','Payment Plan','Area','Company Rate','Login Rate','Total Cost','Due Amount','Pending Amount','Paid Amount','Cleared','Due Tax','Pending Tax','Paid Tax','Cleared Tax','Total Pending'];
+  // Simplified headers for DatewiseReport view
+  const simplifiedHeaders = ['Sr. No.', 'Flat No.', 'Name', 'Email', 'Address', 'Contact No.', 'Dealer', 'Payment Plan', 'Company Rate', 'Login Rate'];
+  
+  // Full headers for normal view (added Address after Email Id)
+  const fullHeaders = ['Sr. No.','Flat No.','Customer Name','Co-Applicant Name','Email Id','Address','Contact No.','PAN No.','Booking Date','Dealer','Payment Plan','Area','Company Rate','Login Rate','Total Cost','Due Amount','Pending Amount','Paid Amount','Cleared','Due Tax','Pending Tax','Paid Tax','Cleared Tax','Total Pending'];
+  
+  const headers = fromDatewiseReport ? simplifiedHeaders : fullHeaders;
 
   const mergedRows = useMemo(() => {
     return filteredFlatsData.map((flat, idx) => {
@@ -117,6 +168,7 @@ const BookedFlats = ({ onPageChange }) => {
         customerName: d.customerName || '-',
         coApplicantName: d.coApplicantName || '-',
         email: d.email || '-',
+        address: d.address || '-', // Added address field
         contactNo: d.contactNo || '-',
         panNo: d.panNo || '-',
         bookingDate: d.bookingDate || '-',
@@ -163,9 +215,18 @@ const BookedFlats = ({ onPageChange }) => {
   }, [searchQuery, pageSize, mergedRows.length]);
 
   const handleCopy = async () => {
-    const csv = [headers.join('\t'), ...displayedRows.map(r => [
-      r.srno,r.flatNo,r.customerName,r.coApplicantName,r.email,r.contactNo,r.panNo,r.bookingDate,r.dealer,r.paymentPlan,r.area,r.companyRate,r.loginRate,r.totalCost,r.dueAmount,r.pendingAmount,r.paidAmount,r.cleared,r.dueTax,r.pendingTax,r.paidTax,r.clearedTax,r.totalPending
-    ].join('\t'))].join('\n');
+    let csv;
+    if (fromDatewiseReport) {
+      // Simplified columns for DatewiseReport
+      csv = [headers.join('\t'), ...displayedRows.map(r => [
+        r.srno, r.flatNo, r.customerName, r.email, r.address, r.contactNo, r.dealer, r.paymentPlan, r.companyRate, r.loginRate
+      ].join('\t'))].join('\n');
+    } else {
+      // Full columns for normal view
+      csv = [headers.join('\t'), ...displayedRows.map(r => [
+        r.srno,r.flatNo,r.customerName,r.coApplicantName,r.email,r.address,r.contactNo,r.panNo,r.bookingDate,r.dealer,r.paymentPlan,r.area,r.companyRate,r.loginRate,r.totalCost,r.dueAmount,r.pendingAmount,r.paidAmount,r.cleared,r.dueTax,r.pendingTax,r.paidTax,r.clearedTax,r.totalPending
+      ].join('\t'))].join('\n');
+    }
     try {
       await navigator.clipboard.writeText(csv);
       setCopied(true);
@@ -176,9 +237,18 @@ const BookedFlats = ({ onPageChange }) => {
   };
 
   const handleExportCSV = () => {
-    const csv = [headers.join(','), ...displayedRows.map(r => [
-      r.srno,r.flatNo,r.customerName,r.coApplicantName,r.email,r.contactNo,r.panNo,r.bookingDate,r.dealer,r.paymentPlan,r.area,r.companyRate,r.loginRate,r.totalCost,r.dueAmount,r.pendingAmount,r.paidAmount,r.cleared,r.dueTax,r.pendingTax,r.paidTax,r.clearedTax,r.totalPending
-    ].map(val => `"${String(val).replace(/"/g,'""')}"`).join(','))].join('\n');
+    let csv;
+    if (fromDatewiseReport) {
+      // Simplified columns for DatewiseReport
+      csv = [headers.join(','), ...displayedRows.map(r => [
+        r.srno, r.flatNo, r.customerName, r.email, r.address, r.contactNo, r.dealer, r.paymentPlan, r.companyRate, r.loginRate
+      ].map(val => `"${String(val).replace(/"/g,'""')}"`).join(','))].join('\n');
+    } else {
+      // Full columns for normal view
+      csv = [headers.join(','), ...displayedRows.map(r => [
+        r.srno,r.flatNo,r.customerName,r.coApplicantName,r.email,r.address,r.contactNo,r.panNo,r.bookingDate,r.dealer,r.paymentPlan,r.area,r.companyRate,r.loginRate,r.totalCost,r.dueAmount,r.pendingAmount,r.paidAmount,r.cleared,r.dueTax,r.pendingTax,r.paidTax,r.clearedTax,r.totalPending
+      ].map(val => `"${String(val).replace(/"/g,'""')}"`).join(','))].join('\n');
+    }
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -227,6 +297,7 @@ const BookedFlats = ({ onPageChange }) => {
       `}</style>
     <div className="flex flex-col lg:flex-row h-full bg-white overflow-hidden w-full shadow-sm lg:shadow-md border lg:border-gray-200" style={{ borderRadius: 'clamp(1rem, 1.5rem, 2rem)' }}>
       {/* LEFT SECTION — FILTERS */}
+      {!fromDatewiseReport && (
       <div className="w-full lg:w-[70%] min-w-0 flex flex-col max-h-[50%] lg:max-h-none">
         <div className="flex-shrink-0" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
           <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)', marginBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}>Booked Flats</h2>
@@ -547,9 +618,10 @@ const BookedFlats = ({ onPageChange }) => {
           )}
         </div>
       </div>
+      )}
 
       {/* RIGHT SECTION — TABLE */}
-      <div className="w-full lg:w-[80%] min-w-0 bg-[#F3F3F3FE] border-t lg:border-t-0 lg:border-l border-gray-300 flex flex-col flex-1 lg:flex-none overflow-hidden">
+      <div className={`w-full ${fromDatewiseReport ? 'lg:w-full' : 'lg:w-[80%]'} min-w-0 bg-[#F3F3F3FE] border-t lg:border-t-0 ${fromDatewiseReport ? '' : 'lg:border-l'} border-gray-300 flex flex-col flex-1 lg:flex-none overflow-hidden`}>
         <div className="flex-shrink-0" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', paddingBottom: 'clamp(0.5rem, 0.75rem, 1rem)' }}>
           <div className="flex items-center gap-3 flex-wrap">
             <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)' }}>Booked Flats Detail</h2>
@@ -585,7 +657,7 @@ const BookedFlats = ({ onPageChange }) => {
         </div>
 
         <div className="flex-1 overflow-auto min-h-0" style={{ paddingLeft: 'clamp(1rem, 1.5rem, 2rem)', paddingRight: 'clamp(1rem, 1.5rem, 2rem)' }}>
-          <div className="min-w-[1200px]">
+          <div className={fromDatewiseReport ? "min-w-[1000px]" : "min-w-[1200px]"}>
             <table ref={tableRef} className="w-full border-collapse text-sm">
               <thead className="sticky top-0 z-10">
                 <tr className="bg-blue-200 text-gray-800">
@@ -598,36 +670,58 @@ const BookedFlats = ({ onPageChange }) => {
                 {paginatedRows.length > 0 ? (
                   paginatedRows.map((r, idx) => (
                     <tr key={idx} className="bg-white even:bg-gray-50">
-                      <td className="border border-gray-200 px-3 py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
-                      <td className="border border-gray-200 px-3 py-2 text-blue-600 font-medium">
-                        <button onClick={() => handleFlatClick({ flatNo: r.flatNo })} className="hover:underline">{r.flatNo}</button>
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2">{r.customerName}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.coApplicantName}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.email}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.contactNo}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.panNo}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.bookingDate}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.dealer}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.paymentPlan}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.area}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.companyRate}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.loginRate}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.totalCost}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.dueAmount}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.pendingAmount}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.paidAmount}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.cleared}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.dueTax}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.pendingTax}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.paidTax}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.clearedTax}</td>
-                      <td className="border border-gray-200 px-3 py-2">{r.totalPending}</td>
+                      {fromDatewiseReport ? (
+                        // Simplified view columns for DatewiseReport
+                        <>
+                          <td className="border border-gray-200 px-3 py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
+                          <td className="border border-gray-200 px-3 py-2 text-blue-600 font-medium">
+                            <button onClick={() => handleFlatClick({ flatNo: r.flatNo })} className="hover:underline">{r.flatNo}</button>
+                          </td>
+                          <td className="border border-gray-200 px-3 py-2">{r.customerName}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.email}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.address}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.contactNo}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.dealer}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.paymentPlan}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.companyRate}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.loginRate}</td>
+                        </>
+                      ) : (
+                        // Full view columns for normal page
+                        <>
+                          <td className="border border-gray-200 px-3 py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
+                          <td className="border border-gray-200 px-3 py-2 text-blue-600 font-medium">
+                            <button onClick={() => handleFlatClick({ flatNo: r.flatNo })} className="hover:underline">{r.flatNo}</button>
+                          </td>
+                          <td className="border border-gray-200 px-3 py-2">{r.customerName}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.coApplicantName}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.email}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.address}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.contactNo}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.panNo}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.bookingDate}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.dealer}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.paymentPlan}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.area}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.companyRate}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.loginRate}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.totalCost}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.dueAmount}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.pendingAmount}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.paidAmount}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.cleared}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.dueTax}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.pendingTax}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.paidTax}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.clearedTax}</td>
+                          <td className="border border-gray-200 px-3 py-2">{r.totalPending}</td>
+                        </>
+                      )}
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={23} className="text-center text-gray-500 py-8">No booked flats found for the selected filters.</td>
+                    <td colSpan={fromDatewiseReport ? 10 : 24} className="text-center text-gray-500 py-8">No booked flats found for the selected filters.</td>
                   </tr>
                 )}
               </tbody>

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { 
   HiHome, 
   HiChevronDown, 
@@ -29,9 +30,15 @@ import 'swiper/css/navigation';
 import '../../styles/property-swiper.css';
 
 function Landing({ onLogin }) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('home');
   const [showExploreMenu, setShowExploreMenu] = useState(false);
-  const [userRole, setUserRole] = useState('user'); // 'user' or 'builder'
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem('isLoggedIn') === 'true';
+  });
+  const [userRole, setUserRole] = useState(() => {
+    return localStorage.getItem('userRole') || 'user'; // Get role from localStorage
+  });
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showFeaturesPopup, setShowFeaturesPopup] = useState(false);
   const [showContactsPopup, setShowContactsPopup] = useState(false);
@@ -116,19 +123,59 @@ function Landing({ onLogin }) {
     setShowLoginPopup(true);
   };
 
-  // Toggle user role for demonstration (you can remove this later)
-  const toggleUserRole = () => {
-    setUserRole(userRole === 'user' ? 'builder' : 'user');
-  };
-
   // Handle successful login
   const handleLoginSuccess = (token) => {
+    // Update isLoggedIn and userRole from localStorage after login
+    setIsLoggedIn(true);
+    const role = localStorage.getItem('userRole') || 'user';
+    setUserRole(role);
+    
     // Call the same onLogin function that the Login page uses
     if (onLogin) {
       onLogin(token);
     }
   };
 
+  // Sync userRole and isLoggedIn with localStorage when it changes (one-time check on mount)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'userRole') {
+        const role = e.newValue || 'user';
+        setUserRole(role);
+      } else if (e.key === 'isLoggedIn') {
+        setIsLoggedIn(e.newValue === 'true');
+      }
+    };
+    
+    // Listen for storage events (only fires from other tabs/windows)
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  // Handle dashboard navigation based on user role
+  const handleGoToDashboard = () => {
+    const isMobileDevice = window.innerWidth < 1024;
+    const role = localStorage.getItem('userRole') || 'user';
+    
+    if (role === 'admin') {
+      // Admin (staff) users
+      if (isMobileDevice) {
+        navigate('/dashboard/flatStatus', { replace: false });
+      } else {
+        navigate('/dashboard/dashboard', { replace: false });
+      }
+    } else {
+      // Regular (customer) users
+      if (isMobileDevice) {
+        navigate('/dashboard', { replace: false });
+      } else {
+        navigate('/dashboard/flatDetails', { replace: false });
+      }
+    }
+  };
 
   return (
     <div className="h-screen bg-white flex flex-col font-outfit">
@@ -208,12 +255,6 @@ function Landing({ onLogin }) {
 
            {/* Right Icons */}
            <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
-             <button 
-               onClick={toggleUserRole}
-               className="hidden sm:block px-2 sm:px-3 py-1 text-xs sm:text-sm bg-gray-200 hover:bg-gray-300 rounded-full transition-colors whitespace-nowrap"
-             >
-               {userRole === 'user' ? 'Switch to Builder' : 'Switch to User'}
-             </button>
              <button 
                onClick={handleNotificationClick}
                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -327,17 +368,6 @@ function Landing({ onLogin }) {
               >
                 <span className="font-medium">Contacts</span>
               </button>
-
-              {/* Role Toggle - Mobile Only */}
-              <button 
-                onClick={() => {
-                  toggleUserRole();
-                  setIsMobileMenuOpen(false);
-                }}
-                className="w-full px-4 py-3 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all font-medium"
-              >
-                {userRole === 'user' ? 'Switch to Builder' : 'Switch to User'}
-              </button>
             </div>
           </div>
         </div>
@@ -388,7 +418,11 @@ function Landing({ onLogin }) {
                      >
                        Book Demo
                      </button>
-                     <button className="flex-1 py-2 sm:py-2.5 lg:py-3 px-4 sm:px-5 lg:px-6 rounded-full text-white font-semibold text-base sm:text-lg lg:text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-poppins" style={{background: 'linear-gradient(180deg, #FC7117, #96430E)'}}>
+                     <button 
+                       onClick={handleGoToDashboard}
+                       className="flex-1 py-2 sm:py-2.5 lg:py-3 px-4 sm:px-5 lg:px-6 rounded-full text-white font-semibold text-base sm:text-lg lg:text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-poppins" 
+                       style={{background: 'linear-gradient(180deg, #FC7117, #96430E)'}}
+                     >
                        Dashboard
                      </button>
                    </div>
@@ -428,7 +462,11 @@ function Landing({ onLogin }) {
                     
                     {/* Go to Dashboard Button */}
                     <div className="flex justify-center">
-                      <button className="py-2 sm:py-2.5 lg:py-3 px-4 sm:px-5 lg:px-6 rounded-full text-white font-semibold text-base sm:text-lg lg:text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-poppins w-full sm:w-auto" style={{background: 'linear-gradient(180deg, #FC7117, #96430E)'}}>
+                      <button 
+                        onClick={handleGoToDashboard}
+                        className="py-2 sm:py-2.5 lg:py-3 px-4 sm:px-5 lg:px-6 rounded-full text-white font-semibold text-base sm:text-lg lg:text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-poppins w-full sm:w-auto" 
+                        style={{background: 'linear-gradient(180deg, #FC7117, #96430E)'}}
+                      >
                         Go to Dashboard
                       </button>
                     </div>

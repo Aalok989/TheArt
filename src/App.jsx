@@ -100,12 +100,8 @@ function App() {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, [navigate, location.pathname]);
 
-  // Redirect logged-in users away from landing page
-  useEffect(() => {
-    if (isLoggedIn && location.pathname === '/') {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [isLoggedIn, location.pathname, navigate]);
+  // Allow logged-in users to stay on landing page
+  // Removed redirect to allow users to see role-based landing page after login
 
   // Sync activePage with URL when navigating
   useEffect(() => {
@@ -143,17 +139,8 @@ function App() {
     }
   }, [location.pathname, isLoggedIn, activePage]);
 
-  // Prevent logged-in users from accessing landing page via back button
-  useEffect(() => {
-    const handlePopState = (event) => {
-      if (isLoggedIn && location.pathname === '/') {
-        navigate('/dashboard', { replace: true });
-      }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [isLoggedIn, location.pathname, navigate]);
+  // Allow logged-in users to access landing page via back button
+  // Removed redirect to allow users to see role-based landing page after login
 
   const handleLogin = (token) => {
     // Defer state updates to avoid updating during render
@@ -166,28 +153,8 @@ function App() {
       const role = localStorage.getItem('userRole') || 'user';
       setUserRole(role); // Update userRole state
       
-      const isMobileDevice = window.innerWidth < 1024;
-      
-      // Navigate based on role and device
-      if (role === 'admin') {
-        // Admin (staff) users
-        if (isMobileDevice) {
-          setActivePage('flatStatus');
-          navigate('/dashboard/flatStatus', { replace: true });
-        } else {
-          setActivePage('dashboard');
-          navigate('/dashboard/dashboard', { replace: true });
-        }
-      } else {
-        // Regular (customer) users
-        if (isMobileDevice) {
-          setActivePage(null);
-          navigate('/dashboard', { replace: true });
-        } else {
-          setActivePage('flatDetails');
-          navigate('/dashboard/flatDetails', { replace: true });
-        }
-      }
+      // Navigate to landing page to show role-based content
+      navigate('/', { replace: true });
     }, 0);
   };
 
