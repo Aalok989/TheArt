@@ -29,6 +29,35 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import '../../styles/property-swiper.css';
 
+const normalizeRole = (role) => {
+  const normalized = (role || 'user').toLowerCase();
+  if (normalized === 'admin') {
+    return 'superadmin';
+  }
+  if (normalized === 'superadmin') {
+    return 'superadmin';
+  }
+  if (normalized === 'builder_admin' || normalized === 'builderadmin') {
+    return 'builder_admin';
+  }
+  if (normalized === 'user' || normalized === 'customer') {
+    return 'user';
+  }
+  return 'user';
+};
+
+const getStoredRole = () => {
+  if (typeof window === 'undefined') {
+    return 'user';
+  }
+  const rawRole = localStorage.getItem('userRole');
+  const normalizedRole = normalizeRole(rawRole);
+  if (rawRole !== normalizedRole) {
+    localStorage.setItem('userRole', normalizedRole);
+  }
+  return normalizedRole;
+};
+
 function Landing({ onLogin }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('home');
@@ -36,13 +65,12 @@ function Landing({ onLogin }) {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return localStorage.getItem('isLoggedIn') === 'true';
   });
-  const [userRole, setUserRole] = useState(() => {
-    return localStorage.getItem('userRole') || 'user'; // Get role from localStorage
-  });
+  const [userRole, setUserRole] = useState(() => getStoredRole()); // Get normalized role from localStorage
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showFeaturesPopup, setShowFeaturesPopup] = useState(false);
   const [showContactsPopup, setShowContactsPopup] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const isCustomerUser = userRole === 'user';
 
   // Dummy property data for cube swiper
   const propertyCards = [
@@ -127,7 +155,7 @@ function Landing({ onLogin }) {
   const handleLoginSuccess = (token) => {
     // Update isLoggedIn and userRole from localStorage after login
     setIsLoggedIn(true);
-    const role = localStorage.getItem('userRole') || 'user';
+    const role = getStoredRole();
     setUserRole(role);
     
     // Call the same onLogin function that the Login page uses
@@ -140,7 +168,7 @@ function Landing({ onLogin }) {
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === 'userRole') {
-        const role = e.newValue || 'user';
+        const role = normalizeRole(e.newValue);
         setUserRole(role);
       } else if (e.key === 'isLoggedIn') {
         setIsLoggedIn(e.newValue === 'true');
@@ -158,15 +186,18 @@ function Landing({ onLogin }) {
   // Handle dashboard navigation based on user role
   const handleGoToDashboard = () => {
     const isMobileDevice = window.innerWidth < 1024;
-    const role = localStorage.getItem('userRole') || 'user';
+    const role = getStoredRole();
     
-    if (role === 'admin') {
-      // Admin (staff) users
+    if (role === 'superadmin') {
+      // Superadmin users
       if (isMobileDevice) {
         navigate('/dashboard/flatStatus', { replace: false });
       } else {
         navigate('/dashboard/dashboard', { replace: false });
       }
+    } else if (role === 'builder_admin') {
+      // Builder admins (temporary routing until dedicated dashboard is added)
+      navigate('/dashboard', { replace: false });
     } else {
       // Regular (customer) users
       if (isMobileDevice) {
@@ -397,7 +428,7 @@ function Landing({ onLogin }) {
           {/* User Dashboard Cards - Only show on home tab and when popups are closed */}
           {activeTab === 'home' && !showLoginPopup && !showFeaturesPopup && !showContactsPopup && (
             <div className="absolute left-2 sm:left-4 lg:left-8 bottom-4 sm:bottom-6 lg:bottom-8 space-y-2 z-10 max-w-[90%] sm:max-w-xs lg:max-w-none overflow-y-auto max-h-[70vh] sm:max-h-[80vh]">
-              {userRole === 'user' ? (
+              {isCustomerUser ? (
                 /* Take a Tour Card for Regular Users */
                 <div className="bg-gray-100/90 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-5 lg:p-6 w-full sm:w-80 lg:w-96">
                    {/* Take a Tour Section */}

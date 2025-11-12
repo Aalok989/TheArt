@@ -1,7 +1,16 @@
 
 
 // Base API configuration
-const API_BASE_URL = '/api';
+const DEFAULT_API_BASE_URL = '/api';
+const envBaseUrl = typeof import.meta !== 'undefined'
+  ? import.meta.env?.VITE_API_BASE_URL
+  : undefined;
+
+const sanitizedBaseUrl = envBaseUrl
+  ? envBaseUrl.replace(/\/+$/, '')
+  : DEFAULT_API_BASE_URL;
+
+const API_BASE_URL = sanitizedBaseUrl;
 
 // Simple API client
 class SimpleApiClient {
@@ -127,6 +136,23 @@ class SimpleApiClient {
 const api = new SimpleApiClient();
 
 // Authentication methods
+const mapUserTypeToRole = (userType) => {
+  const normalizedType = (userType || '').toLowerCase();
+  switch (normalizedType) {
+    case 'staff':
+    case 'superadmin':
+      return 'superadmin';
+    case 'builder_admin':
+    case 'builderadmin':
+      return 'builder_admin';
+    case 'user':
+    case 'customer':
+      return 'user';
+    default:
+      return 'user';
+  }
+};
+
 export const authAPI = {
   async login(username, password) {
     const response = await api.post('/auth/token/login/', { username, password });
@@ -136,7 +162,7 @@ export const authAPI = {
       
       // Determine role based on user_type or role.type from the response
       const userType = response.role?.type || response.user_type;
-      const role = userType === 'staff' ? 'admin' : 'user';
+      const role = mapUserTypeToRole(userType);
       localStorage.setItem('userRole', role);
       
       // Store additional user info for future use
@@ -248,24 +274,32 @@ export const customerAPI = {
 // Properties/Projects API methods
 export const propertiesAPI = {
   async getProjects() {
-    const response = await api.get('/properties/projects/');
+    const response = await api.get('/master/projects/');
     // Transform API response to match component expectations
     const projects = Array.isArray(response) ? response : (response ? [response] : []);
     return projects.map(project => ({
       id: project.id,
       name: project.name,
-      location: project.location,
-      builder: project.builder || '',
+      address: project.address || '',
+      location: project.location || project.address || '',
+      builder: project.builder_name || project.builder || '',
+      builderId: project.builder_id || project.builder || '',
+      builderName: project.builder_name || project.builder || '',
       description: project.description || '',
       startDate: project.start_date || '',
       endDate: project.end_date || '',
       isActive: project.is_active !== undefined ? project.is_active : true,
+      isInitialized: project.is_initialized !== undefined ? project.is_initialized : false,
       createdAt: project.created_at || '',
+      updatedAt: project.updated_at || '',
+      databaseName: project.database_name || '',
       logo: project.logo,
       headerImage: project.header,
       footerImage: project.footer,
       projectType: project.project_type,
       unitType: project.unit_type,
+      contactDetails: project.contact_details || project.contactDetails || '',
+      supportContactDetails: project.support_contact_details || project.supportContactDetails || '',
       blocks: project.blocks || [] // If blocks come from API
     }));
   },
@@ -275,8 +309,23 @@ export const propertiesAPI = {
     
     // Add text fields
     formData.append('name', projectData.name);
-    formData.append('location', projectData.location);
+    const locationValue = projectData.location ?? projectData.address ?? '';
+    formData.append('location', locationValue);
+    if (projectData.address) {
+      formData.append('address', projectData.address);
+    }
     formData.append('description', projectData.description || '');
+    if (projectData.contactDetails) {
+      formData.append('contact_details', projectData.contactDetails);
+    }
+    if (projectData.supportContactDetails) {
+      formData.append('support_contact_details', projectData.supportContactDetails);
+    }
+    if (projectData.assignedBuilderId) {
+      formData.append('builder', projectData.assignedBuilderId);
+    } else if (projectData.assignedBuilderName) {
+      formData.append('builder_name', projectData.assignedBuilderName);
+    }
     
     // Add optional fields if provided
     if (projectData.projectType) {

@@ -1,6 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { HiPlus, HiChevronDown, HiX, HiPhotograph, HiTrash } from 'react-icons/hi';
-import { fetchBlocksByProject, fetchFlatTemplates } from '../../api/mockData';
+import { fetchBlocksByProject, fetchFlatTemplates, fetchTowersByProject } from '../../api/mockData';
+
+const TOWER_STRUCTURE_TYPE = 'A Tower with Blocks (Flats)';
+
+const PROJECT_STRUCTURE_OPTIONS = [
+  TOWER_STRUCTURE_TYPE,
+  'Multiple Towers with Blocks (Flats)',
+  'Single Multistory (Flats)',
+  'Villas',
+  'Plots'
+];
+
+const STEP_META = {
+  project: {
+    title: 'Select or Create Project',
+    subtitle: 'Select an existing Project or Create New Project to continue.'
+  },
+  structure: {
+    title: 'Project Structure Type',
+    subtitle: 'Choose the structure type that best fits your project.'
+  },
+  tower: {
+    title: 'Select or Create Tower',
+    subtitle: 'Select an existing Tower or Create New Tower to continue.'
+  },
+  block: {
+    title: 'Select or Create Block',
+    subtitle: 'Select an existing Block or Create New Block to continue.'
+  },
+  floors: {
+    title: 'Floors & Flats',
+    subtitle: 'Please provide Floor Number and Flat Details.'
+  }
+};
 import { propertiesAPI } from '../../api/api';
 
 const NewProject = ({ onPageChange }) => {
@@ -12,25 +45,38 @@ const NewProject = ({ onPageChange }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newProjectData, setNewProjectData] = useState({
     name: '',
-    location: '',
+    address: '',
+    contactDetails: '',
+    supportContactDetails: '',
     description: '',
     logo: null,
     headerImage: null,
-    footerImage: null
+    footerImage: null,
+    assignedBuilderId: '',
+    assignedBuilderName: ''
   });
   const [logoPreview, setLogoPreview] = useState(null);
   const [headerImagePreview, setHeaderImagePreview] = useState(null);
   const [footerImagePreview, setFooterImagePreview] = useState(null);
   const [projectStructureType, setProjectStructureType] = useState('');
-  const [unitType, setUnitType] = useState('');
   const [showStructureDropdown, setShowStructureDropdown] = useState(false);
-  const [showUnitDropdown, setShowUnitDropdown] = useState(false);
+  const [allTowers, setAllTowers] = useState([]);
+  const [towersLoading, setTowersLoading] = useState(false);
+  const [selectedTower, setSelectedTower] = useState('');
+  const [showTowerDropdown, setShowTowerDropdown] = useState(false);
+  const [showCreateTowerForm, setShowCreateTowerForm] = useState(false);
+  const [newTowerData, setNewTowerData] = useState({
+    name: '',
+    number: '',
+    description: ''
+  });
   const [selectedBlock, setSelectedBlock] = useState('');
   const [showBlockDropdown, setShowBlockDropdown] = useState(false);
   const [allBlocks, setAllBlocks] = useState([]);
   const [blocksLoading, setBlocksLoading] = useState(false);
   const [showCreateBlockForm, setShowCreateBlockForm] = useState(false);
   const [newBlockName, setNewBlockName] = useState('');
+  const [newBlockDescription, setNewBlockDescription] = useState('');
   const [floors, setFloors] = useState([
     { id: 1, floorNumber: '', flats: [], selectedTemplate: '' }
   ]);
@@ -39,6 +85,63 @@ const NewProject = ({ onPageChange }) => {
   const [newTemplateName, setNewTemplateName] = useState('');
   const [newTemplateFlats, setNewTemplateFlats] = useState([{ flatNumber: '', type: '', area: '' }]);
   const [flatTemplates, setFlatTemplates] = useState([]);
+  const [customBuilders, setCustomBuilders] = useState([]);
+  const [showCreateBuilderForm, setShowCreateBuilderForm] = useState(false);
+  const [newBuilderData, setNewBuilderData] = useState({
+    name: '',
+    address: '',
+    contactEmail: ''
+  });
+  const builderOptions = useMemo(() => {
+    const builderMap = new Map();
+
+    allProjects.forEach(project => {
+      const id = project.builderId || project.builder;
+      const name = project.builderName || project.builder || '';
+      if (!name) return;
+      const key = id ? `api-${id}` : `api-name-${name.toLowerCase()}`;
+      if (!builderMap.has(key)) {
+        builderMap.set(key, {
+          key,
+          id: id ? String(id) : '',
+          name,
+          source: 'api'
+        });
+      }
+    });
+
+    customBuilders.forEach(builder => {
+      const key = builder.id ? `custom-${builder.id}` : `custom-name-${builder.name.toLowerCase()}`;
+      if (!builderMap.has(key)) {
+        builderMap.set(key, {
+          key,
+          id: builder.id ? String(builder.id) : '',
+          name: builder.name,
+          source: 'custom'
+        });
+      }
+    });
+
+    return Array.from(builderMap.values());
+  }, [allProjects, customBuilders]);
+
+  const selectedBuilderOptionKey = useMemo(() => {
+    if (newProjectData.assignedBuilderId) {
+      const option = builderOptions.find(
+        opt => opt.id && opt.id === String(newProjectData.assignedBuilderId)
+      );
+      if (option) {
+        return option.key;
+      }
+    }
+    if (newProjectData.assignedBuilderName) {
+      const option = builderOptions.find(opt => opt.name === newProjectData.assignedBuilderName);
+      if (option) {
+        return option.key;
+      }
+    }
+    return '';
+  }, [builderOptions, newProjectData.assignedBuilderId, newProjectData.assignedBuilderName]);
 
   // Fetch projects data on component mount
   useEffect(() => {
@@ -75,36 +178,47 @@ const NewProject = ({ onPageChange }) => {
     loadFlatTemplates();
   }, []);
 
-  const steps = [
-    {
-      number: 1,
-      title: 'Select or Create Project',
-      subtitle: 'Select an existing Project or Create New Project to continue.',
-      completed: currentStep > 1,
-      active: currentStep === 1
-    },
-    {
-      number: 2,
-      title: 'Project Type & Unit Type',
-      subtitle: 'Choose your preferred Project type and Unit type.',
-      completed: currentStep > 2,
-      active: currentStep === 2
-    },
-    {
-      number: 3,
-      title: 'Select or Create Block',
-      subtitle: 'Select an existing Block or Create New Block to continue.',
-      completed: currentStep > 3,
-      active: currentStep === 3
-    },
-    {
-      number: 4,
-      title: 'Floors & Flats',
-      subtitle: 'Please provide Floor Number and Flat Details.',
-      completed: currentStep > 4,
-      active: currentStep === 4
+  const stepSequence = useMemo(() => {
+    const base = ['project', 'structure'];
+    if (projectStructureType === TOWER_STRUCTURE_TYPE) {
+      base.push('tower');
     }
-  ];
+    base.push('block', 'floors');
+    return base;
+  }, [projectStructureType]);
+
+  useEffect(() => {
+    if (currentStep > stepSequence.length) {
+      setCurrentStep(stepSequence.length);
+    }
+  }, [currentStep, stepSequence]);
+
+  const currentStepId = stepSequence[currentStep - 1] || stepSequence[stepSequence.length - 1];
+
+  useEffect(() => {
+    if (projectStructureType !== TOWER_STRUCTURE_TYPE) {
+      setSelectedTower('');
+      setAllTowers([]);
+    }
+  }, [projectStructureType]);
+
+  useEffect(() => {
+    setSelectedTower('');
+    setAllTowers([]);
+  }, [selectedProject]);
+
+  const steps = useMemo(
+    () =>
+      stepSequence.map((id, index) => ({
+        id,
+        number: index + 1,
+        title: STEP_META[id].title,
+        subtitle: STEP_META[id].subtitle,
+        completed: currentStep > index + 1,
+        active: currentStep === index + 1
+      })),
+    [stepSequence, currentStep]
+  );
 
   const handleProjectSelect = (project) => {
     setSelectedProject(project.id || project.name); // Store ID for API calls, fallback to name
@@ -119,11 +233,15 @@ const NewProject = ({ onPageChange }) => {
     setShowCreateForm(false);
     setNewProjectData({
       name: '',
-      location: '',
+      address: '',
+      contactDetails: '',
+      supportContactDetails: '',
       description: '',
       logo: null,
       headerImage: null,
-      footerImage: null
+      footerImage: null,
+      assignedBuilderId: '',
+      assignedBuilderName: ''
     });
     setLogoPreview(null);
     setHeaderImagePreview(null);
@@ -135,6 +253,95 @@ const NewProject = ({ onPageChange }) => {
       ...prev,
       [field]: value
     }));
+  };
+
+  const handleBuilderSelect = (optionKey) => {
+    const option = builderOptions.find(opt => opt.key === optionKey);
+    if (!option) {
+      setNewProjectData(prev => ({
+        ...prev,
+        assignedBuilderId: '',
+        assignedBuilderName: ''
+      }));
+      return;
+    }
+
+    if (option.source === 'api' && option.id) {
+      setNewProjectData(prev => ({
+        ...prev,
+        assignedBuilderId: option.id,
+        assignedBuilderName: option.name
+      }));
+    } else {
+      setNewProjectData(prev => ({
+        ...prev,
+        assignedBuilderId: '',
+        assignedBuilderName: option.name
+      }));
+    }
+  };
+
+  const handleOpenCreateBuilderForm = () => {
+    setShowCreateBuilderForm(true);
+    setNewBuilderData({
+      name: '',
+      address: '',
+      contactEmail: ''
+    });
+  };
+
+  const handleCloseCreateBuilderForm = () => {
+    setShowCreateBuilderForm(false);
+    setNewBuilderData({
+      name: '',
+      address: '',
+      contactEmail: ''
+    });
+  };
+
+  const handleNewBuilderChange = (field, value) => {
+    setNewBuilderData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmitNewBuilder = (e) => {
+    e.preventDefault();
+    const trimmedName = newBuilderData.name.trim();
+    if (!trimmedName) {
+      return;
+    }
+
+    setCustomBuilders(prev => {
+      const exists =
+        prev.some(builder => builder.name.toLowerCase() === trimmedName.toLowerCase()) ||
+        allProjects.some(project => (project.builderName || project.builder || '').toLowerCase() === trimmedName.toLowerCase());
+
+      if (exists) {
+        return prev;
+      }
+
+      const newBuilder = {
+        id: `custom-${Date.now()}`,
+        name: trimmedName,
+        address: newBuilderData.address.trim(),
+        contactEmail: newBuilderData.contactEmail.trim()
+      };
+
+      return [
+        ...prev,
+        newBuilder
+      ];
+    });
+
+    setNewProjectData(prev => ({
+      ...prev,
+      assignedBuilderId: '',
+      assignedBuilderName: trimmedName
+    }));
+
+    handleCloseCreateBuilderForm();
   };
 
   const handleImageUpload = (field, file) => {
@@ -201,18 +408,21 @@ const NewProject = ({ onPageChange }) => {
   };
 
   const handleContinue = () => {
-    // Validate step requirements
-    if (currentStep === 1 && !selectedProject) {
+    const activeStepId = currentStepId;
+    if (activeStepId === 'project' && !selectedProject) {
       return;
     }
-    if (currentStep === 2 && (!projectStructureType || !unitType)) {
+    if (activeStepId === 'structure' && !projectStructureType) {
       return;
     }
-    if (currentStep === 3 && !selectedBlock) {
+    if (activeStepId === 'tower' && !selectedTower) {
       return;
     }
-    
-    if (currentStep < 4) {
+    if (activeStepId === 'block' && !selectedBlock) {
+      return;
+    }
+
+    if (currentStep < stepSequence.length) {
       setCurrentStep(currentStep + 1);
     } else {
       // Final step - submit form
@@ -223,23 +433,10 @@ const NewProject = ({ onPageChange }) => {
   const handleStructureSelect = (type) => {
     setProjectStructureType(type);
     setShowStructureDropdown(false);
-    // Reset unit type when structure type changes
-    setUnitType('');
-  };
-
-  const handleUnitSelect = (type) => {
-    setUnitType(type);
-    setShowUnitDropdown(false);
-  };
-
-  // Get available unit types based on project structure
-  const getAvailableUnitTypes = () => {
-    if (projectStructureType === 'Tower(High-rise with Blocks)') {
-      return ['Flats(Apartments)'];
-    } else if (projectStructureType === 'Block(Direct Unit Management)') {
-      return ['Flats(Apartments)', 'Plots(Land Parcels)', 'Villas(Independent Houses)'];
-    }
-    return [];
+    setSelectedTower('');
+    setAllTowers([]);
+    setSelectedBlock('');
+    setAllBlocks([]);
   };
 
   const handlePrevious = () => {
@@ -250,14 +447,76 @@ const NewProject = ({ onPageChange }) => {
 
   const handleStepClick = (stepNumber) => {
     // Allow clicking on completed steps or current step to navigate
-    if (stepNumber <= currentStep) {
+    if (stepNumber <= currentStep && stepNumber <= stepSequence.length) {
       setCurrentStep(stepNumber);
     }
   };
 
-  // Fetch blocks when step 3 is reached
+  // Fetch towers when the tower step is active
   useEffect(() => {
-    if (currentStep === 3 && selectedProject) {
+    if (currentStepId === 'tower' && selectedProject) {
+      const loadTowers = async () => {
+        try {
+          setTowersLoading(true);
+          const response = await fetchTowersByProject(selectedProject);
+          if (response.success && Array.isArray(response.data)) {
+            setAllTowers(response.data);
+          }
+          setTowersLoading(false);
+        } catch (error) {
+          console.error('Error loading towers:', error);
+          setTowersLoading(false);
+        }
+      };
+      loadTowers();
+    }
+  }, [currentStepId, selectedProject]);
+
+  const handleTowerSelect = (tower) => {
+    const towerName = typeof tower === 'string' ? tower : tower.name;
+    setSelectedTower(towerName);
+    setShowTowerDropdown(false);
+  };
+
+  const handleCreateNewTower = () => {
+    setShowCreateTowerForm(true);
+  };
+
+  const handleCloseCreateTowerForm = () => {
+    setShowCreateTowerForm(false);
+    setNewTowerData({
+      name: '',
+      number: '',
+      description: ''
+    });
+  };
+
+  const handleNewTowerChange = (field, value) => {
+    setNewTowerData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmitNewTower = (e) => {
+    e.preventDefault();
+    if (newTowerData.name.trim()) {
+      const newTower = {
+        id: Date.now(),
+        name: newTowerData.name.trim(),
+        number: newTowerData.number.trim(),
+        description: newTowerData.description.trim()
+      };
+      setAllTowers(prev => [...prev, newTower]);
+      setSelectedTower(newTower.name);
+      handleCloseCreateTowerForm();
+      alert('Tower created successfully!');
+    }
+  };
+
+  // Fetch blocks when the block step is active
+  useEffect(() => {
+    if (currentStepId === 'block' && selectedProject) {
       const loadBlocks = async () => {
         try {
           setBlocksLoading(true);
@@ -273,7 +532,7 @@ const NewProject = ({ onPageChange }) => {
       };
       loadBlocks();
     }
-  }, [currentStep, selectedProject]);
+  }, [currentStepId, selectedProject]);
 
   const handleBlockSelect = (block) => {
     setSelectedBlock(block.name);
@@ -287,6 +546,7 @@ const NewProject = ({ onPageChange }) => {
   const handleCloseCreateBlockForm = () => {
     setShowCreateBlockForm(false);
     setNewBlockName('');
+    setNewBlockDescription('');
   };
 
   const handleSubmitNewBlock = (e) => {
@@ -295,7 +555,8 @@ const NewProject = ({ onPageChange }) => {
       // Create new block - in real app, make API call
       const newBlock = {
         id: Date.now(),
-        name: newBlockName.trim()
+        name: newBlockName.trim(),
+        description: newBlockDescription.trim()
       };
       setAllBlocks(prev => [...prev, newBlock]);
       setSelectedBlock(newBlock.name);
@@ -540,7 +801,7 @@ const NewProject = ({ onPageChange }) => {
               {/* Project Form Card */}
               <div className="bg-white rounded-xl shadow-lg border border-gray-200 w-full flex flex-col" style={{ padding: 'clamp(2rem, 2.5rem, 3rem)' }}>
                {/* Step 1: Project Selection */}
-               {currentStep === 1 && (
+               {currentStepId === 'project' && (
                  <>
                    {/* Header Section */}
                    <div className="mb-6 pb-4 border-b border-gray-200">
@@ -602,7 +863,9 @@ const NewProject = ({ onPageChange }) => {
                                className="w-full px-3 py-2.5 text-left hover:bg-orange-50 transition-colors border-b border-gray-100 last:border-b-0 first:rounded-t-lg last:rounded-b-lg text-base"
                              >
                                <div className="font-medium text-gray-900 mb-0.5">{project.name}</div>
-                               <div className="text-sm text-gray-600">{project.location}</div>
+                              <div className="text-sm text-gray-600">
+                                {project.address || project.location || 'Address not available'}
+                              </div>
                              </button>
                            ))
                          )}
@@ -655,8 +918,8 @@ const NewProject = ({ onPageChange }) => {
                  </>
                )}
 
-               {/* Step 2: Project Type & Unit Type */}
-               {currentStep === 2 && (
+              {/* Step 2: Project Structure Type */}
+              {currentStepId === 'structure' && (
                  <>
                    {/* Header Section */}
                    <div className="mb-6 pb-4 border-b border-gray-200">
@@ -664,10 +927,10 @@ const NewProject = ({ onPageChange }) => {
                        className="font-bold text-gray-900 mb-1"
                        style={{ fontSize: 'clamp(1.125rem, 1.375rem, 1.625rem)' }}
                      >
-                       Project Type & Unit Type
+                      Project Structure Type
                      </h2>
                      <p className="text-gray-500 text-sm">
-                       Choose your preferred Project type and Unit type
+                      Choose the structure type that best fits your project
                      </p>
                    </div>
 
@@ -683,7 +946,6 @@ const NewProject = ({ onPageChange }) => {
                            type="button"
                            onClick={() => {
                              setShowStructureDropdown(!showStructureDropdown);
-                             setShowUnitDropdown(false);
                            }}
                            className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-left flex items-center justify-between transition-all hover:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
                          >
@@ -701,61 +963,11 @@ const NewProject = ({ onPageChange }) => {
                          {/* Dropdown Menu */}
                          {showStructureDropdown && (
                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                             {['Tower(High-rise with Blocks)', 'Block(Direct Unit Management)'].map((type) => (
+                             {PROJECT_STRUCTURE_OPTIONS.map((type) => (
                                <button
                                  key={type}
                                  type="button"
                                  onClick={() => handleStructureSelect(type)}
-                                 className="w-full px-3 py-2.5 text-left hover:bg-orange-50 transition-colors border-b border-gray-100 last:border-b-0 first:rounded-t-lg last:rounded-b-lg text-base"
-                               >
-                                 <div className="font-medium text-gray-900">{type}</div>
-                               </button>
-                             ))}
-                           </div>
-                         )}
-                       </div>
-                     </div>
-
-                     {/* Unit Type */}
-                     <div>
-                       <label className="block font-medium text-gray-700 mb-2 text-base">
-                         Unit Type <span className="text-red-500">*</span>
-                       </label>
-                       <div className="relative">
-                         <button
-                           type="button"
-                           onClick={() => {
-                             if (projectStructureType) {
-                               setShowUnitDropdown(!showUnitDropdown);
-                               setShowStructureDropdown(false);
-                             }
-                           }}
-                           disabled={!projectStructureType}
-                           className={`w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-left flex items-center justify-between transition-all text-base ${
-                             !projectStructureType
-                               ? 'bg-gray-50 cursor-not-allowed border-gray-200'
-                               : 'hover:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
-                           }`}
-                         >
-                           <span className={unitType ? 'text-gray-900' : 'text-gray-400'}>
-                             {unitType || (!projectStructureType ? 'Select Project Structure first' : 'Select Unit Type')}
-                           </span>
-                           <HiChevronDown
-                             className={`text-gray-400 transition-all ${
-                               showUnitDropdown ? 'transform rotate-180 text-orange-500' : ''
-                             }`}
-                             style={{ fontSize: '1.125rem' }}
-                           />
-                         </button>
-
-                         {/* Dropdown Menu */}
-                         {showUnitDropdown && projectStructureType && (
-                           <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                             {getAvailableUnitTypes().map((type) => (
-                               <button
-                                 key={type}
-                                 type="button"
-                                 onClick={() => handleUnitSelect(type)}
                                  className="w-full px-3 py-2.5 text-left hover:bg-orange-50 transition-colors border-b border-gray-100 last:border-b-0 first:rounded-t-lg last:rounded-b-lg text-base"
                                >
                                  <div className="font-medium text-gray-900">{type}</div>
@@ -782,9 +994,9 @@ const NewProject = ({ onPageChange }) => {
                          <button
                            type="button"
                            onClick={handleContinue}
-                           disabled={!projectStructureType || !unitType}
+                           disabled={!projectStructureType}
                            className={`px-4 py-1.5 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all text-base ${
-                             projectStructureType && unitType
+                             projectStructureType
                                ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 shadow-md hover:shadow-lg'
                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                            }`}
@@ -797,8 +1009,140 @@ const NewProject = ({ onPageChange }) => {
                  </>
                )}
 
-               {/* Step 3: Select or Create Block */}
-               {currentStep === 3 && (
+              {/* Step (Conditional): Select or Create Tower */}
+              {currentStepId === 'tower' && (
+                <>
+                  <div className="mb-6 pb-4 border-b border-gray-200">
+                    <h2
+                      className="font-bold text-gray-900 mb-1"
+                      style={{ fontSize: 'clamp(1.125rem, 1.375rem, 1.625rem)' }}
+                    >
+                      Select or Create Tower
+                    </h2>
+                    <p className="text-gray-500 text-sm">
+                      Select an existing Tower or Create New Tower to continue
+                    </p>
+                  </div>
+
+                  <div className="space-y-5">
+                    <div>
+                      <label className="block font-medium text-gray-700 mb-2 text-base">
+                        Select an existing Tower <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowTowerDropdown(!showTowerDropdown);
+                          }}
+                          className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-left flex items-center justify-between transition-all hover:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
+                        >
+                          <span className={selectedTower ? 'text-gray-900' : 'text-gray-400'}>
+                            {selectedTower || 'Select a Tower'}
+                          </span>
+                          <HiChevronDown
+                            className={`text-gray-400 transition-all ${
+                              showTowerDropdown ? 'transform rotate-180 text-orange-500' : ''
+                            }`}
+                            style={{ fontSize: '1.125rem' }}
+                          />
+                        </button>
+
+                        {showTowerDropdown && (
+                          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                            {towersLoading ? (
+                              <div className="px-3 py-3 text-gray-500 text-center text-sm">
+                                <div className="flex items-center justify-center gap-2">
+                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-500"></div>
+                                  <span>Loading...</span>
+                                </div>
+                              </div>
+                            ) : allTowers.length === 0 ? (
+                              <div className="px-3 py-3 text-gray-500 text-center text-sm">
+                                No towers available
+                              </div>
+                            ) : (
+                              allTowers.map((tower) => {
+                                const towerName = tower.name || tower;
+                                const towerNumber = tower.number || '';
+                                const towerDescription = tower.description || '';
+                                return (
+                                  <button
+                                    key={tower.id || towerName}
+                                    type="button"
+                                    onClick={() => handleTowerSelect(tower)}
+                                    className="w-full px-3 py-2.5 text-left hover:bg-orange-50 transition-colors border-b border-gray-100 last:border-b-0 first:rounded-t-lg last:rounded-b-lg text-base"
+                                  >
+                                    <div className="font-medium text-gray-900">
+                                      {towerName}
+                                      {towerNumber ? ` (${towerNumber})` : ''}
+                                    </div>
+                                    {towerDescription && (
+                                      <div className="text-gray-500 text-sm mt-0.5">
+                                        {towerDescription}
+                                      </div>
+                                    )}
+                                  </button>
+                                );
+                              })
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-300"></div>
+                      </div>
+                      <div className="relative flex justify-center">
+                        <span className="px-3 bg-white text-gray-500 font-medium uppercase text-sm">
+                          OR
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-center">
+                      <button
+                        type="button"
+                        onClick={handleCreateNewTower}
+                        className="px-3 py-1.5 border border-dashed border-orange-400 bg-orange-50/30 rounded-md font-medium text-orange-600 hover:bg-orange-50 hover:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all flex items-center justify-center gap-1.5 text-sm"
+                      >
+                        <HiPlus style={{ fontSize: '1rem' }} />
+                        <span>Create New Tower</span>
+                      </button>
+                    </div>
+
+                    <div className="pt-4 flex justify-between items-center">
+                      <button
+                        type="button"
+                        onClick={handlePrevious}
+                        className="px-4 py-1.5 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all text-base bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 shadow-sm hover:shadow-md"
+                      >
+                        Previous
+                      </button>
+
+                      <div className="ml-auto">
+                        <button
+                          type="button"
+                          onClick={handleContinue}
+                          disabled={!selectedTower}
+                          className={`px-4 py-1.5 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all text-base ${
+                            selectedTower
+                              ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 shadow-md hover:shadow-lg'
+                              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          }`}
+                        >
+                          Continue
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Step: Select or Create Block */}
+              {currentStepId === 'block' && (
                  <>
                    {/* Header Section */}
                    <div className="mb-6 pb-4 border-b border-gray-200">
@@ -923,8 +1267,8 @@ const NewProject = ({ onPageChange }) => {
                  </>
                )}
 
-               {/* Step 4: Floors & Flats */}
-               {currentStep === 4 && (
+              {/* Step: Floors & Flats */}
+              {currentStepId === 'floors' && (
                  <>
                    {/* Header Section */}
                    <div className="mb-6 pb-4 border-b border-gray-200">
@@ -1171,13 +1515,13 @@ const NewProject = ({ onPageChange }) => {
       </div>
 
       {/* Click outside to close dropdowns */}
-      {(showProjectDropdown || showStructureDropdown || showUnitDropdown || showBlockDropdown || Object.keys(showTemplateDropdown).some(key => showTemplateDropdown[key])) && (
+      {(showProjectDropdown || showStructureDropdown || showTowerDropdown || showBlockDropdown || Object.keys(showTemplateDropdown).some(key => showTemplateDropdown[key])) && (
         <div
           className="fixed inset-0 z-40"
           onClick={() => {
             setShowProjectDropdown(false);
             setShowStructureDropdown(false);
-            setShowUnitDropdown(false);
+            setShowTowerDropdown(false);
             setShowBlockDropdown(false);
             setShowTemplateDropdown({});
           }}
@@ -1218,18 +1562,47 @@ const NewProject = ({ onPageChange }) => {
                   />
                 </div>
 
-                {/* Location */}
+                {/* Address */}
                 <div>
                   <label className="block font-medium text-gray-700 mb-1.5 text-sm">
-                    Location <span className="text-red-500">*</span>
+                    Address <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    value={newProjectData.address}
+                    onChange={(e) => handleInputChange('address', e.target.value)}
+                    placeholder="Enter project address"
+                    rows={2}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none text-sm"
+                    required
+                  />
+                </div>
+
+                {/* Contact Details */}
+                <div>
+                  <label className="block font-medium text-gray-700 mb-1.5 text-sm">
+                    Contact Details <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
-                    value={newProjectData.location}
-                    onChange={(e) => handleInputChange('location', e.target.value)}
-                    placeholder="Enter project location"
+                    value={newProjectData.contactDetails}
+                    onChange={(e) => handleInputChange('contactDetails', e.target.value)}
+                    placeholder="Enter primary contact details (e.g., name, phone, email)"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
                     required
+                  />
+                </div>
+
+                {/* Support Contact Details */}
+                <div>
+                  <label className="block font-medium text-gray-700 mb-1.5 text-sm">
+                    Support Contact Details <span className="text-gray-500 text-xs">(Optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newProjectData.supportContactDetails}
+                    onChange={(e) => handleInputChange('supportContactDetails', e.target.value)}
+                    placeholder="Enter support contact details"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
                   />
                 </div>
 
@@ -1357,6 +1730,42 @@ const NewProject = ({ onPageChange }) => {
                     )}
                   </div>
                 </div>
+
+              {/* Assign Builder */}
+              <div className="pt-2 border-t border-gray-200">
+                <label className="block font-medium text-gray-700 mb-1.5 text-sm">
+                  Assign a Builder
+                </label>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="relative w-full sm:max-w-xs">
+                    <select
+                      value={selectedBuilderOptionKey}
+                      onChange={(e) => handleBuilderSelect(e.target.value)}
+                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm bg-white appearance-none"
+                    >
+                      <option value="">Select a builder</option>
+                      {builderOptions.map((builder) => (
+                        <option key={builder.key} value={builder.key}>
+                          {builder.name}
+                        </option>
+                      ))}
+                    </select>
+                    <HiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleOpenCreateBuilderForm}
+                    className="px-4 py-2 text-sm font-medium text-orange-600 border border-orange-400 rounded-md hover:bg-orange-50 transition-colors self-start sm:self-center sm:ml-auto"
+                  >
+                    Create Builder
+                  </button>
+                </div>
+                {builderOptions.length === 0 && (
+                  <p className="mt-1 text-xs text-gray-500">
+                    No builders available from existing projects.
+                  </p>
+                )}
+              </div>
               </div>
 
               {/* Form Actions */}
@@ -1373,6 +1782,81 @@ const NewProject = ({ onPageChange }) => {
                   className="px-4 py-2 rounded-md font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 text-sm"
                 >
                   Create Project
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Create New Tower Form Modal */}
+      {showCreateTowerForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+              <h2 className="font-bold text-gray-900 text-lg">Create New Tower</h2>
+              <button
+                onClick={handleCloseCreateTowerForm}
+                className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
+              >
+                <HiX className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitNewTower} className="p-4 space-y-4">
+              <div>
+                <label className="block font-medium text-gray-700 mb-1.5 text-sm">
+                  Tower Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newTowerData.name}
+                  onChange={(e) => handleNewTowerChange('name', e.target.value)}
+                  placeholder="Enter tower name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block font-medium text-gray-700 mb-1.5 text-sm">
+                  Tower Number <span className="text-gray-500 text-xs">(Optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={newTowerData.number}
+                  onChange={(e) => handleNewTowerChange('number', e.target.value)}
+                  placeholder="Enter tower number"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block font-medium text-gray-700 mb-1.5 text-sm">
+                  Description <span className="text-gray-500 text-xs">(Optional)</span>
+                </label>
+                <textarea
+                  value={newTowerData.description}
+                  onChange={(e) => handleNewTowerChange('description', e.target.value)}
+                  placeholder="Enter tower description"
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none text-sm"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-gray-200">
+                <button
+                  type="button"
+                  onClick={handleCloseCreateTowerForm}
+                  className="px-4 py-2 rounded-md font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-md font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 text-sm"
+                >
+                  Save
                 </button>
               </div>
             </form>
@@ -1412,6 +1896,19 @@ const NewProject = ({ onPageChange }) => {
                 />
               </div>
 
+              <div>
+                <label className="block font-medium text-gray-700 mb-1.5 text-sm">
+                  Description <span className="text-gray-500 text-xs">(Optional)</span>
+                </label>
+                <textarea
+                  value={newBlockDescription}
+                  onChange={(e) => setNewBlockDescription(e.target.value)}
+                  placeholder="Enter block description"
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none text-sm"
+                />
+              </div>
+
               {/* Form Actions */}
               <div className="flex justify-end gap-2 pt-3 border-t border-gray-200">
                 <button
@@ -1426,6 +1923,81 @@ const NewProject = ({ onPageChange }) => {
                   className="px-4 py-2 rounded-md font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 text-sm"
                 >
                   Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Create Builder Form Modal */}
+      {showCreateBuilderForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+              <h2 className="font-bold text-gray-900 text-lg">Create Builder</h2>
+              <button
+                onClick={handleCloseCreateBuilderForm}
+                className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
+              >
+                <HiX className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitNewBuilder} className="p-4 space-y-4">
+              <div>
+                <label className="block font-medium text-gray-700 mb-1.5 text-sm">
+                  Builder Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newBuilderData.name}
+                  onChange={(e) => handleNewBuilderChange('name', e.target.value)}
+                  placeholder="Enter builder name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block font-medium text-gray-700 mb-1.5 text-sm">
+                  Address
+                </label>
+                <textarea
+                  value={newBuilderData.address}
+                  onChange={(e) => handleNewBuilderChange('address', e.target.value)}
+                  placeholder="Enter builder address"
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block font-medium text-gray-700 mb-1.5 text-sm">
+                  Contact Email
+                </label>
+                <input
+                  type="email"
+                  value={newBuilderData.contactEmail}
+                  onChange={(e) => handleNewBuilderChange('contactEmail', e.target.value)}
+                  placeholder="Enter contact email"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-gray-200">
+                <button
+                  type="button"
+                  onClick={handleCloseCreateBuilderForm}
+                  className="px-4 py-2 rounded-md font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-md font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 text-sm"
+                >
+                  Create
                 </button>
               </div>
             </form>

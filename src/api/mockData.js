@@ -1450,13 +1450,33 @@ export const fetchActivityToSubactivity = async () => {
   };
 };
 
-// ==================== ADMIN: BLOCKS DATA ====================
+// ==================== ADMIN: BLOCKS & TOWERS DATA ====================
 const blocksData = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
 export const fetchBlocks = async () => {
   return {
     success: true,
     data: blocksData
+  };
+};
+
+const defaultTowers = [
+  { id: 1, name: 'Tower A', number: 'T1', description: 'Primary residential tower' },
+  { id: 2, name: 'Tower B', number: 'T2', description: 'Secondary residential tower' },
+  { id: 3, name: 'Tower C', number: 'T3', description: 'Premium amenities tower' }
+];
+
+export const fetchTowersByProject = async (projectId) => {
+  const project = projectsData.find(p => p.id === projectId || p.name === projectId);
+  if (project && project.towers) {
+    return {
+      success: true,
+      data: project.towers
+    };
+  }
+  return {
+    success: true,
+    data: defaultTowers
   };
 };
 
@@ -2210,6 +2230,7 @@ export default {
   fetchViewActivity,
   fetchActivityToSubactivity,
   fetchBlocks,
+  fetchTowersByProject,
   fetchCustomizationTypes,
   fetchDealerIds,
   fetchMonths,

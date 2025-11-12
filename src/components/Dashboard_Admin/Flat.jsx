@@ -1,7 +1,56 @@
+  const individualDemandStageOptions = [
+    {
+      id: 'bookingAdvance',
+      label: 'Booking Advance',
+      percentage: '10%',
+      installmentAmount: 805020,
+      tdsGhpl: 37891,
+      tdsOrchid: 2249,
+      gstGhpl: 52528,
+      gstOrchid: 14993
+    },
+    {
+      id: 'agreementOfSale',
+      label: 'At the time of Agreement of Sale',
+      percentage: '20%',
+      installmentAmount: 1610040,
+      tdsGhpl: 75600,
+      tdsOrchid: 4500,
+      gstGhpl: 105056,
+      gstOrchid: 29986
+    },
+    {
+      id: 'completion5thSlab',
+      label: 'Completion of 5th Slab',
+      percentage: '25%',
+      installmentAmount: 2012550,
+      tdsGhpl: 94500,
+      tdsOrchid: 5625,
+      gstGhpl: 131320,
+      gstOrchid: 37500
+    },
+    {
+      id: 'firstStageInternal',
+      label: 'Completion of First Stage of Internal works',
+      percentage: '5%',
+      installmentAmount: 402510,
+      tdsGhpl: 18900,
+      tdsOrchid: 1125,
+      gstGhpl: 26264,
+      gstOrchid: 7497
+    }
+  ];
+
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { HiChevronLeft, HiPlus, HiMinus, HiDotsVertical, HiTrash, HiPencil, HiCheckCircle, HiReceiptTax, HiCog, HiMenu, HiX, HiLightningBolt, HiBell, HiFolder, HiEye, HiRefresh, HiDocumentText, HiCurrencyRupee, HiPrinter, HiShare, HiInformationCircle, HiDocument, HiKey, HiArrowUp, HiArrowDown, HiXCircle, HiArrowRight, HiDeviceMobile } from 'react-icons/hi';
 import { fetchFlatDetailsAdmin } from '../../api/mockData';
 import UploadDocumentPopup from './UploadDocumentPopup';
+import DemandLetter from '../Template/DemandLetter';
+import PaymentSchedule from '../Template/PaymentSchedule';
+import PrintStatement from '../Template/PrintStatement';
+import IndividualDemand from '../Template/IndividualDemand';
+import Reciept from '../Template/Reciept';
 
 const Flat = ({ onPageChange }) => {
   const [loading, setLoading] = useState(true);
@@ -81,9 +130,17 @@ const Flat = ({ onPageChange }) => {
   // Add Remarks popup state
   const [showAddRemarksPopup, setShowAddRemarksPopup] = useState(false);
   const [showUploadDocumentsPopup, setShowUploadDocumentsPopup] = useState(false);
+  const [showDemandLetterModal, setShowDemandLetterModal] = useState(false);
+  const [showPaymentScheduleModal, setShowPaymentScheduleModal] = useState(false);
+  const [showPrintStatementModal, setShowPrintStatementModal] = useState(false);
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [showIndividualDemandModal, setShowIndividualDemandModal] = useState(false);
+  const [selectedIndividualStages, setSelectedIndividualStages] = useState([]);
+  const [individualDemandStep, setIndividualDemandStep] = useState('selection');
   const [remarkType, setRemarkType] = useState(''); // 'comment' or 'customerNotification'
   const [commentVisibility, setCommentVisibility] = useState(''); // 'public' or 'confidential'
   const [remarkText, setRemarkText] = useState('');
+  const [receiptData, setReceiptData] = useState(null);
 
   useEffect(() => {
     // Load flat data from sessionStorage or API
@@ -288,9 +345,15 @@ const Flat = ({ onPageChange }) => {
   };
 
   const handlePaymentReceipt = (index) => {
-    // In a real app, this would open a receipt modal or navigate to receipt page
-    console.log('Generating receipt for payment at index:', index);
-    alert('Receipt generation feature - Coming soon!');
+    const payment = flatData.paymentInfo?.[index];
+    const details = buildReceiptData(payment);
+    setReceiptData(details);
+    setShowReceiptModal(true);
+  };
+  
+  const handleCloseReceipt = () => {
+    setShowReceiptModal(false);
+    setReceiptData(null);
   };
 
   const handleInputChange = (field, value) => {
@@ -591,6 +654,51 @@ const Flat = ({ onPageChange }) => {
     setShowUploadDocumentsPopup(false);
   };
 
+  // Demand Letter handler
+  const handleOpenDemandLetter = () => {
+    setIsMenuOpen(false);
+    setIsQuickAccessOpen(false);
+    setShowDemandLetterModal(true);
+  };
+
+  const handleCloseDemandLetter = () => {
+    setShowDemandLetterModal(false);
+  };
+
+  const handleOpenPaymentSchedule = () => {
+    setIsMenuOpen(false);
+    setIsQuickAccessOpen(false);
+    setShowPaymentScheduleModal(true);
+  };
+
+  const handleClosePaymentSchedule = () => {
+    setShowPaymentScheduleModal(false);
+  };
+
+  const handleOpenPrintStatement = () => {
+    setIsMenuOpen(false);
+    setIsQuickAccessOpen(false);
+    setShowPrintStatementModal(true);
+  };
+
+  const handleClosePrintStatement = () => {
+    setShowPrintStatementModal(false);
+  };
+
+  const handleOpenIndividualDemand = () => {
+    setIsMenuOpen(false);
+    setIsQuickAccessOpen(false);
+    setSelectedIndividualStages([]);
+    setIndividualDemandStep('selection');
+    setShowIndividualDemandModal(true);
+  };
+
+  const handleCloseIndividualDemand = () => {
+    setShowIndividualDemandModal(false);
+    setSelectedIndividualStages([]);
+    setIndividualDemandStep('selection');
+  };
+
   // View Documents handler - Navigate to FlatDocs with pre-selected flat
   const handleViewDocumentsClick = () => {
     setIsQuickAccessOpen(false);
@@ -710,6 +818,140 @@ const Flat = ({ onPageChange }) => {
       </div>
     );
   }
+
+  const customerName = flatData.customerInfo?.name || '';
+  const coApplicantName = flatData.coApplicantInfo?.name || '';
+  const customerEmail = flatData.customerInfo?.email || '';
+
+  const demandLetterData = {
+    flatNo: flatData.flatNo || '',
+    name: customerName,
+    coApplicant: coApplicantName,
+    email: customerEmail
+  };
+
+  const paymentScheduleData = {
+    flatNo: flatData.flatNo || '',
+    name: customerName,
+    coApplicant: coApplicantName,
+    email: customerEmail
+  };
+
+  const parseAmount = (value) => {
+    const numeric = String(value ?? '0').replace(/[^0-9.]/g, '');
+    return Number(numeric || 0);
+  };
+
+  const statementInfo = {
+    customerName: customerName || '',
+    fatherHusbandName: flatData.customerInfo?.fatherHusband || '',
+    contactNo: flatData.customerInfo?.contactNo || '',
+    coApplicant: coApplicantName || '',
+    area: flatData.flatInfo?.area || '',
+    paymentPlan: flatData.flatInfo?.paymentPlan || '',
+    totalAmount: parseAmount(flatData.flatInfo?.totalCost),
+    paidAmount: parseAmount(flatData.charges?.paidAmount),
+    uniqueId: flatData.customerInfo?.kycId || '',
+    date: new Date().toLocaleDateString('en-GB'),
+    title: flatData.flatNo ? `Flat No:- ${flatData.flatNo}` : 'Payment Statement'
+  };
+
+  const statementRows = (flatData.paymentInfo || []).map((payment, index) => ({
+    srNo: payment.srNo || index + 1,
+    receiptNo: payment.receiptNo || `R${String(index + 1).padStart(4, '0')}`,
+    chequeNo: payment.chequeNo || '-',
+    amount: parseAmount(payment.amount),
+    bank: payment.bank || '',
+    chequeDate: payment.chequeDate || '',
+    status: payment.chequeStatus || ''
+  }));
+
+  const sanitizedFlatNo = (flatData.flatNo || 'A1').replace(/-/g, '');
+
+  const defaultReceiptData = {
+    receiptNo: 'A1603',
+    date: '23-11-2021',
+    customerName: customerName || 'V.REVATHI',
+    guardianName: flatData.customerInfo?.fatherHusband || 'V.RAMA MOHAN RAO',
+    flatNo: sanitizedFlatNo || 'A1',
+    address: flatData.customerInfo?.address || 'Flat No-16-104 Near Saibaba Temple, Huzusnagar, at Suryapet.',
+    ghplAmount: 0,
+    orchidAmount: 0,
+    totalAmount: 0,
+    chequeNo: '',
+    bank: '',
+    chequeDate: ''
+  };
+
+  const buildReceiptData = (payment) => {
+    const baseDetails = { ...defaultReceiptData };
+
+    if (!payment) {
+      return {
+        ...baseDetails,
+        ghplAmount: 376500,
+        orchidAmount: 223500,
+        totalAmount: 600000,
+        chequeNo: '000003',
+        bank: 'HDFC',
+        chequeDate: '20-11-2021'
+      };
+    }
+
+    const rawAmount = parseAmount(payment.totalAmount ?? payment.amount ?? baseDetails.totalAmount);
+    const receiptNo = payment.receiptNo || baseDetails.receiptNo;
+    const chequeNo = payment.chequeNo || baseDetails.chequeNo;
+    const bank = payment.bank || baseDetails.bank;
+    const chequeDate = payment.chequeDate || baseDetails.chequeDate;
+    const paymentDate = payment.receivingDate || chequeDate || baseDetails.date;
+
+    let ghplAmount = baseDetails.ghplAmount;
+    let orchidAmount = baseDetails.orchidAmount;
+
+    if (payment.ghplAmount !== undefined || payment.orchidAmount !== undefined) {
+      ghplAmount = payment.ghplAmount !== undefined ? parseAmount(payment.ghplAmount) : ghplAmount;
+      orchidAmount = payment.orchidAmount !== undefined ? parseAmount(payment.orchidAmount) : orchidAmount;
+    } else {
+      const accountInfo = (payment.onAccountOf || '').toLowerCase();
+      if (accountInfo.includes('ghpl') && accountInfo.includes('orchid')) {
+        // Split equally only if both are mentioned but no explicit breakup provided
+        ghplAmount = rawAmount ? rawAmount / 2 : ghplAmount;
+        orchidAmount = rawAmount ? rawAmount / 2 : orchidAmount;
+      } else if (accountInfo.includes('ghpl')) {
+        ghplAmount = rawAmount || ghplAmount;
+        orchidAmount = 0;
+      } else if (accountInfo.includes('orchid')) {
+        orchidAmount = rawAmount || orchidAmount;
+        ghplAmount = 0;
+      } else {
+        ghplAmount = rawAmount || ghplAmount;
+        orchidAmount = 0;
+      }
+    }
+
+    const computedTotal = rawAmount || ghplAmount + orchidAmount;
+
+    return {
+      ...baseDetails,
+      receiptNo,
+      date: paymentDate || baseDetails.date,
+      chequeNo,
+      bank,
+      chequeDate,
+      ghplAmount,
+      orchidAmount,
+      totalAmount: computedTotal || baseDetails.totalAmount
+    };
+  };
+
+  const individualDemandInfo = {
+    customerName: customerName,
+    coApplicant: coApplicantName,
+    flatNo: flatData.flatNo || '',
+    floor: flatData.flatInfo?.floor || '',
+    block: flatData.flatInfo?.block || '',
+    email: customerEmail
+  };
 
   return (
     <div className="h-full flex flex-col bg-white lg:bg-transparent shadow-sm lg:shadow-none border lg:border-0 border-gray-200" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', borderRadius: 'clamp(1rem, 1.5rem, 1.75rem)' }}>
@@ -917,14 +1159,14 @@ const Flat = ({ onPageChange }) => {
                 { icon: HiDocumentText, text: 'Generate Receipt Number' },
                 { icon: HiCurrencyRupee, text: 'Add Payment' },
                 { icon: HiPlus, text: 'Add Remarks', action: 'addRemarks' },
-                { icon: HiPrinter, text: 'Print Demand Letter' },
-                { icon: HiShare, text: 'Email Demand Letter' },
-                { icon: HiPrinter, text: 'Print Payment Schedule' },
-                { icon: HiShare, text: 'Email Payment Schedule' },
-                { icon: HiPrinter, text: 'Print Statement' },
-                { icon: HiShare, text: 'Email Statement' },
-                { icon: HiInformationCircle, text: 'Print Individual Demand' },
-                { icon: HiInformationCircle, text: 'Email Individual Demand' },
+                { icon: HiPrinter, text: 'Print Demand Letter', action: 'printDemandLetter' },
+                { icon: HiShare, text: 'Email Demand Letter', action: 'emailDemandLetter' },
+                { icon: HiPrinter, text: 'Print Payment Schedule', action: 'printPaymentSchedule' },
+                { icon: HiShare, text: 'Email Payment Schedule', action: 'emailPaymentSchedule' },
+                { icon: HiPrinter, text: 'Print Statement', action: 'printStatement' },
+                { icon: HiShare, text: 'Email Statement', action: 'emailStatement' },
+                { icon: HiInformationCircle, text: 'Print Individual Demand', action: 'printIndividualDemand' },
+                { icon: HiInformationCircle, text: 'Email Individual Demand', action: 'emailIndividualDemand' },
                 { icon: HiDocumentText, text: 'Cost Sheet' },
               ].map((item, index) => (
                 <button 
@@ -934,6 +1176,14 @@ const Flat = ({ onPageChange }) => {
                       handleAddRemarksClick();
                     } else if (item.action === 'uploadDocuments') {
                       handleUploadDocumentsClick();
+                    } else if (item.action === 'printDemandLetter' || item.action === 'emailDemandLetter') {
+                      handleOpenDemandLetter();
+                    } else if (item.action === 'printPaymentSchedule' || item.action === 'emailPaymentSchedule') {
+                      handleOpenPaymentSchedule();
+                    } else if (item.action === 'printStatement' || item.action === 'emailStatement') {
+                      handleOpenPrintStatement();
+                    } else if (item.action === 'printIndividualDemand' || item.action === 'emailIndividualDemand') {
+                      handleOpenIndividualDemand();
                     } else if (item.text === 'View Documents') {
                       handleViewDocumentsClick();
                     } else if (item.text === 'View Legal Documents') {
@@ -2355,6 +2605,290 @@ const Flat = ({ onPageChange }) => {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Demand Letter Modal */}
+      {showDemandLetterModal && createPortal(
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+          style={{ zIndex: 99999 }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              handleCloseDemandLetter();
+            }
+          }}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[95vh] overflow-auto relative"
+            style={{ zIndex: 100000 }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center" style={{ zIndex: 100001, position: 'relative' }}>
+              <h3 className="text-lg font-bold">Demand Letter - {demandLetterData.flatNo}</h3>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleCloseDemandLetter();
+                }}
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
+                style={{
+                  zIndex: 100002,
+                  position: 'relative',
+                  pointerEvents: 'auto'
+                }}
+              >
+                Close
+              </button>
+            </div>
+            <div className="p-6" onClick={(e) => e.stopPropagation()}>
+              <DemandLetter paymentData={demandLetterData} />
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Payment Schedule Modal */}
+      {showPaymentScheduleModal && createPortal(
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+          style={{ zIndex: 99999 }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              handleClosePaymentSchedule();
+            }
+          }}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[95vh] overflow-auto relative"
+            style={{ zIndex: 100000 }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center" style={{ zIndex: 100001, position: 'relative' }}>
+              <h3 className="text-lg font-bold">Payment Schedule - {paymentScheduleData.flatNo}</h3>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleClosePaymentSchedule();
+                }}
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
+                style={{
+                  zIndex: 100002,
+                  position: 'relative',
+                  pointerEvents: 'auto'
+                }}
+              >
+                Close
+              </button>
+            </div>
+            <div className="p-6" onClick={(e) => e.stopPropagation()}>
+              <PaymentSchedule paymentData={paymentScheduleData} />
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Receipt Modal */}
+      {showReceiptModal && createPortal(
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+          style={{ zIndex: 99999 }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              handleCloseReceipt();
+            }
+          }}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[95vh] overflow-auto relative"
+            style={{ zIndex: 100000 }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center" style={{ zIndex: 100001, position: 'relative' }}>
+              <h3 className="text-lg font-bold">Payment Receipt - {receiptData?.flatNo || defaultReceiptData.flatNo}</h3>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleCloseReceipt();
+                }}
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
+                style={{
+                  zIndex: 100002,
+                  position: 'relative',
+                  pointerEvents: 'auto'
+                }}
+              >
+                Close
+              </button>
+            </div>
+            <div className="p-6" onClick={(e) => e.stopPropagation()}>
+              <Reciept receiptData={receiptData || defaultReceiptData} />
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Print Statement Modal */}
+      {showPrintStatementModal && createPortal(
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+          style={{ zIndex: 99999 }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              handleClosePrintStatement();
+            }
+          }}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[95vh] overflow-auto relative"
+            style={{ zIndex: 100000 }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center" style={{ zIndex: 100001, position: 'relative' }}>
+              <h3 className="text-lg font-bold">Payment Statement - {statementInfo.uniqueId}</h3>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleClosePrintStatement();
+                }}
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
+                style={{
+                  zIndex: 100002,
+                  position: 'relative',
+                  pointerEvents: 'auto'
+                }}
+              >
+                Close
+              </button>
+            </div>
+            <div className="p-6" onClick={(e) => e.stopPropagation()}>
+              <PrintStatement statementInfo={statementInfo} rows={statementRows} />
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Individual Demand Modal */}
+      {showIndividualDemandModal && createPortal(
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+          style={{ zIndex: 99999 }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              handleCloseIndividualDemand();
+            }
+          }}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[95vh] overflow-auto relative"
+            style={{ zIndex: 100000 }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center" style={{ zIndex: 100001, position: 'relative' }}>
+              <h3 className="text-lg font-bold">
+                Individual Demand {individualDemandStep === 'selection' ? ' - Select Construction Stages' : ` - ${flatData.flatNo}`}
+              </h3>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleCloseIndividualDemand();
+                }}
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
+                style={{
+                  zIndex: 100002,
+                  position: 'relative',
+                  pointerEvents: 'auto'
+                }}
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {individualDemandStep === 'selection' ? (
+                <div>
+                  <p className="font-medium mb-4 text-gray-700">Please select Installment stages</p>
+                  <div className="border border-gray-300 rounded overflow-hidden">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-gray-100 text-gray-700 text-sm">
+                          <th className="border border-gray-300 px-3 py-2 w-16 text-center">S.No.</th>
+                          <th className="border border-gray-300 px-3 py-2 text-left">Installment</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {individualDemandStageOptions.map((stage, idx) => (
+                          <tr key={stage.id} className="text-sm">
+                            <td className="border border-gray-300 px-3 py-2 text-center">
+                              <input
+                                type="checkbox"
+                                checked={selectedIndividualStages.includes(stage.id)}
+                                onChange={(e) => {
+                                  setSelectedIndividualStages((prev) => {
+                                    if (e.target.checked) {
+                                      return [...prev, stage.id];
+                                    }
+                                    return prev.filter((id) => id !== stage.id);
+                                  });
+                                }}
+                              />
+                            </td>
+                            <td className="border border-gray-300 px-3 py-2">{stage.label}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="flex justify-end mt-4">
+                    <button
+                      className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                      onClick={() => {
+                        if (selectedIndividualStages.length === 0) {
+                          alert('Please select at least one installment stage.');
+                          return;
+                        }
+                        setIndividualDemandStep('preview');
+                      }}
+                    >
+                      Generate
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <IndividualDemand
+                  demandInfo={individualDemandInfo}
+                  stages={individualDemandStageOptions}
+                  selectedStageIds={selectedIndividualStages}
+                />
+              )}
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
 
       {/* Upload Documents Popup */}

@@ -7,9 +7,12 @@ import documentsIcon from '../../assets/documents.png';
 import userImageBig from '../../assets/user Image big.png';
 
 const MobileSidebar = ({ isOpen, onClose, activePage, setActivePage, onLogout, onCustomerCareOpen, userRole = 'user' }) => {
+  const normalizedRole = userRole === 'admin' ? 'superadmin' : userRole;
+  const isSuperAdmin = normalizedRole === 'superadmin';
+  const isCustomerUser = normalizedRole === 'user';
   // Initialize with overview expanded for admin users
   const [expandedItems, setExpandedItems] = useState(() => {
-    return userRole === 'admin' ? { overview: true } : {};
+    return isSuperAdmin ? { overview: true } : {};
   });
 
   const toggleExpanded = (itemId) => {
@@ -20,7 +23,7 @@ const MobileSidebar = ({ isOpen, onClose, activePage, setActivePage, onLogout, o
   };
   // Role-based menu items
   const getMenuItems = () => {
-    if (userRole === 'admin') {
+    if (isSuperAdmin) {
       return [
         {
           id: 'overview',
@@ -54,41 +57,40 @@ const MobileSidebar = ({ isOpen, onClose, activePage, setActivePage, onLogout, o
           isActive: activePage === 'documents'
         }
       ];
-    } else {
-      return [
-        {
-          id: 'flatDetails',
-          label: 'Flat Details',
-          icon: flatDetailsIcon,
-          isActive: activePage === 'flatDetails'
-        },
-        {
-          id: 'currentDues',
-          label: 'Current Dues',
-          icon: currentDuesIcon,
-          isActive: activePage === 'currentDues'
-        },
-        {
-          id: 'payment',
-          label: 'Payment',
-          icon: paymentIcon,
-          isActive: activePage === 'payment'
-        },
-        {
-          id: 'documents',
-          label: 'Documents',
-          icon: documentsIcon,
-          isActive: activePage === 'documents'
-        }
-      ];
     }
+    return [
+      {
+        id: 'flatDetails',
+        label: 'Flat Details',
+        icon: flatDetailsIcon,
+        isActive: activePage === 'flatDetails'
+      },
+      {
+        id: 'currentDues',
+        label: 'Current Dues',
+        icon: currentDuesIcon,
+        isActive: activePage === 'currentDues'
+      },
+      {
+        id: 'payment',
+        label: 'Payment',
+        icon: paymentIcon,
+        isActive: activePage === 'payment'
+      },
+      {
+        id: 'documents',
+        label: 'Documents',
+        icon: documentsIcon,
+        isActive: activePage === 'documents'
+      }
+    ];
   };
 
   const menuItems = getMenuItems();
 
   const handleMenuClick = (pageId) => {
     // Toggle behavior: if clicking the same page that's already active, deselect it (user role only)
-    if (activePage === pageId && userRole === 'user') {
+    if (activePage === pageId && isCustomerUser) {
       setActivePage(null); // Go back to showing UserProfile + DetailedInformation
     } else {
       setActivePage(pageId); // Select the new page

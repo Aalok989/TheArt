@@ -103,6 +103,11 @@ const Layout = ({
   animationKey,
   userRole = "user", // Default to 'user' role
 }) => {
+  const normalizedUserRole = userRole === 'admin' ? 'superadmin' : userRole;
+  const isSuperAdmin = normalizedUserRole === 'superadmin';
+  const isBuilderAdmin = normalizedUserRole === 'builder_admin';
+  const isCustomerUser = normalizedUserRole === 'user';
+
   // Navbar state
   const [isPasswordPopupOpen, setIsPasswordPopupOpen] = useState(false);
   const [isUpdatesPopupOpen, setIsUpdatesPopupOpen] = useState(false);
@@ -170,7 +175,7 @@ const Layout = ({
 
   // Fetch notification count and profile image (only for customer users)
   useEffect(() => {
-    if (userRole === 'user') {
+    if (isCustomerUser) {
       const fetchUserData = async () => {
         try {
           // Fetch notifications
@@ -191,11 +196,11 @@ const Layout = ({
 
       fetchUserData();
     }
-  }, [userRole]);
+  }, [isCustomerUser]);
 
   // Role-based navigation configuration
   const getNavigationItems = () => {
-    if (userRole === "admin") {
+    if (isSuperAdmin) {
       return [
         {
           key: "services",
@@ -230,34 +235,40 @@ const Layout = ({
           megamenuType: 'documents',
         },
       ];
-    } else {
-      return [
-        {
-          key: "flatDetails",
-          label: "Flat Details",
-          icon: flatDetailsIcon,
-          width: "clamp(8.5rem, 10.625rem, 12rem)",
-        },
-        {
-          key: "currentDues",
-          label: "Current Dues",
-          icon: currentDuesIcon,
-          width: "clamp(9.5rem, 12rem, 14rem)",
-        },
-        {
-          key: "payment",
-          label: "Payments",
-          icon: paymentIcon,
-          width: "clamp(8.5rem, 10.625rem, 12rem)",
-        },
-        {
-          key: "documents",
-          label: "Documents",
-          icon: documentsIcon,
-          width: "clamp(8.75rem, 10.9375rem, 12.5rem)",
-        },
-      ];
     }
+
+    const customerNavigation = [
+      {
+        key: "flatDetails",
+        label: "Flat Details",
+        icon: flatDetailsIcon,
+        width: "clamp(8.5rem, 10.625rem, 12rem)",
+      },
+      {
+        key: "currentDues",
+        label: "Current Dues",
+        icon: currentDuesIcon,
+        width: "clamp(9.5rem, 12rem, 14rem)",
+      },
+      {
+        key: "payment",
+        label: "Payments",
+        icon: paymentIcon,
+        width: "clamp(8.5rem, 10.625rem, 12rem)",
+      },
+      {
+        key: "documents",
+        label: "Documents",
+        icon: documentsIcon,
+        width: "clamp(8.75rem, 10.9375rem, 12.5rem)",
+      },
+    ];
+
+    if (isBuilderAdmin) {
+      return customerNavigation;
+    }
+
+    return customerNavigation;
   };
 
   const navigationItems = getNavigationItems();
@@ -301,13 +312,31 @@ const Layout = ({
   };
 
   // Navbar handlers
-  const handleNavClick = (page) => {
-    // Only prevent navigation for admin megamenu items
-    if (userRole === 'admin' && (page === 'services' || page === 'banking' || page === 'projects' || page === 'documents')) {
-      return; // Don't navigate, just show megamenu
+  const openMegamenu = useCallback((megamenuType) => {
+    setIsServicesMegamenuOpen(megamenuType === 'services');
+    setIsBankingMegamenuOpen(megamenuType === 'banking');
+    setIsProjectsMegamenuOpen(megamenuType === 'projects');
+    setIsDocumentsMegamenuOpen(megamenuType === 'documents');
+  }, []);
+
+  const handleNavClick = (item) => {
+    if (isSuperAdmin && item.isMegamenu) {
+      if (megamenuTimeoutRef.current) {
+        clearTimeout(megamenuTimeoutRef.current);
+        megamenuTimeoutRef.current = null;
+      }
+
+      const isOpen = getMegamenuState(item.megamenuType);
+      if (isOpen) {
+        openMegamenu(null);
+      } else {
+        openMegamenu(item.megamenuType);
+      }
+      return;
     }
-    onPageChange(page);
+    onPageChange(item.key);
   };
+
 
   // Megamenu handlers
   const handleMegamenuMouseEnter = (megamenuType) => {
@@ -316,35 +345,15 @@ const Layout = ({
       clearTimeout(megamenuTimeoutRef.current);
       megamenuTimeoutRef.current = null;
     }
-    
-    // Close all other megamenus first
-    setIsServicesMegamenuOpen(false);
-    setIsBankingMegamenuOpen(false);
-    setIsProjectsMegamenuOpen(false);
-    setIsDocumentsMegamenuOpen(false);
-    
+
     // Small delay to prevent flickering when switching between megamenus
-    setTimeout(() => {
-      switch (megamenuType) {
-        case 'services':
-          setIsServicesMegamenuOpen(true);
-          break;
-        case 'banking':
-          setIsBankingMegamenuOpen(true);
-          break;
-        case 'projects':
-          setIsProjectsMegamenuOpen(true);
-          break;
-        case 'documents':
-          setIsDocumentsMegamenuOpen(true);
-          break;
-        default:
-          break;
-      }
+    megamenuTimeoutRef.current = setTimeout(() => {
+      openMegamenu(megamenuType);
+      megamenuTimeoutRef.current = null;
     }, 30);
   };
 
-  const handleMegamenuMouseLeave = (megamenuType) => {
+  const handleMegamenuMouseLeave = (_megamenuType) => {
     // Clear any existing timeout
     if (megamenuTimeoutRef.current) {
       clearTimeout(megamenuTimeoutRef.current);
@@ -354,20 +363,15 @@ const Layout = ({
     megamenuTimeoutRef.current = setTimeout(() => {
       // Only close if we're not hovering over any megamenu
       if (!isHoveringMegamenuRef.current) {
-        setIsServicesMegamenuOpen(false);
-        setIsBankingMegamenuOpen(false);
-        setIsProjectsMegamenuOpen(false);
-        setIsDocumentsMegamenuOpen(false);
+        openMegamenu(null);
+        megamenuTimeoutRef.current = null;
       }
     }, 150);
   };
 
-  const handleMegamenuClose = (megamenuType) => {
+  const handleMegamenuClose = (_megamenuType) => {
     // Close all megamenus
-    setIsServicesMegamenuOpen(false);
-    setIsBankingMegamenuOpen(false);
-    setIsProjectsMegamenuOpen(false);
-    setIsDocumentsMegamenuOpen(false);
+    openMegamenu(null);
   };
 
   // Track when hovering over megamenu content
@@ -385,13 +389,11 @@ const Layout = ({
     // Use the same timeout logic as button leave
     megamenuTimeoutRef.current = setTimeout(() => {
       if (!isHoveringMegamenuRef.current) {
-        setIsServicesMegamenuOpen(false);
-        setIsBankingMegamenuOpen(false);
-        setIsProjectsMegamenuOpen(false);
-        setIsDocumentsMegamenuOpen(false);
+        openMegamenu(null);
+        megamenuTimeoutRef.current = null;
       }
     }, 150);
-  }, []);
+  }, [openMegamenu]);
 
 
 
@@ -466,7 +468,7 @@ const Layout = ({
     }
 
     // Admin components
-    if (userRole === "admin") {
+    if (isSuperAdmin) {
       switch (activePage) {
         case "dashboard":
           return (
@@ -1216,7 +1218,7 @@ const Layout = ({
 
             {/* Logo */}
             <div className="flex-shrink-0">
-              {userRole === 'admin' ? (
+              {isSuperAdmin ? (
                 <button
                   onClick={() => onPageChange('dashboard')}
                   className="hover:opacity-80 transition-opacity duration-200"
@@ -1259,16 +1261,16 @@ const Layout = ({
                 className="relative"
               >
                 <button
-                  ref={item.isMegamenu && userRole === 'admin' ? megamenuTriggerRef : undefined}
-                  onClick={() => handleNavClick(item.key)}
-                  onMouseEnter={item.isMegamenu && userRole === 'admin' ? () => handleMegamenuMouseEnter(item.megamenuType) : undefined}
-                  onMouseLeave={item.isMegamenu && userRole === 'admin' ? () => handleMegamenuMouseLeave(item.megamenuType) : undefined}
+                  ref={item.isMegamenu && isSuperAdmin ? megamenuTriggerRef : undefined}
+                  onClick={() => handleNavClick(item)}
+                  onMouseEnter={item.isMegamenu && isSuperAdmin ? () => handleMegamenuMouseEnter(item.megamenuType) : undefined}
+                  onMouseLeave={item.isMegamenu && isSuperAdmin ? () => handleMegamenuMouseLeave(item.megamenuType) : undefined}
                   className={`flex items-center justify-center transition-all duration-300 ease-out whitespace-nowrap shadow-sm rounded-full ${
-                    item.isMegamenu && userRole === 'admin' 
+                    item.isMegamenu && isSuperAdmin 
                       ? "hover:bg-gray-50" // Simplified hover for megamenu buttons
                       : "btn-animate hover-lift" // Full animation for regular buttons
                   } ${
-                    activePage === item.key || (item.isMegamenu && userRole === 'admin' && (getMegamenuState(item.megamenuType) || isPageInMegamenu(item.megamenuType)))
+                    activePage === item.key || (item.isMegamenu && isSuperAdmin && (getMegamenuState(item.megamenuType) || isPageInMegamenu(item.megamenuType)))
                       ? "text-white font-medium transform scale-105"
                       : "text-gray-600 hover:text-gray-800 bg-white hover:bg-gray-50 hover:shadow-lg"
                   }`}
@@ -1277,7 +1279,7 @@ const Layout = ({
                     height: "clamp(2.25rem, 2.8125rem, 3.25rem)",
                     fontSize: "clamp(0.75rem, 0.875rem, 1rem)",
                     background:
-                      activePage === item.key || (item.isMegamenu && userRole === 'admin' && (getMegamenuState(item.megamenuType) || isPageInMegamenu(item.megamenuType)))
+                      activePage === item.key || (item.isMegamenu && isSuperAdmin && (getMegamenuState(item.megamenuType) || isPageInMegamenu(item.megamenuType)))
                         ? "linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)"
                         : undefined,
                   }}
@@ -1291,7 +1293,7 @@ const Layout = ({
                       height: "clamp(1rem, 1.25rem, 1.5rem)",
                       marginRight: "clamp(0.375rem, 0.5625rem, 0.75rem)",
                       filter: 
-                        activePage === item.key || (item.isMegamenu && userRole === 'admin' && (getMegamenuState(item.megamenuType) || isPageInMegamenu(item.megamenuType)))
+                        activePage === item.key || (item.isMegamenu && isSuperAdmin && (getMegamenuState(item.megamenuType) || isPageInMegamenu(item.megamenuType)))
                           ? "invert(1)" 
                           : "none",
                     }}
@@ -1302,7 +1304,7 @@ const Layout = ({
                 </button>
                 
                 {/* Consolidated Megamenu - Only for Admin */}
-                {item.isMegamenu && userRole === 'admin' && (
+                {item.isMegamenu && isSuperAdmin && (
                   <Megamenu
                     isOpen={getMegamenuState(item.megamenuType)}
                     onClose={handleMegamenuClose}
@@ -1332,7 +1334,7 @@ const Layout = ({
                 className="w-[2.5rem] h-[2.5rem] flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-gray-50 transition-all duration-300 hover-lift btn-animate relative"
               >
                 <HiBell className="w-[1.25rem] h-[1.25rem] text-gray-600 transition-transform duration-300 hover:scale-110" />
-                {userRole === 'user' && notificationCount > 0 && (
+                {isCustomerUser && notificationCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                     {notificationCount > 99 ? '99+' : notificationCount}
                   </span>
@@ -1346,7 +1348,7 @@ const Layout = ({
               className="lg:hidden w-[2.5rem] h-[2.5rem] flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-gray-50 transition-all duration-300 hover-lift btn-animate relative"
             >
               <HiBell className="w-[1.25rem] h-[1.25rem] text-gray-600 transition-transform duration-300 hover:scale-110" />
-              {userRole === 'user' && notificationCount > 0 && (
+              {isCustomerUser && notificationCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                   {notificationCount > 99 ? '99+' : notificationCount}
                 </span>
@@ -1440,7 +1442,7 @@ const Layout = ({
 
           {/* Logo - Centered */}
           <div className="absolute left-1/2 transform -translate-x-1/2">
-            {userRole === 'admin' ? (
+            {isSuperAdmin ? (
               <button
                 onClick={() => onPageChange('dashboard')}
                 className="hover:opacity-80 transition-opacity duration-200"
@@ -1508,7 +1510,7 @@ const Layout = ({
               >
                 <div className="relative">
                   <HiBell style={{ width: 'clamp(1rem, 1.25rem, 1.5rem)', height: 'clamp(1rem, 1.25rem, 1.5rem)' }} className="text-gray-600" />
-                  {userRole === 'user' && notificationCount > 0 && (
+                  {isCustomerUser && notificationCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[0.5rem] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                       {notificationCount > 9 ? '9+' : notificationCount}
                     </span>
@@ -1550,14 +1552,14 @@ const Layout = ({
         setActivePage={onPageChange}
         onLogout={onLogout}
         onCustomerCareOpen={() => {}} // Will be handled by parent
-        userRole={userRole}
+        userRole={normalizedUserRole}
       />
 
       <div className="overflow-hidden h-screen">
         {/* Mobile/Tablet Layout */}
         <div className="lg:hidden h-full flex flex-col relative" style={{ paddingTop: 'clamp(4.5rem, 5rem, 5.5rem)', paddingBottom: 'clamp(1rem, 1.5rem, 2rem)', paddingLeft: 'clamp(1rem, 1.5rem, 2rem)', paddingRight: 'clamp(1rem, 1.5rem, 2rem)', gap: 'clamp(0.75rem, 1rem, 1.25rem)' }}>
           {/* User Role - Home View (No active page) */}
-          {userRole === "user" && (!activePage || activePage === "null") && (
+          {isCustomerUser && (!activePage || activePage === "null") && (
             <>
               <div className="flex-shrink-0" style={{ height: 'clamp(12rem, 30vh, 18rem)' }}>
                 <UserProfile />
@@ -1569,7 +1571,7 @@ const Layout = ({
           )}
           
           {/* Active Page View (User navigates to a specific page or Admin) */}
-          {((activePage && activePage !== "null") || userRole === "admin") && (
+          {((activePage && activePage !== "null") || isSuperAdmin) && (
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
               {renderMiddlePanel()}
             </div>
@@ -1599,7 +1601,7 @@ const Layout = ({
 
         {/* Desktop Layout */}
         <div className="hidden lg:flex h-full items-center justify-center relative" style={{ paddingTop: 'clamp(5rem, 7.25rem, 8rem)', paddingBottom: 'clamp(1.5rem, 2.3125rem, 3rem)', paddingLeft: 'clamp(1.5rem, 2.75rem, 3.5rem)', paddingRight: 'clamp(1.5rem, 2.75rem, 3.5rem)' }}>
-          {userRole === "admin" ? (
+          {isSuperAdmin ? (
             // Admin layout - only middle section with two components
             <>
               <div className="flex w-full max-w-[120rem] mx-auto" style={{ gap: 'clamp(0.625rem, 0.9375rem, 1.25rem)' }}>

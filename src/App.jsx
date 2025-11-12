@@ -4,15 +4,61 @@ import Layout from './components/Layout';
 import Landing from './components/Landing/Landing';
 import { authAPI } from './api/api';
 
+const normalizeRole = (role) => {
+  const normalized = (role || 'user').toLowerCase();
+  if (normalized === 'admin') {
+    return 'superadmin';
+  }
+  if (normalized === 'superadmin') {
+    return 'superadmin';
+  }
+  if (normalized === 'builder_admin' || normalized === 'builderadmin') {
+    return 'builder_admin';
+  }
+  if (normalized === 'user' || normalized === 'customer') {
+    return 'user';
+  }
+  return 'user';
+};
+
+const getStoredRole = () => {
+  if (typeof window === 'undefined') {
+    return 'user';
+  }
+  const rawRole = localStorage.getItem('userRole');
+  const normalizedRole = normalizeRole(rawRole);
+  if (rawRole !== normalizedRole) {
+    localStorage.setItem('userRole', normalizedRole);
+  }
+  return normalizedRole;
+};
+
+const getDefaultPageForRole = (role, isMobile) => {
+  if (role === 'superadmin') {
+    return isMobile ? 'flatStatus' : 'dashboard';
+  }
+  if (role === 'user' || role === 'builder_admin') {
+    return isMobile ? null : 'flatDetails';
+  }
+  return null;
+};
+
+const getInitialActivePage = () => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  const isMobile = window.innerWidth < 1024;
+  const role = getStoredRole();
+  return getDefaultPageForRole(role, isMobile);
+};
+
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return localStorage.getItem('isLoggedIn') === 'true';
   });
-  const [userRole, setUserRole] = useState(() => {
-    return localStorage.getItem('userRole') || 'user'; // Default to 'user' role
-  });
+  const [userRole, setUserRole] = useState(() => getStoredRole());
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationKey, setAnimationKey] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -20,23 +66,7 @@ function App() {
   const [isMobile, setIsMobile] = useState(false);
   const [isCustomerCarePopupOpen, setIsCustomerCarePopupOpen] = useState(false);
 
-  const [activePage, setActivePage] = useState(() => {
-    if (typeof window !== 'undefined') {
-      // Use viewport width directly (browser zoom scales this automatically)
-      const isMobile = window.innerWidth < 1024;
-      const userRole = localStorage.getItem('userRole') || 'user';
-      
-      if (userRole === 'admin') {
-        // Admin: on mobile/tablet default to flatStatus, on desktop default to dashboard
-        const defaultPage = isMobile ? 'flatStatus' : 'dashboard';
-        return defaultPage;
-      } else {
-        // User: on mobile/tablet no default page, on desktop default to flatDetails
-        return isMobile ? null : 'flatDetails';
-      }
-    }
-    return null;
-  });
+  const [activePage, setActivePage] = useState(() => getInitialActivePage());
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -44,11 +74,11 @@ function App() {
       // Browser zoom automatically scales rem/px units, so this works correctly
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
-      const currentUserRole = localStorage.getItem('userRole') || 'user';
+      const currentUserRole = normalizeRole(localStorage.getItem('userRole'));
       
       // On mobile, users should have no active page (shows UserProfile + DetailedInfo)
-      // Admins always need an active page
-      if (mobile && currentUserRole === 'user') {
+      // Superadmins always need an active page
+      if (mobile && (currentUserRole === 'user' || currentUserRole === 'builder_admin')) {
         setActivePage(prevPage => {
           // Only update if changing from a page to null
           if (prevPage !== null) {
@@ -56,8 +86,8 @@ function App() {
           }
           return null;
         });
-      } else if (mobile && currentUserRole === 'admin') {
-        // Admin on mobile: prefer flatStatus
+      } else if (mobile && currentUserRole === 'superadmin') {
+        // Superadmin on mobile: prefer flatStatus
         setActivePage(prevPage => {
           // If coming from desktop dashboard, switch to flatStatus
           if (prevPage === 'dashboard') {
@@ -70,8 +100,8 @@ function App() {
           }
           return pageToSet;
         });
-      } else if (!mobile && currentUserRole === 'user') {
-        // User on desktop: default to flatDetails
+      } else if (!mobile && (currentUserRole === 'user' || currentUserRole === 'builder_admin')) {
+        // User and Builder Admin on desktop: default to flatDetails
         setActivePage(prevPage => {
           // Switching from mobile (null) to desktop - set default and navigate
           if (prevPage === null || prevPage === undefined) {
@@ -81,8 +111,8 @@ function App() {
           // Already on desktop with a page selected - keep it
           return prevPage;
         });
-      } else if (!mobile && currentUserRole === 'admin') {
-        // Admin on desktop: keep current page if set; otherwise default to dashboard
+      } else if (!mobile && currentUserRole === 'superadmin') {
+        // Superadmin on desktop: keep current page if set; otherwise default to dashboard
         setActivePage(prevPage => {
           if (prevPage) {
             // Do not override existing page on desktop
@@ -108,7 +138,7 @@ function App() {
     if (isLoggedIn && location.pathname.startsWith('/dashboard')) {
       const pathSegments = location.pathname.split('/');
       const pageFromUrl = pathSegments[2]; // /dashboard/flatDetails -> flatDetails
-      const userRole = localStorage.getItem('userRole') || 'user';
+      const userRole = normalizeRole(localStorage.getItem('userRole'));
       const isMobileDevice = window.innerWidth < 1024;
       
       if (pageFromUrl && pageFromUrl !== activePage) {
@@ -116,21 +146,21 @@ function App() {
         setActivePage(pageFromUrl);
       } else if (!pageFromUrl) {
         // URL is just /dashboard - set default based on role and device
-        if (isMobileDevice && userRole === 'user') {
-          // On mobile/tablet, users should have no active page (shows UserProfile + DetailedInfo)
+        if (isMobileDevice && (userRole === 'user' || userRole === 'builder_admin')) {
+          // On mobile/tablet, users and builder admins should have no active page (shows UserProfile + DetailedInfo)
           setActivePage(null);
-        } else if (isMobileDevice && userRole === 'admin') {
-          // On mobile/tablet, admin defaults to flatStatus
+        } else if (isMobileDevice && userRole === 'superadmin') {
+          // On mobile/tablet, superadmin defaults to flatStatus
           if (!activePage) {
             setActivePage('flatStatus');
           }
-        } else if (!isMobileDevice && userRole === 'user') {
-          // On desktop, user defaults to flatDetails
+        } else if (!isMobileDevice && (userRole === 'user' || userRole === 'builder_admin')) {
+          // On desktop, user and builder admin default to flatDetails
           if (!activePage) {
             setActivePage('flatDetails');
           }
-        } else if (!isMobileDevice && userRole === 'admin') {
-          // On desktop, admin defaults to dashboard
+        } else if (!isMobileDevice && userRole === 'superadmin') {
+          // On desktop, superadmin defaults to dashboard
           if (!activePage) {
             setActivePage('dashboard');
           }
@@ -150,7 +180,7 @@ function App() {
       localStorage.setItem('authToken', token);
       
       // Get role from localStorage (set by API during login)
-      const role = localStorage.getItem('userRole') || 'user';
+      const role = getStoredRole();
       setUserRole(role); // Update userRole state
       
       // Navigate to landing page to show role-based content
