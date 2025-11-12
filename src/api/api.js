@@ -163,6 +163,7 @@ export const authAPI = {
       // Determine role based on user_type or role.type from the response
       const userType = response.role?.type || response.user_type;
       const role = mapUserTypeToRole(userType);
+      console.log('[Auth] Role fetched from API:', userType, '=> normalized role:', role);
       localStorage.setItem('userRole', role);
       
       // Store additional user info for future use

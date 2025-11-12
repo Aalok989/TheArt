@@ -71,6 +71,8 @@ function Landing({ onLogin }) {
   const [showContactsPopup, setShowContactsPopup] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isCustomerUser = userRole === 'user';
+  const isBuilderAdmin = userRole === 'builder_admin';
+  const isSuperAdmin = userRole === 'superadmin';
 
   // Dummy property data for cube swiper
   const propertyCards = [
@@ -157,6 +159,7 @@ function Landing({ onLogin }) {
     setIsLoggedIn(true);
     const role = getStoredRole();
     setUserRole(role);
+    console.log('[Landing] Logged in with role:', role);
     
     // Call the same onLogin function that the Login page uses
     if (onLogin) {
@@ -188,16 +191,13 @@ function Landing({ onLogin }) {
     const isMobileDevice = window.innerWidth < 1024;
     const role = getStoredRole();
     
-    if (role === 'superadmin') {
-      // Superadmin users
+    if (role === 'superadmin' || role === 'builder_admin') {
+      // Admin roles
       if (isMobileDevice) {
         navigate('/dashboard/flatStatus', { replace: false });
       } else {
         navigate('/dashboard/dashboard', { replace: false });
       }
-    } else if (role === 'builder_admin') {
-      // Builder admins (temporary routing until dedicated dashboard is added)
-      navigate('/dashboard', { replace: false });
     } else {
       // Regular (customer) users
       if (isMobileDevice) {
@@ -458,8 +458,56 @@ function Landing({ onLogin }) {
                      </button>
                    </div>
                 </div>
-              ) : (
-                /* Builder Dashboard Card */
+              ) : isBuilderAdmin ? (
+                /* Builder Admin Card */
+                <div className="space-y-2 w-full sm:w-80 lg:w-96">
+                  <div className="bg-gray-100/90 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-lg px-4 sm:px-5 lg:px-6 pt-5 sm:pt-6 lg:pt-7 pb-4 sm:pb-5 lg:pb-6">
+                    <div className="flex items-center justify-between mb-3 sm:mb-4">
+                      <div>
+                        <h2 className="text-gray-800 text-2xl sm:text-3xl lg:text-4xl font-Poly leading-tight">
+                          Builder<br />Workspace
+                        </h2>
+                        <p className="text-gray-600 text-xs sm:text-sm mt-1">
+                          Coordinate projects, teams, and site progress.
+                        </p>
+                      </div>
+                      <div className="bg-white rounded-full p-2 sm:p-3 shadow-md">
+                        <HiOutlineHome className="w-6 h-6 sm:w-7 sm:h-7 text-gray-700" />
+                      </div>
+                    </div>
+
+                    <div className="border-t-2 border-dashed border-gray-300 mb-4 sm:mb-5 lg:mb-6"></div>
+
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-5">
+                      <button className="bg-white/80 text-gray-800 rounded-xl px-3 py-2 sm:py-3 flex flex-col items-start shadow-sm hover:shadow-md transition-all">
+                        <span className="text-xs sm:text-sm font-semibold">Site Updates</span>
+                        <span className="text-[11px] sm:text-xs text-gray-500 mt-1">Track daily status</span>
+                      </button>
+                      <button className="bg-white/80 text-gray-800 rounded-xl px-3 py-2 sm:py-3 flex flex-col items-start shadow-sm hover:shadow-md transition-all">
+                        <span className="text-xs sm:text-sm font-semibold">Team Roster</span>
+                        <span className="text-[11px] sm:text-xs text-gray-500 mt-1">Manage crew shifts</span>
+                      </button>
+                      <button className="bg-white/80 text-gray-800 rounded-xl px-3 py-2 sm:py-3 flex flex-col items-start shadow-sm hover:shadow-md transition-all">
+                        <span className="text-xs sm:text-sm font-semibold">Vendor Calls</span>
+                        <span className="text-[11px] sm:text-xs text-gray-500 mt-1">Stay in touch</span>
+                      </button>
+                      <button className="bg-white/80 text-gray-800 rounded-xl px-3 py-2 sm:py-3 flex flex-col items-start shadow-sm hover:shadow-md transition-all">
+                        <span className="text-xs sm:text-sm font-semibold">Milestones</span>
+                        <span className="text-[11px] sm:text-xs text-gray-500 mt-1">Check upcoming</span>
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={handleGoToDashboard}
+                      className="w-full py-2 sm:py-2.5 lg:py-3 px-4 sm:px-5 rounded-full text-white font-semibold text-base sm:text-lg lg:text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-poppins"
+                      style={{background: 'linear-gradient(180deg, #FC7117, #96430E)'}}
+                    >
+                      Open Builder Dashboard
+                    </button>
+                  </div>
+                </div>
+              ) : isSuperAdmin ? (
+                /* Superadmin Dashboard Card */
                 <div className="space-y-2 w-full sm:w-80 lg:w-96">
                   {/* Management Buttons */}
                   <div className="flex space-x-2">
@@ -501,6 +549,31 @@ function Landing({ onLogin }) {
                         Go to Dashboard
                       </button>
                     </div>
+                  </div>
+                </div>
+              ) : (
+                /* Default fallback mirrors user card */
+                <div className="bg-gray-100/90 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-5 lg:p-6 w-full sm:w-80 lg:w-96">
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <span className="text-gray-800 text-2xl sm:text-3xl lg:text-4xl font-medium font-poly">Take a Tour</span>
+                    <img src="/src/assets/Larrow.png" alt="Arrow" className="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16" />
+                  </div>
+                  <div className="border-t-2 border-dashed border-gray-300 mb-4 sm:mb-5 lg:mb-6"></div>
+                  <div className="flex flex-row space-x-2">
+                    <button
+                      onClick={() => setShowContactsPopup(true)}
+                      className="flex-1 py-2 sm:py-2.5 lg:py-3 px-3 sm:px-3.5 lg:px-4 rounded-full text-white font-semibold text-base sm:text-lg lg:text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-poppins"
+                      style={{background: 'linear-gradient(180deg, #FC7117, #96430E)'}}
+                    >
+                      Book Demo
+                    </button>
+                    <button
+                      onClick={handleGoToDashboard}
+                      className="flex-1 py-2 sm:py-2.5 lg:py-3 px-4 sm:px-5 lg:px-6 rounded-full text-white font-semibold text-base sm:text-lg lg:text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-poppins"
+                      style={{background: 'linear-gradient(180deg, #FC7117, #96430E)'}}
+                    >
+                      Dashboard
+                    </button>
                   </div>
                 </div>
               )}

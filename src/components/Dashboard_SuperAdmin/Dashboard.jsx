@@ -161,7 +161,10 @@ const Dashboard = ({ onPageChange }) => {
           {/* LEFT SECTION — DASHBOARD OVERVIEW */}
           <div className="w-full min-w-0 flex flex-col h-full">
             <div className="flex-shrink-0" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
-              <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)', marginBottom: 'clamp(0.75rem, 1rem, 1.25rem)' }}>Dashboard Overview</h2>
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="font-bold text-gray-800" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)' }}>Dashboard Overview</h2>
+                <span className="text-xs sm:text-sm font-semibold text-purple-600 whitespace-nowrap">Role: superadmin</span>
+              </div>
             </div>
             
             {/* Status Cards */}

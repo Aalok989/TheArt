@@ -34,10 +34,10 @@ const getStoredRole = () => {
 };
 
 const getDefaultPageForRole = (role, isMobile) => {
-  if (role === 'superadmin') {
+  if (role === 'superadmin' || role === 'builder_admin') {
     return isMobile ? 'flatStatus' : 'dashboard';
   }
-  if (role === 'user' || role === 'builder_admin') {
+  if (role === 'user') {
     return isMobile ? null : 'flatDetails';
   }
   return null;
@@ -78,7 +78,9 @@ function App() {
       
       // On mobile, users should have no active page (shows UserProfile + DetailedInfo)
       // Superadmins always need an active page
-      if (mobile && (currentUserRole === 'user' || currentUserRole === 'builder_admin')) {
+      const isAdminLike = currentUserRole === 'superadmin' || currentUserRole === 'builder_admin';
+
+      if (mobile && currentUserRole === 'user') {
         setActivePage(prevPage => {
           // Only update if changing from a page to null
           if (prevPage !== null) {
@@ -86,22 +88,17 @@ function App() {
           }
           return null;
         });
-      } else if (mobile && currentUserRole === 'superadmin') {
-        // Superadmin on mobile: prefer flatStatus
+      } else if (mobile && isAdminLike) {
+        // Admin roles on mobile: prefer flatStatus
         setActivePage(prevPage => {
-          // If coming from desktop dashboard, switch to flatStatus
-          if (prevPage === 'dashboard') {
+          if (prevPage === 'dashboard' || prevPage === null || prevPage === undefined) {
             navigate('/dashboard/flatStatus', { replace: true });
             return 'flatStatus';
           }
-          const pageToSet = prevPage || 'flatStatus';
-          if (!prevPage) {
-            navigate(`/dashboard/${pageToSet}`, { replace: true });
-          }
-          return pageToSet;
+          return prevPage;
         });
-      } else if (!mobile && (currentUserRole === 'user' || currentUserRole === 'builder_admin')) {
-        // User and Builder Admin on desktop: default to flatDetails
+      } else if (!mobile && currentUserRole === 'user') {
+        // User on desktop: default to flatDetails
         setActivePage(prevPage => {
           // Switching from mobile (null) to desktop - set default and navigate
           if (prevPage === null || prevPage === undefined) {
@@ -111,8 +108,8 @@ function App() {
           // Already on desktop with a page selected - keep it
           return prevPage;
         });
-      } else if (!mobile && currentUserRole === 'superadmin') {
-        // Superadmin on desktop: keep current page if set; otherwise default to dashboard
+      } else if (!mobile && isAdminLike) {
+        // Admin roles on desktop: keep current page if set; otherwise default to dashboard
         setActivePage(prevPage => {
           if (prevPage) {
             // Do not override existing page on desktop
@@ -146,21 +143,21 @@ function App() {
         setActivePage(pageFromUrl);
       } else if (!pageFromUrl) {
         // URL is just /dashboard - set default based on role and device
-        if (isMobileDevice && (userRole === 'user' || userRole === 'builder_admin')) {
-          // On mobile/tablet, users and builder admins should have no active page (shows UserProfile + DetailedInfo)
+        if (isMobileDevice && userRole === 'user') {
+          // On mobile/tablet, users should have no active page (shows UserProfile + DetailedInfo)
           setActivePage(null);
-        } else if (isMobileDevice && userRole === 'superadmin') {
-          // On mobile/tablet, superadmin defaults to flatStatus
+        } else if (isMobileDevice && (userRole === 'superadmin' || userRole === 'builder_admin')) {
+          // On mobile/tablet, admin roles default to flatStatus
           if (!activePage) {
             setActivePage('flatStatus');
           }
-        } else if (!isMobileDevice && (userRole === 'user' || userRole === 'builder_admin')) {
-          // On desktop, user and builder admin default to flatDetails
+        } else if (!isMobileDevice && userRole === 'user') {
+          // On desktop, user default to flatDetails
           if (!activePage) {
             setActivePage('flatDetails');
           }
-        } else if (!isMobileDevice && userRole === 'superadmin') {
-          // On desktop, superadmin defaults to dashboard
+        } else if (!isMobileDevice && (userRole === 'superadmin' || userRole === 'builder_admin')) {
+          // On desktop, admin roles default to dashboard
           if (!activePage) {
             setActivePage('dashboard');
           }
@@ -181,6 +178,7 @@ function App() {
       
       // Get role from localStorage (set by API during login)
       const role = getStoredRole();
+      console.log('[App] Logged in with role:', role);
       setUserRole(role); // Update userRole state
       
       // Navigate to landing page to show role-based content

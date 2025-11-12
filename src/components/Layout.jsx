@@ -55,7 +55,6 @@ import ManageCommission from "./Dashboard_Admin/ManageCommission";
 import ConstructionStages from "./Dashboard_Admin/ConstructionStages";
 import Flat from "./Dashboard_Admin/Flat";
 import Projects from "./Dashboard_Admin/Projects";
-import NewProject from "./Dashboard_Admin/NewProject";
 import AddPartner from "./Dashboard_Admin/AddPartner";
 import ViewAll from "./Dashboard_Admin/ViewAll";
 import FlatDetail_CP from "./Dashboard_Admin/FlatDetail_CP";
@@ -82,6 +81,63 @@ import AddSubactivity from "./Dashboard_Admin/AddSubactivity";
 import ViewActivity from "./Dashboard_Admin/ViewActivity";
 import FlatHandover from "./Dashboard_Admin/FlatHandover";
 import ViewHandover from "./Dashboard_Admin/ViewHandover";
+
+// Superadmin components
+import SADashboard from "./Dashboard_SuperAdmin/Dashboard";
+import SAFlatStatus from "./Dashboard_SuperAdmin/FlatStatus";
+import SABookedFlats from "./Dashboard_SuperAdmin/BookedFlats";
+import SABlockedFlats from "./Dashboard_SuperAdmin/BlockedFlats";
+import SACancelledFlats from "./Dashboard_SuperAdmin/CancelledFlats";
+import SAFlatSummary from "./Dashboard_SuperAdmin/FlatSummary";
+import SAFlat from "./Dashboard_SuperAdmin/Flat";
+import SAFlatVerification from "./Dashboard_SuperAdmin/FlatVerification";
+import SAActivityType from "./Dashboard_SuperAdmin/ActivityType";
+import SAViewActivities from "./Dashboard_SuperAdmin/ViewActivities";
+import SACustomize from "./Dashboard_SuperAdmin/Customize";
+import SAViewCustomization from "./Dashboard_SuperAdmin/ViewCustomization";
+import SAAddActivity from "./Dashboard_SuperAdmin/AddActivity";
+import SAAddSubactivity from "./Dashboard_SuperAdmin/AddSubactivity";
+import SAViewActivity from "./Dashboard_SuperAdmin/ViewActivity";
+import SAFlatHandover from "./Dashboard_SuperAdmin/FlatHandover";
+import SAViewHandover from "./Dashboard_SuperAdmin/ViewHandover";
+import SABlockInventory from "./Dashboard_SuperAdmin/BlockInventory";
+import SAProjects from "./Dashboard_SuperAdmin/Projects";
+import SANewProject from "./Dashboard_SuperAdmin/NewProject";
+import SAUserLogs from "./Dashboard_SuperAdmin/UserLogs";
+import SALoanedFlats from "./Dashboard_SuperAdmin/LoanedFlats";
+import SALoanDocument from "./Dashboard_SuperAdmin/LoanDocument";
+import SAUploadLoanDoc from "./Dashboard_SuperAdmin/UploadLoanDoc";
+import SACompletePayment from "./Dashboard_SuperAdmin/CompletePayment";
+import SABalancePayment from "./Dashboard_SuperAdmin/BalancePayment";
+import SANoPayment from "./Dashboard_SuperAdmin/NoPayment";
+import SANoDiscount from "./Dashboard_SuperAdmin/NoDiscount";
+import SAExtraDiscount from "./Dashboard_SuperAdmin/ExtraDiscount";
+import SAExtraPayment from "./Dashboard_SuperAdmin/ExtraPayment";
+import SABBASigned from "./Dashboard_SuperAdmin/BBASigned";
+import SAUnsignedBBA from "./Dashboard_SuperAdmin/UnsignedBBA";
+import SACheque from "./Dashboard_SuperAdmin/Cheque";
+import SACash from "./Dashboard_SuperAdmin/Cash";
+import SANEFT from "./Dashboard_SuperAdmin/NEFT";
+import SAManageBank from "./Dashboard_SuperAdmin/ManageBank";
+import SAManageUser from "./Dashboard_SuperAdmin/ManageUser";
+import SAManageCommission from "./Dashboard_SuperAdmin/ManageCommission";
+import SAConstructionStages from "./Dashboard_SuperAdmin/ConstructionStages";
+import SAAddPartner from "./Dashboard_SuperAdmin/AddPartner";
+import SAReleaseCommission from "./Dashboard_SuperAdmin/ReleaseCommission";
+import SAPaidCommission from "./Dashboard_SuperAdmin/PaidCommission";
+import SAViewCoupons from "./Dashboard_SuperAdmin/ViewCoupons";
+import SAInstallmentReport from "./Dashboard_SuperAdmin/InstallmentReport";
+import SACPReport from "./Dashboard_SuperAdmin/CLPReport";
+import SAFinalReport from "./Dashboard_SuperAdmin/FinalReport";
+import SATodayReport from "./Dashboard_SuperAdmin/TodayReport";
+import SADatewiseReport from "./Dashboard_SuperAdmin/DatewiseReport";
+import SAViewAll from "./Dashboard_SuperAdmin/ViewAll";
+import SAFlatDetailCP from "./Dashboard_SuperAdmin/FlatDetail_CP";
+import SACPDetail from "./Dashboard_SuperAdmin/CP_Detail";
+import SACommonDocs from "./Dashboard_SuperAdmin/CommonDocs";
+import SAFlatDocs from "./Dashboard_SuperAdmin/FlatDocs";
+import SALegalDocs from "./Dashboard_SuperAdmin/LegalDocs";
+import SAFlatLegalDocs from "./Dashboard_SuperAdmin/FlatLegalDocs";
 import Proprite from "../assets/proprite.png";
 import Hamburger from "../assets/Hamburger.png";
 import flatDetailsIcon from "../assets/flat details.png";
@@ -106,6 +162,7 @@ const Layout = ({
   const normalizedUserRole = userRole === 'admin' ? 'superadmin' : userRole;
   const isSuperAdmin = normalizedUserRole === 'superadmin';
   const isBuilderAdmin = normalizedUserRole === 'builder_admin';
+  const isAdminRole = isSuperAdmin || isBuilderAdmin;
   const isCustomerUser = normalizedUserRole === 'user';
 
   // Navbar state
@@ -237,6 +294,43 @@ const Layout = ({
       ];
     }
 
+    if (isBuilderAdmin) {
+      return [
+        {
+          key: "services",
+          label: "Flats",
+          icon: paymentIcon,
+          width: "clamp(8.5rem, 10.625rem, 12rem)",
+          isMegamenu: true,
+          megamenuType: 'services',
+        },
+        {
+          key: "banking",
+          label: "Payment",
+          icon: currentDuesIcon,
+          width: "clamp(8.5rem, 10.625rem, 12rem)",
+          isMegamenu: true,
+          megamenuType: 'banking',
+        },
+        {
+          key: "projects",
+          label: "Projects",
+          icon: paymentIcon,
+          width: "clamp(8.5rem, 10.625rem, 12rem)",
+          isMegamenu: true,
+          megamenuType: 'projects',
+        },
+        {
+          key: "documents",
+          label: "Documents",
+          icon: documentsIcon,
+          width: "clamp(8.75rem, 10.9375rem, 12.5rem)",
+          isMegamenu: true,
+          megamenuType: 'documents',
+        },
+      ];
+    }
+
     const customerNavigation = [
       {
         key: "flatDetails",
@@ -263,10 +357,6 @@ const Layout = ({
         width: "clamp(8.75rem, 10.9375rem, 12.5rem)",
       },
     ];
-
-    if (isBuilderAdmin) {
-      return customerNavigation;
-    }
 
     return customerNavigation;
   };
@@ -320,7 +410,7 @@ const Layout = ({
   }, []);
 
   const handleNavClick = (item) => {
-    if (isSuperAdmin && item.isMegamenu) {
+    if (isAdminRole && item.isMegamenu) {
       if (megamenuTimeoutRef.current) {
         clearTimeout(megamenuTimeoutRef.current);
         megamenuTimeoutRef.current = null;
@@ -455,8 +545,10 @@ const Layout = ({
         alert('New Staff feature - Coming soon!');
         break;
       case 'new-projects':
-        // Navigate to new project page
-        onPageChange('newProject');
+        // Only super admins can access new project creation
+        if (isSuperAdmin) {
+          onPageChange('newProject');
+        }
         break;
       default:
         console.log(`Quick tool clicked: ${tool}`);
@@ -467,7 +559,6 @@ const Layout = ({
       return null;
     }
 
-    // Admin components
     if (isSuperAdmin) {
       switch (activePage) {
         case "dashboard":
@@ -477,7 +568,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <Dashboard key={`dashboard-${animationKey}`} onPageChange={onPageChange} />
+              <SADashboard key={`dashboard-${animationKey}`} onPageChange={onPageChange} />
             </div>
           );
         case "flatStatus":
@@ -487,7 +578,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <FlatStatus key={`flatStatus-${animationKey}`} onPageChange={onPageChange} />
+              <SAFlatStatus key={`flatStatus-${animationKey}`} onPageChange={onPageChange} />
             </div>
           );
         case "bookedFlats":
@@ -497,385 +588,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <BookedFlats key={`bookedFlats-${animationKey}`} onPageChange={onPageChange} />
-            </div>
-          );
-        case "blockedFlats":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <BlockedFlats key={`blockedFlats-${animationKey}`} onPageChange={onPageChange} />
-            </div>
-          );
-        case "cancelledFlats":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <CancelledFlats key={`cancelledFlats-${animationKey}`} onPageChange={onPageChange} />
-            </div>
-          );
-        case "flatSummary":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <FlatSummary key={`flatSummary-${animationKey}`} onPageChange={onPageChange} />
-            </div>
-          );
-        case "flat":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <Flat key={`flat-${animationKey}`} onPageChange={onPageChange} />
-              </div>
-            </div>
-          );
-        case "flatVerification":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <FlatVerification key={`flatVerification-${animationKey}`} onPageChange={onPageChange} />
-            </div>
-          );
-        case "activityType":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <ActivityType key={`activityType-${animationKey}`} />
-            </div>
-          );
-        case "viewActivities":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <ViewActivities key={`viewActivities-${animationKey}`} />
-            </div>
-          );
-        case "customize":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <Customize key={`customize-${animationKey}`} />
-            </div>
-          );
-        case "viewCustomization":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <ViewCustomization key={`viewCustomization-${animationKey}`} onPageChange={onPageChange} />
-            </div>
-          );
-        case "flatHandoverActivity":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <AddActivity key={`flatHandoverActivity-${animationKey}`} />
-            </div>
-          );
-        case "addSubactivity":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <AddSubactivity key={`addSubactivity-${animationKey}`} />
-            </div>
-          );
-        case "viewActivity":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <ViewActivity key={`viewActivity-${animationKey}`} />
-            </div>
-          );
-        case "flatHandover":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <FlatHandover key={`flatHandover-${animationKey}`} />
-            </div>
-          );
-        case "viewHandover":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <ViewHandover key={`viewHandover-${animationKey}`} onPageChange={onPageChange} />
-            </div>
-          );
-        case "blockInventory":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <BlockInventory key={`blockInventory-${animationKey}`} onPageChange={onPageChange} />
-            </div>
-          );
-        case "projects":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <Projects key={`projects-${animationKey}`} onPageChange={onPageChange} />
-              </div>
-            </div>
-          );
-        case "newProject":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <NewProject key={`newProject-${animationKey}`} onPageChange={onPageChange} />
-            </div>
-          );
-        case "userLogs":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <UserLogs key={`userLogs-${animationKey}`} />
-              </div>
-            </div>
-          );
-        case "loanedFlats":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <LoanedFlats key={`loanedFlats-${animationKey}`} onPageChange={onPageChange} />
-            </div>
-          );
-        case "loanDocuments":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <LoanDocument
-                key={`loanDocument-${animationKey}`}
-                onPageChange={onPageChange}
-              />
-            </div>
-          );
-        case "uploadLoanDoc":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <UploadLoanDoc
-                key={`uploadLoanDoc-${animationKey}`}
-                onPageChange={onPageChange}
-              />
-            </div>
-          );
-        case "completePayment":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <CompletePayment
-                key={`completePayment-${animationKey}`}
-                onPageChange={onPageChange}
-              />
-            </div>
-          );
-        case "balancePayment":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <BalancePayment
-                key={`balancePayment-${animationKey}`}
-                onPageChange={onPageChange}
-              />
-            </div>
-          );
-        case "noPayment":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <NoPayment
-                key={`noPayment-${animationKey}`}
-                onPageChange={onPageChange}
-              />
-            </div>
-          );
-        case "noDiscount":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <NoDiscount
-                key={`noDiscount-${animationKey}`}
-                onPageChange={onPageChange}
-              />
-            </div>
-          );
-        case "extraDiscount":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <ExtraDiscount
-                key={`extraDiscount-${animationKey}`}
-                onPageChange={onPageChange}
-              />
-            </div>
-          );
-        case "extraPayment":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <ExtraPayment
-                key={`extraPayment-${animationKey}`}
-                onPageChange={onPageChange}
-              />
-            </div>
-          );
-        case "signedBBA":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <BBASigned
-                key={`signedBBA-${animationKey}`}
-                onPageChange={onPageChange}
-              />
-            </div>
-          );
-        case "unsignedBBA":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <UnsignedBBA
-                key={`unsignedBBA-${animationKey}`}
-                onPageChange={onPageChange}
-              />
-            </div>
-          );
-        case "cheque":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <Cheque
-                key={`cheque-${animationKey}`}
-                onPageChange={onPageChange}
-              />
-            </div>
-          );
-        case "cash":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <Cash
-                key={`cash-${animationKey}`}
-                onPageChange={onPageChange}
-              />
-            </div>
-          );
-        case "neft":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <NEFT
-                key={`neft-${animationKey}`}
-                onPageChange={onPageChange}
-              />
-            </div>
-          );
-        case "manageBank":
-          return (
-            <div
-              className={`page-container h-full flex flex-col ${
-                isAnimating ? "opacity-50" : ""
-              }`}
-            >
-              <ManageBank
-                key={`manageBank-${animationKey}`}
-                onPageChange={onPageChange}
-              />
+              <SABookedFlats key={`bookedFlats-${animationKey}`} onPageChange={onPageChange} />
             </div>
           );
         case "manageUser":
@@ -885,7 +598,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <ManageUser
+              <SAManageUser
                 key={`manageUser-${animationKey}`}
                 onPageChange={onPageChange}
               />
@@ -898,7 +611,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <ManageCommission
+              <SAManageCommission
                 key={`manageCommission-${animationKey}`}
                 onPageChange={onPageChange}
               />
@@ -911,7 +624,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <ConstructionStages
+              <SAConstructionStages
                 key={`constructionStages-${animationKey}`}
                 onPageChange={onPageChange}
               />
@@ -924,7 +637,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <AddPartner
+              <SAAddPartner
                 key={`addPartner-${animationKey}`}
                 onPageChange={onPageChange}
               />
@@ -937,7 +650,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <ReleaseCommission
+              <SAReleaseCommission
                 key={`releaseCommission-${animationKey}`}
                 onPageChange={onPageChange}
               />
@@ -950,7 +663,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <PaidCommission
+              <SAPaidCommission
                 key={`paidCommission-${animationKey}`}
                 onPageChange={onPageChange}
               />
@@ -963,7 +676,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <ViewCoupons
+              <SAViewCoupons
                 key={`viewCoupons-${animationKey}`}
                 onPageChange={onPageChange}
               />
@@ -976,7 +689,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <InstallmentReport
+              <SAInstallmentReport
                 key={`installmentReport-${animationKey}`}
                 onPageChange={onPageChange}
               />
@@ -989,7 +702,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <CLPReport
+              <SACPReport
                 key={`clpReport-${animationKey}`}
                 onPageChange={onPageChange}
               />
@@ -1002,7 +715,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <FinalReport
+              <SAFinalReport
                 key={`finalReport-${animationKey}`}
                 onPageChange={onPageChange}
               />
@@ -1015,7 +728,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <TodayReport
+              <SATodayReport
                 key={`todayReport-${animationKey}`}
                 onPageChange={onPageChange}
               />
@@ -1028,7 +741,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <DatewiseReport
+              <SADatewiseReport
                 key={`datewiseReport-${animationKey}`}
                 onPageChange={onPageChange}
               />
@@ -1041,7 +754,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <ViewAll
+              <SAViewAll
                 key={`viewAll-${animationKey}`}
                 onPageChange={onPageChange}
               />
@@ -1054,7 +767,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <FlatDetail_CP
+              <SAFlatDetailCP
                 key={`flatDetailCP-${animationKey}`}
                 onPageChange={onPageChange}
               />
@@ -1067,7 +780,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <CP_Detail
+              <SACPDetail
                 key={`cpDetail-${animationKey}`}
                 onPageChange={onPageChange}
               />
@@ -1083,7 +796,7 @@ const Layout = ({
               }`}
             >
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <CommonDocs key={`commonDocs-${animationKey}`} />
+                <SACommonDocs key={`commonDocs-${animationKey}`} />
               </div>
             </div>
           );
@@ -1095,7 +808,7 @@ const Layout = ({
               }`}
             >
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <FlatDocs key={`flatDocs-${animationKey}`} onPageChange={onPageChange} />
+                <SAFlatDocs key={`flatDocs-${animationKey}`} onPageChange={onPageChange} />
               </div>
             </div>
           );
@@ -1107,7 +820,7 @@ const Layout = ({
               }`}
             >
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <LegalDocs key={`legalDocs-${animationKey}`} />
+                <SALegalDocs key={`legalDocs-${animationKey}`} />
               </div>
             </div>
           );
@@ -1119,6 +832,354 @@ const Layout = ({
               }`}
             >
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <SAFlatLegalDocs key={`flatLegalDocs-${animationKey}`} onPageChange={onPageChange} />
+              </div>
+            </div>
+          );
+        default:
+          return null;
+      }
+    }
+
+    // Builder admin components
+    if (isBuilderAdmin) {
+      switch (activePage) {
+        case "dashboard":
+          return (
+            <div className={`page-container h-full ${isAnimating ? "opacity-50" : ""}`}>
+              <Dashboard key={`dashboard-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "flatStatus":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <FlatStatus key={`flatStatus-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "bookedFlats":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <BookedFlats key={`bookedFlats-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "blockedFlats":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <BlockedFlats key={`blockedFlats-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "cancelledFlats":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <CancelledFlats key={`cancelledFlats-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "flatSummary":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <FlatSummary key={`flatSummary-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "flat":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <Flat key={`flat-${animationKey}`} onPageChange={onPageChange} />
+              </div>
+            </div>
+          );
+        case "flatVerification":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <FlatVerification key={`flatVerification-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "activityType":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <ActivityType key={`activityType-${animationKey}`} />
+            </div>
+          );
+        case "viewActivities":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <ViewActivities key={`viewActivities-${animationKey}`} />
+            </div>
+          );
+        case "customize":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <Customize key={`customize-${animationKey}`} />
+            </div>
+          );
+        case "viewCustomization":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <ViewCustomization key={`viewCustomization-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "flatHandoverActivity":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <AddActivity key={`flatHandoverActivity-${animationKey}`} />
+            </div>
+          );
+        case "addSubactivity":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <AddSubactivity key={`addSubactivity-${animationKey}`} />
+            </div>
+          );
+        case "viewActivity":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <ViewActivity key={`viewActivity-${animationKey}`} />
+            </div>
+          );
+        case "flatHandover":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <FlatHandover key={`flatHandover-${animationKey}`} />
+            </div>
+          );
+        case "viewHandover":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <ViewHandover key={`viewHandover-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "blockInventory":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <BlockInventory key={`blockInventory-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "projects":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <Projects key={`projects-${animationKey}`} onPageChange={onPageChange} />
+              </div>
+            </div>
+          );
+        case "userLogs":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <UserLogs key={`userLogs-${animationKey}`} />
+              </div>
+            </div>
+          );
+        case "loanedFlats":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <LoanedFlats key={`loanedFlats-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "loanDocuments":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <LoanDocument key={`loanDocument-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "uploadLoanDoc":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <UploadLoanDoc key={`uploadLoanDoc-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "completePayment":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <CompletePayment key={`completePayment-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "balancePayment":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <BalancePayment key={`balancePayment-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "noPayment":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <NoPayment key={`noPayment-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "noDiscount":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <NoDiscount key={`noDiscount-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "extraDiscount":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <ExtraDiscount key={`extraDiscount-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "extraPayment":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <ExtraPayment key={`extraPayment-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "signedBBA":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <BBASigned key={`signedBBA-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "unsignedBBA":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <UnsignedBBA key={`unsignedBBA-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "cheque":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <Cheque key={`cheque-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "cash":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <Cash key={`cash-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "neft":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <NEFT key={`neft-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "manageBank":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <ManageBank key={`manageBank-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "manageUser":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <ManageUser key={`manageUser-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "manageCommission":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <ManageCommission key={`manageCommission-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "constructionStages":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <ConstructionStages key={`constructionStages-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "addPartner":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <AddPartner key={`addPartner-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "releaseCommission":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <ReleaseCommission key={`releaseCommission-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "paidCommission":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <PaidCommission key={`paidCommission-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "viewCoupons":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <ViewCoupons key={`viewCoupons-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "installmentReport":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <InstallmentReport key={`installmentReport-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "clpReport":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <CLPReport key={`clpReport-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "finalReport":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <FinalReport key={`finalReport-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "todayReport":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <TodayReport key={`todayReport-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "datewiseReport":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <DatewiseReport key={`datewiseReport-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "viewAll":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <ViewAll key={`viewAll-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "flatDetailCP":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <FlatDetail_CP key={`flatDetailCP-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "cpDetail":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <CP_Detail key={`cpDetail-${animationKey}`} onPageChange={onPageChange} />
+            </div>
+          );
+        case "documents":
+          return <Documents key={`documents-${animationKey}`} />;
+        case "commonDocs":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <CommonDocs key={`commonDocs-${animationKey}`} />
+              </div>
+            </div>
+          );
+        case "flatDocs":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <FlatDocs key={`flatDocs-${animationKey}`} onPageChange={onPageChange} />
+              </div>
+            </div>
+          );
+        case "legalDocs":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <LegalDocs key={`legalDocs-${animationKey}`} />
+              </div>
+            </div>
+          );
+        case "flatLegalDocs":
+          return (
+            <div className={`page-container h-full flex flex-col ${isAnimating ? "opacity-50" : ""}`}>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
                 <FlatLegalDocs key={`flatLegalDocs-${animationKey}`} onPageChange={onPageChange} />
               </div>
             </div>
@@ -1128,7 +1189,6 @@ const Layout = ({
       }
     }
 
-    // User components
     const Component = (() => {
       switch (activePage) {
         case "flatDetails":
@@ -1218,7 +1278,7 @@ const Layout = ({
 
             {/* Logo */}
             <div className="flex-shrink-0">
-              {isSuperAdmin ? (
+              {isAdminRole ? (
                 <button
                   onClick={() => onPageChange('dashboard')}
                   className="hover:opacity-80 transition-opacity duration-200"
@@ -1261,16 +1321,16 @@ const Layout = ({
                 className="relative"
               >
                 <button
-                  ref={item.isMegamenu && isSuperAdmin ? megamenuTriggerRef : undefined}
+                  ref={item.isMegamenu && isAdminRole ? megamenuTriggerRef : undefined}
                   onClick={() => handleNavClick(item)}
-                  onMouseEnter={item.isMegamenu && isSuperAdmin ? () => handleMegamenuMouseEnter(item.megamenuType) : undefined}
-                  onMouseLeave={item.isMegamenu && isSuperAdmin ? () => handleMegamenuMouseLeave(item.megamenuType) : undefined}
+                  onMouseEnter={item.isMegamenu && isAdminRole ? () => handleMegamenuMouseEnter(item.megamenuType) : undefined}
+                  onMouseLeave={item.isMegamenu && isAdminRole ? () => handleMegamenuMouseLeave(item.megamenuType) : undefined}
                   className={`flex items-center justify-center transition-all duration-300 ease-out whitespace-nowrap shadow-sm rounded-full ${
-                    item.isMegamenu && isSuperAdmin 
+                    item.isMegamenu && isAdminRole 
                       ? "hover:bg-gray-50" // Simplified hover for megamenu buttons
                       : "btn-animate hover-lift" // Full animation for regular buttons
                   } ${
-                    activePage === item.key || (item.isMegamenu && isSuperAdmin && (getMegamenuState(item.megamenuType) || isPageInMegamenu(item.megamenuType)))
+                    activePage === item.key || (item.isMegamenu && isAdminRole && (getMegamenuState(item.megamenuType) || isPageInMegamenu(item.megamenuType)))
                       ? "text-white font-medium transform scale-105"
                       : "text-gray-600 hover:text-gray-800 bg-white hover:bg-gray-50 hover:shadow-lg"
                   }`}
@@ -1279,7 +1339,7 @@ const Layout = ({
                     height: "clamp(2.25rem, 2.8125rem, 3.25rem)",
                     fontSize: "clamp(0.75rem, 0.875rem, 1rem)",
                     background:
-                      activePage === item.key || (item.isMegamenu && isSuperAdmin && (getMegamenuState(item.megamenuType) || isPageInMegamenu(item.megamenuType)))
+                      activePage === item.key || (item.isMegamenu && isAdminRole && (getMegamenuState(item.megamenuType) || isPageInMegamenu(item.megamenuType)))
                         ? "linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)"
                         : undefined,
                   }}
@@ -1293,7 +1353,7 @@ const Layout = ({
                       height: "clamp(1rem, 1.25rem, 1.5rem)",
                       marginRight: "clamp(0.375rem, 0.5625rem, 0.75rem)",
                       filter: 
-                        activePage === item.key || (item.isMegamenu && isSuperAdmin && (getMegamenuState(item.megamenuType) || isPageInMegamenu(item.megamenuType)))
+                        activePage === item.key || (item.isMegamenu && isAdminRole && (getMegamenuState(item.megamenuType) || isPageInMegamenu(item.megamenuType)))
                           ? "invert(1)" 
                           : "none",
                     }}
@@ -1304,7 +1364,7 @@ const Layout = ({
                 </button>
                 
                 {/* Consolidated Megamenu - Only for Admin */}
-                {item.isMegamenu && isSuperAdmin && (
+                {item.isMegamenu && isAdminRole && (
                   <Megamenu
                     isOpen={getMegamenuState(item.megamenuType)}
                     onClose={handleMegamenuClose}
@@ -1442,7 +1502,7 @@ const Layout = ({
 
           {/* Logo - Centered */}
           <div className="absolute left-1/2 transform -translate-x-1/2">
-            {isSuperAdmin ? (
+            {isAdminRole ? (
               <button
                 onClick={() => onPageChange('dashboard')}
                 className="hover:opacity-80 transition-opacity duration-200"
@@ -1571,7 +1631,7 @@ const Layout = ({
           )}
           
           {/* Active Page View (User navigates to a specific page or Admin) */}
-          {((activePage && activePage !== "null") || isSuperAdmin) && (
+          {((activePage && activePage !== "null") || isAdminRole) && (
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
               {renderMiddlePanel()}
             </div>
@@ -1601,7 +1661,7 @@ const Layout = ({
 
         {/* Desktop Layout */}
         <div className="hidden lg:flex h-full items-center justify-center relative" style={{ paddingTop: 'clamp(5rem, 7.25rem, 8rem)', paddingBottom: 'clamp(1.5rem, 2.3125rem, 3rem)', paddingLeft: 'clamp(1.5rem, 2.75rem, 3.5rem)', paddingRight: 'clamp(1.5rem, 2.75rem, 3.5rem)' }}>
-          {isSuperAdmin ? (
+          {isAdminRole ? (
             // Admin layout - only middle section with two components
             <>
               <div className="flex w-full max-w-[120rem] mx-auto" style={{ gap: 'clamp(0.625rem, 0.9375rem, 1.25rem)' }}>
@@ -1697,24 +1757,26 @@ const Layout = ({
                       </button>
 
                       {/* New Projects Tile */}
-                      <button
-                        onClick={() => handleQuickToolClick('new-projects')}
-                        className="bg-gray-100 rounded-lg shadow-xl border border-gray-300 px-4 py-2 hover:shadow-2xl transition-all duration-300 hover:scale-105 whitespace-nowrap group"
-                        style={{
-                          background: 'rgb(243, 244, 246)',
-                          borderColor: 'rgb(209, 213, 219)',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)';
-                          e.currentTarget.style.borderColor = '#FC7117';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'rgb(243, 244, 246)';
-                          e.currentTarget.style.borderColor = 'rgb(209, 213, 219)';
-                        }}
-                      >
-                        <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">New Projects</span>
-                      </button>
+                      {isSuperAdmin && (
+                        <button
+                          onClick={() => handleQuickToolClick('new-projects')}
+                          className="bg-gray-100 rounded-lg shadow-xl border border-gray-300 px-4 py-2 hover:shadow-2xl transition-all duration-300 hover:scale-105 whitespace-nowrap group"
+                          style={{
+                            background: 'rgb(243, 244, 246)',
+                            borderColor: 'rgb(209, 213, 219)',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)';
+                            e.currentTarget.style.borderColor = '#FC7117';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'rgb(243, 244, 246)';
+                            e.currentTarget.style.borderColor = 'rgb(209, 213, 219)';
+                          }}
+                        >
+                          <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">New Projects</span>
+                        </button>
+                      )}
                     </div>
                   </>
                 )}
