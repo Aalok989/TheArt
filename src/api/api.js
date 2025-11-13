@@ -308,44 +308,30 @@ export const propertiesAPI = {
   async createProject(projectData) {
     const formData = new FormData();
     
-    // Add text fields
-    formData.append('name', projectData.name);
-    const locationValue = projectData.location ?? projectData.address ?? '';
-    formData.append('location', locationValue);
-    if (projectData.address) {
-      formData.append('address', projectData.address);
-    }
+    // Add required text fields - matching API endpoint format from curl command
+    // Format: --form 'name="..."' --form 'address="..."' --form 'description="..."'
+    formData.append('name', projectData.name || '');
+    formData.append('address', projectData.address || '');
     formData.append('description', projectData.description || '');
-    if (projectData.contactDetails) {
-      formData.append('contact_details', projectData.contactDetails);
-    }
+    
+    // Add contact details (required field in form)
+    formData.append('contact_details', projectData.contactDetails || '');
+    
+    // Add support contact details (optional)
     if (projectData.supportContactDetails) {
       formData.append('support_contact_details', projectData.supportContactDetails);
     }
+    
+    // Add builder_id if available (matching API endpoint format: --form 'builder_id="2"')
+    // Only send if assignedBuilderId exists and is not empty
     if (projectData.assignedBuilderId) {
-      formData.append('builder', projectData.assignedBuilderId);
-    } else if (projectData.assignedBuilderName) {
-      formData.append('builder_name', projectData.assignedBuilderName);
+      const builderId = String(projectData.assignedBuilderId).trim();
+      if (builderId !== '') {
+        formData.append('builder_id', builderId);
+      }
     }
     
-    // Add optional fields if provided
-    if (projectData.projectType) {
-      formData.append('project_type', projectData.projectType);
-    }
-    if (projectData.unitType) {
-      formData.append('unit_type', projectData.unitType);
-    }
-    if (projectData.startDate) {
-      formData.append('start_date', projectData.startDate);
-    }
-    if (projectData.endDate) {
-      formData.append('end_date', projectData.endDate);
-    }
-    if (projectData.isActive !== undefined) {
-      formData.append('is_active', projectData.isActive);
-    }
-    
-    // Add file uploads if provided
+    // Add file uploads if provided (matching curl format: --form 'logo=@...' --form 'header=@...' --form 'footer=@...')
     if (projectData.logo && projectData.logo instanceof File) {
       formData.append('logo', projectData.logo);
     }
@@ -356,7 +342,100 @@ export const propertiesAPI = {
       formData.append('footer', projectData.footerImage);
     }
     
-    return api.postFormData('/properties/projects/', formData);
+    // Use the correct endpoint from the curl command: /api/master/projects/create_project/
+    return api.postFormData('/master/projects/create_project/', formData);
+  },
+
+  async getStructureOptions(projectId) {
+    // Matching curl command: GET /properties/structure-options/?project_id=1
+    return api.get(`/properties/structure-options/?project_id=${projectId}`);
+  },
+
+  async getBlocks(projectId, towerId = null) {
+    // GET /properties/blocks/?project_id=X&tower_id=Y (tower_id is optional)
+    let endpoint = `/properties/blocks/?project_id=${projectId}`;
+    if (towerId) {
+      endpoint += `&tower_id=${towerId}`;
+    }
+    return api.get(endpoint);
+  },
+
+  async createBlock(blockData) {
+    // Matching curl command: POST /properties/blocks/ with JSON body
+    const payload = {
+      project: blockData.project,
+      name: blockData.name || '',
+      description: blockData.description || ''
+    };
+    
+    // Only include tower field if it's provided (for structures that require tower step)
+    if (blockData.tower) {
+      payload.tower = blockData.tower;
+    }
+    
+    return api.post('/properties/blocks/', payload);
+  },
+
+  async getTowers(projectId) {
+    // Matching curl command: GET /properties/towers/?project_id=2
+    return api.get(`/properties/towers/?project_id=${projectId}`);
+  },
+
+  async createTower(towerData) {
+    // Matching curl command: POST /properties/towers/ with JSON body
+    const payload = {
+      project: towerData.project,
+      name: towerData.name || '',
+      description: towerData.description || ''
+    };
+    
+    // Include tower_number if provided
+    if (towerData.tower_number !== undefined && towerData.tower_number !== null && towerData.tower_number !== '') {
+      payload.tower_number = towerData.tower_number;
+    }
+    
+    return api.post('/properties/towers/', payload);
+  },
+
+  async getFlatTemplates(projectId) {
+    // Matching curl command: GET /properties/flat-templates/active/?project_id=2
+    return api.get(`/properties/flat-templates/active/?project_id=${projectId}`);
+  },
+
+  async createFlatTemplate(templateData) {
+    // Matching curl command: POST /properties/flat-templates/ with JSON body
+    return api.post('/properties/flat-templates/', {
+      name: templateData.name || '',
+      description: templateData.description || '',
+      project_id: templateData.project_id,
+      is_active: templateData.is_active !== undefined ? templateData.is_active : true,
+      flat_items: (templateData.flat_items || []).map(item => ({
+        flat_number_pattern: item.flat_number_pattern || '',
+        flat_type: item.flat_type || '',
+        area_sqft: item.area_sqft
+      }))
+    });
+  },
+
+  async submitCreationHub(data) {
+    // Matching curl command: POST /properties/creation-hub/ with JSON body
+    return api.post('/properties/creation-hub/', data);
+  }
+};
+
+// Builders API methods
+export const buildersAPI = {
+  async createBuilder(builderData) {
+    // Matching curl command format: POST /tenants/builders/ with JSON body
+    return api.post('/tenants/builders/', {
+      name: builderData.name || '',
+      address: builderData.address || '',
+      contact_email: builderData.contactEmail || builderData.contact_email || ''
+    });
+  },
+
+  async getBuilders() {
+    return api.get('/tenants/builders/');
   }
 };
 

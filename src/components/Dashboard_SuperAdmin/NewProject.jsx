@@ -1,16 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { HiPlus, HiChevronDown, HiX, HiPhotograph, HiTrash } from 'react-icons/hi';
-import { fetchBlocksByProject, fetchFlatTemplates, fetchTowersByProject } from '../../api/mockData';
 
-const TOWER_STRUCTURE_TYPE = 'A Tower with Blocks (Flats)';
-
-const PROJECT_STRUCTURE_OPTIONS = [
-  TOWER_STRUCTURE_TYPE,
-  'Multiple Towers with Blocks (Flats)',
-  'Single Multistory (Flats)',
-  'Villas',
-  'Plots'
-];
+// Structure keys that require tower step (based on API response project_type === 'tower')
+const TOWER_STRUCTURE_KEYS = ['tower_with_blocks', 'multiple_towers', 'tower_with_floors'];
 
 const STEP_META = {
   project: {
@@ -34,7 +26,7 @@ const STEP_META = {
     subtitle: 'Please provide Floor Number and Flat Details.'
   }
 };
-import { propertiesAPI } from '../../api/api';
+import { propertiesAPI, buildersAPI } from '../../api/api';
 
 const NewProject = ({ onPageChange }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -59,10 +51,14 @@ const NewProject = ({ onPageChange }) => {
   const [headerImagePreview, setHeaderImagePreview] = useState(null);
   const [footerImagePreview, setFooterImagePreview] = useState(null);
   const [projectStructureType, setProjectStructureType] = useState('');
+  const [projectStructureData, setProjectStructureData] = useState(null); // Store full structure data
+  const [structureOptions, setStructureOptions] = useState([]);
+  const [structureOptionsLoading, setStructureOptionsLoading] = useState(false);
   const [showStructureDropdown, setShowStructureDropdown] = useState(false);
   const [allTowers, setAllTowers] = useState([]);
   const [towersLoading, setTowersLoading] = useState(false);
   const [selectedTower, setSelectedTower] = useState('');
+  const [selectedTowerId, setSelectedTowerId] = useState(null);
   const [showTowerDropdown, setShowTowerDropdown] = useState(false);
   const [showCreateTowerForm, setShowCreateTowerForm] = useState(false);
   const [newTowerData, setNewTowerData] = useState({
@@ -71,6 +67,7 @@ const NewProject = ({ onPageChange }) => {
     description: ''
   });
   const [selectedBlock, setSelectedBlock] = useState('');
+  const [selectedBlockId, setSelectedBlockId] = useState(null);
   const [showBlockDropdown, setShowBlockDropdown] = useState(false);
   const [allBlocks, setAllBlocks] = useState([]);
   const [blocksLoading, setBlocksLoading] = useState(false);
@@ -83,8 +80,33 @@ const NewProject = ({ onPageChange }) => {
   const [showTemplateDropdown, setShowTemplateDropdown] = useState({});
   const [showAddTemplateForm, setShowAddTemplateForm] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState('');
+  const [newTemplateDescription, setNewTemplateDescription] = useState('');
   const [newTemplateFlats, setNewTemplateFlats] = useState([{ flatNumber: '', type: '', area: '' }]);
   const [flatTemplates, setFlatTemplates] = useState([]);
+  const [villas, setVillas] = useState([{ 
+    id: 1, 
+    villaNumber: '', 
+    landArea: '', 
+    buildUpArea: '', 
+    bedrooms: '', 
+    bathrooms: '', 
+    villaType: '', 
+    facing: '', 
+    cornerUnit: false, 
+    mainRoadFacing: false, 
+    price: '' 
+  }]);
+  const [plots, setPlots] = useState([{ 
+    id: 1, 
+    plotNumber: '', 
+    area: '', 
+    plotType: '', 
+    facing: '', 
+    cornerUnit: false, 
+    mainRoadFacing: false, 
+    pricePerSqft: '', 
+    totalPrice: '' 
+  }]);
   const [customBuilders, setCustomBuilders] = useState([]);
   const [showCreateBuilderForm, setShowCreateBuilderForm] = useState(false);
   const [newBuilderData, setNewBuilderData] = useState({
@@ -162,30 +184,66 @@ const NewProject = ({ onPageChange }) => {
     loadProjects();
   }, []);
 
-  // Fetch flat templates data on component mount
+  // Fetch flat templates data when a project is selected
   useEffect(() => {
     const loadFlatTemplates = async () => {
+      if (!selectedProject) {
+        setFlatTemplates([]);
+        return;
+      }
+
       try {
-        const response = await fetchFlatTemplates();
-        if (response.success) {
-          setFlatTemplates(response.data);
+        // Get project ID
+        const projectId = typeof selectedProject === 'number' 
+          ? selectedProject 
+          : (typeof selectedProject === 'string' && !isNaN(selectedProject) 
+            ? parseInt(selectedProject) 
+            : allProjects.find(p => p.id === selectedProject || p.name === selectedProject)?.id);
+
+        if (!projectId) {
+          return;
         }
+
+        const response = await propertiesAPI.getFlatTemplates(projectId);
+        
+        // Transform API response to match component expectations
+        // API returns: [{ id, name, description, flat_items: [{ flat_number_pattern, flat_type, area_sqft }] }]
+        // Component expects: [{ id, name, flats: [{ flatNumber, type, area }] }]
+        const templates = Array.isArray(response) ? response : (response ? [response] : []);
+        const formattedTemplates = templates.map(template => ({
+          id: template.id,
+          name: template.name,
+          description: template.description,
+          flats: (template.flat_items || []).map(item => ({
+            flatNumber: item.flat_number_pattern || '',
+            type: item.flat_type || '',
+            area: item.area_sqft || ''
+          }))
+        }));
+
+        setFlatTemplates(formattedTemplates);
       } catch (error) {
         console.error('Error loading flat templates:', error);
+        setFlatTemplates([]);
       }
     };
 
     loadFlatTemplates();
-  }, []);
+  }, [selectedProject, allProjects]);
 
   const stepSequence = useMemo(() => {
     const base = ['project', 'structure'];
-    if (projectStructureType === TOWER_STRUCTURE_TYPE) {
+    // Check if selected structure requires tower step (project_type === 'tower')
+    if (projectStructureData && projectStructureData.project_type === 'tower') {
       base.push('tower');
     }
-    base.push('block', 'floors');
+    // Skip block step for "Tower with Flats" (id:4 or structure_key: "tower_with_floors")
+    if (!projectStructureData || projectStructureData.id !== 4) {
+      base.push('block');
+    }
+    base.push('floors');
     return base;
-  }, [projectStructureType]);
+  }, [projectStructureData]);
 
   useEffect(() => {
     if (currentStep > stepSequence.length) {
@@ -196,32 +254,88 @@ const NewProject = ({ onPageChange }) => {
   const currentStepId = stepSequence[currentStep - 1] || stepSequence[stepSequence.length - 1];
 
   useEffect(() => {
-    if (projectStructureType !== TOWER_STRUCTURE_TYPE) {
+    // Reset tower selection if structure doesn't require towers
+    if (projectStructureData && projectStructureData.project_type !== 'tower') {
       setSelectedTower('');
+      setSelectedTowerId(null);
       setAllTowers([]);
     }
-  }, [projectStructureType]);
+  }, [projectStructureData]);
 
   useEffect(() => {
     setSelectedTower('');
+    setSelectedTowerId(null);
     setAllTowers([]);
+    // Reset structure selection when project changes
+    setProjectStructureType('');
+    setProjectStructureData(null);
+    setStructureOptions([]);
+    // Reset block selection
+    setSelectedBlock('');
+    setSelectedBlockId(null);
   }, [selectedProject]);
+
+  // Fetch structure options when project is selected
+  useEffect(() => {
+    if (selectedProject) {
+      const loadStructureOptions = async () => {
+        try {
+          setStructureOptionsLoading(true);
+          // Get project ID - selectedProject should be numeric ID from first step
+          const projectId = typeof selectedProject === 'number' 
+            ? selectedProject 
+            : (typeof selectedProject === 'string' && !isNaN(selectedProject) 
+              ? parseInt(selectedProject) 
+              : allProjects.find(p => p.id === selectedProject || p.name === selectedProject)?.id);
+          
+          if (projectId) {
+            const response = await propertiesAPI.getStructureOptions(projectId);
+            if (Array.isArray(response)) {
+              setStructureOptions(response);
+            }
+          }
+          setStructureOptionsLoading(false);
+        } catch (error) {
+          console.error('Error loading structure options:', error);
+          setStructureOptionsLoading(false);
+        }
+      };
+      loadStructureOptions();
+    }
+  }, [selectedProject, allProjects]);
 
   const steps = useMemo(
     () =>
-      stepSequence.map((id, index) => ({
+      stepSequence.map((id, index) => {
+        let title = STEP_META[id].title;
+        let subtitle = STEP_META[id].subtitle;
+        
+        // Update title and subtitle for floors step based on unit_type
+        if (id === 'floors' && projectStructureData) {
+          if (projectStructureData.unit_type === 'villas') {
+            title = 'Villas';
+            subtitle = 'Please provide Villa Details';
+          } else if (projectStructureData.unit_type === 'plots') {
+            title = 'Plots';
+            subtitle = 'Please provide Plot Details';
+          }
+        }
+        
+        return {
         id,
         number: index + 1,
-        title: STEP_META[id].title,
-        subtitle: STEP_META[id].subtitle,
+          title,
+          subtitle,
         completed: currentStep > index + 1,
         active: currentStep === index + 1
-      })),
-    [stepSequence, currentStep]
+        };
+      }),
+    [stepSequence, currentStep, projectStructureData]
   );
 
   const handleProjectSelect = (project) => {
-    setSelectedProject(project.id || project.name); // Store ID for API calls, fallback to name
+    // Always store the project ID (numeric) for API calls
+    setSelectedProject(project.id);
     setShowProjectDropdown(false);
   };
 
@@ -306,13 +420,38 @@ const NewProject = ({ onPageChange }) => {
     }));
   };
 
-  const handleSubmitNewBuilder = (e) => {
+  const handleSubmitNewBuilder = async (e) => {
     e.preventDefault();
     const trimmedName = newBuilderData.name.trim();
     if (!trimmedName) {
       return;
     }
 
+    try {
+      // Call the real API to create the builder
+      const response = await buildersAPI.createBuilder({
+        name: trimmedName,
+        address: newBuilderData.address.trim(),
+        contactEmail: newBuilderData.contactEmail.trim()
+      });
+
+      // Update the project data with the newly created builder
+      if (response && response.id) {
+        setNewProjectData(prev => ({
+          ...prev,
+          assignedBuilderId: String(response.id),
+          assignedBuilderName: response.name || trimmedName
+        }));
+      } else {
+        // Fallback if response doesn't have id
+        setNewProjectData(prev => ({
+          ...prev,
+          assignedBuilderId: '',
+          assignedBuilderName: trimmedName
+        }));
+      }
+
+      // Also add to custom builders list for local state
     setCustomBuilders(prev => {
       const exists =
         prev.some(builder => builder.name.toLowerCase() === trimmedName.toLowerCase()) ||
@@ -323,10 +462,10 @@ const NewProject = ({ onPageChange }) => {
       }
 
       const newBuilder = {
-        id: `custom-${Date.now()}`,
-        name: trimmedName,
-        address: newBuilderData.address.trim(),
-        contactEmail: newBuilderData.contactEmail.trim()
+          id: response?.id ? String(response.id) : `custom-${Date.now()}`,
+          name: response?.name || trimmedName,
+          address: response?.address || newBuilderData.address.trim(),
+          contactEmail: response?.contact_email || response?.contactEmail || newBuilderData.contactEmail.trim()
       };
 
       return [
@@ -335,13 +474,12 @@ const NewProject = ({ onPageChange }) => {
       ];
     });
 
-    setNewProjectData(prev => ({
-      ...prev,
-      assignedBuilderId: '',
-      assignedBuilderName: trimmedName
-    }));
-
+      alert('Builder created successfully!');
     handleCloseCreateBuilderForm();
+    } catch (error) {
+      console.error('Error creating builder:', error);
+      alert(`Failed to create builder: ${error.message || 'Unknown error'}`);
+    }
   };
 
   const handleImageUpload = (field, file) => {
@@ -395,6 +533,7 @@ const NewProject = ({ onPageChange }) => {
       // Select the newly created project
       if (response && response.id) {
         setSelectedProject(response.id);
+        // Structure options will be fetched automatically via useEffect when selectedProject changes
       }
       
       alert('Project created successfully!');
@@ -407,7 +546,7 @@ const NewProject = ({ onPageChange }) => {
     }
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     const activeStepId = currentStepId;
     if (activeStepId === 'project' && !selectedProject) {
       return;
@@ -425,17 +564,178 @@ const NewProject = ({ onPageChange }) => {
     if (currentStep < stepSequence.length) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Final step - submit form
-      console.log('Form submitted');
+      // Final step - submit creation hub data (for tower with blocks structure)
+      await handleSubmitCreationHub();
     }
   };
 
-  const handleStructureSelect = (type) => {
-    setProjectStructureType(type);
+  const handleSubmitCreationHub = async () => {
+    if (!projectStructureData || !projectStructureData.id) {
+      alert('Please select a structure type first');
+      return;
+    }
+
+    try {
+      // Get project ID
+      const projectId = typeof selectedProject === 'number' 
+        ? selectedProject 
+        : (typeof selectedProject === 'string' && !isNaN(selectedProject) 
+          ? parseInt(selectedProject) 
+          : allProjects.find(p => p.id === selectedProject || p.name === selectedProject)?.id);
+
+      if (!projectId) {
+        alert('Please select a project first');
+        return;
+      }
+
+      // Prepare base creation hub data
+      const creationData = {
+        project_id: projectId,
+        structure_id: projectStructureData.id
+      };
+
+      // Handle different unit types
+      if (projectStructureData.unit_type === 'flats') {
+        // Flats require tower/block based on structure type
+        // Only require tower_id if structure requires tower step (project_type === 'tower')
+        if (projectStructureData.project_type === 'tower' && !selectedTowerId) {
+          alert('Please select a tower first');
+          return;
+        }
+
+        // Only require block_id if structure requires block step (id !== 4, Tower with Flats skips block)
+        if (projectStructureData.id !== 4 && !selectedBlockId) {
+          alert('Please select a block first');
+          return;
+        }
+
+        // Format floors data according to API format
+        const formattedFloors = floors
+          .filter(floor => floor.floorNumber && floor.floorNumber.trim() !== '')
+          .map(floor => {
+            const floorNumber = parseInt(floor.floorNumber.trim());
+            if (isNaN(floorNumber)) {
+              return null;
+            }
+
+            // Format flats data
+            const formattedFlats = floor.flats
+              .filter(flat => flat.flatNumber && flat.flatNumber.trim() !== '')
+              .map(flat => {
+                const areaSqft = parseInt(flat.area.trim()) || 0;
+                return {
+                  flat_number: flat.flatNumber.trim(),
+                  flat_type: flat.type.trim() || '',
+                  area_sqft: areaSqft
+                };
+              });
+
+            return {
+              floor_number: floorNumber,
+              flats: formattedFlats
+            };
+          })
+          .filter(floor => floor !== null && floor.flats.length > 0);
+
+        if (formattedFloors.length === 0) {
+          alert('Please add at least one floor with flats');
+          return;
+        }
+
+        creationData.floors = formattedFloors;
+
+        // Only include tower_id if structure requires tower step (project_type === 'tower')
+        if (projectStructureData.project_type === 'tower' && selectedTowerId) {
+          creationData.tower_id = selectedTowerId;
+        }
+
+        // Only include block_id if structure requires block step (id !== 4, Tower with Flats skips block)
+        if (projectStructureData.id !== 4 && selectedBlockId) {
+          creationData.block_id = selectedBlockId;
+        }
+      } else if (projectStructureData.unit_type === 'villas') {
+        // Villas require block_id
+        if (!selectedBlockId) {
+          alert('Please select a block first');
+          return;
+        }
+
+        // Format villas data according to API format
+        const formattedVillas = villas
+          .filter(villa => villa.villaNumber && villa.villaNumber.trim() !== '')
+          .map(villa => ({
+            villa_number: villa.villaNumber.trim(),
+            land_area_sqft: parseInt(villa.landArea.trim()) || 0,
+            builtup_area_sqft: parseInt(villa.buildUpArea.trim()) || 0,
+            bedrooms: parseInt(villa.bedrooms.trim()) || 0,
+            bathrooms: parseInt(villa.bathrooms.trim()) || 0,
+            villa_type: villa.villaType.trim() || '',
+            facing: villa.facing.trim() || '',
+            corner_unit: villa.cornerUnit || false,
+            main_road_facing: villa.mainRoadFacing || false,
+            price: parseInt(villa.price.trim()) || 0
+          }))
+          .filter(villa => villa.villa_number !== '');
+
+        if (formattedVillas.length === 0) {
+          alert('Please add at least one villa');
+          return;
+        }
+
+        creationData.villas = formattedVillas;
+        creationData.block_id = selectedBlockId;
+      } else if (projectStructureData.unit_type === 'plots') {
+        // Plots require block_id (similar structure to villas)
+        if (!selectedBlockId) {
+          alert('Please select a block first');
+          return;
+        }
+
+        // Format plots data according to API format
+        const formattedPlots = plots
+          .filter(plot => plot.plotNumber && plot.plotNumber.trim() !== '')
+          .map(plot => ({
+            plot_number: plot.plotNumber.trim(),
+            area_sqft: parseInt(plot.area.trim()) || 0,
+            plot_type: plot.plotType.trim() || '',
+            facing: plot.facing.trim() || '',
+            corner_plot: plot.cornerUnit || false,
+            main_road_facing: plot.mainRoadFacing || false,
+            price_per_sqft: parseInt(plot.pricePerSqft.trim()) || 0,
+            total_price: parseInt(plot.totalPrice.trim()) || 0
+          }))
+          .filter(plot => plot.plot_number !== '');
+
+        if (formattedPlots.length === 0) {
+          alert('Please add at least one plot');
+          return;
+        }
+
+        creationData.plots = formattedPlots;
+        creationData.block_id = selectedBlockId;
+      }
+
+      // Call the API
+      await propertiesAPI.submitCreationHub(creationData);
+
+      alert('Project setup completed successfully!');
+      // Optionally reset form or navigate
+    } catch (error) {
+      console.error('Error submitting creation hub:', error);
+      alert(`Failed to submit: ${error.message || 'Unknown error'}`);
+    }
+  };
+
+  const handleStructureSelect = (structure) => {
+    // structure is now the full structure object from API
+    setProjectStructureType(structure.structure_type);
+    setProjectStructureData(structure);
     setShowStructureDropdown(false);
     setSelectedTower('');
+    setSelectedTowerId(null);
     setAllTowers([]);
     setSelectedBlock('');
+    setSelectedBlockId(null);
     setAllBlocks([]);
   };
 
@@ -458,9 +758,22 @@ const NewProject = ({ onPageChange }) => {
       const loadTowers = async () => {
         try {
           setTowersLoading(true);
-          const response = await fetchTowersByProject(selectedProject);
-          if (response.success && Array.isArray(response.data)) {
+          // Get project ID - selectedProject should be numeric ID from first step
+          const projectId = typeof selectedProject === 'number' 
+            ? selectedProject 
+            : (typeof selectedProject === 'string' && !isNaN(selectedProject) 
+              ? parseInt(selectedProject) 
+              : allProjects.find(p => p.id === selectedProject || p.name === selectedProject)?.id);
+          
+          if (projectId) {
+            const response = await propertiesAPI.getTowers(projectId);
+            if (Array.isArray(response)) {
+              setAllTowers(response);
+            } else if (response && Array.isArray(response.data)) {
             setAllTowers(response.data);
+            } else {
+              setAllTowers([]);
+            }
           }
           setTowersLoading(false);
         } catch (error) {
@@ -470,11 +783,13 @@ const NewProject = ({ onPageChange }) => {
       };
       loadTowers();
     }
-  }, [currentStepId, selectedProject]);
+  }, [currentStepId, selectedProject, allProjects]);
 
   const handleTowerSelect = (tower) => {
     const towerName = typeof tower === 'string' ? tower : tower.name;
+    const towerId = typeof tower === 'object' && tower.id ? tower.id : null;
     setSelectedTower(towerName);
+    setSelectedTowerId(towerId);
     setShowTowerDropdown(false);
   };
 
@@ -498,19 +813,65 @@ const NewProject = ({ onPageChange }) => {
     }));
   };
 
-  const handleSubmitNewTower = (e) => {
+  const handleSubmitNewTower = async (e) => {
     e.preventDefault();
-    if (newTowerData.name.trim()) {
-      const newTower = {
-        id: Date.now(),
+    if (!newTowerData.name.trim()) {
+      return;
+    }
+
+    try {
+      // Get project ID
+      const projectId = typeof selectedProject === 'number' 
+        ? selectedProject 
+        : (typeof selectedProject === 'string' && !isNaN(selectedProject) 
+          ? parseInt(selectedProject) 
+          : allProjects.find(p => p.id === selectedProject || p.name === selectedProject)?.id);
+
+      if (!projectId) {
+        alert('Please select a project first');
+        return;
+      }
+
+      // Prepare tower data
+      const towerData = {
+        project: projectId,
         name: newTowerData.name.trim(),
-        number: newTowerData.number.trim(),
         description: newTowerData.description.trim()
       };
-      setAllTowers(prev => [...prev, newTower]);
-      setSelectedTower(newTower.name);
-      handleCloseCreateTowerForm();
+
+      // Include tower_number if provided
+      if (newTowerData.number && newTowerData.number.trim() !== '') {
+        const towerNumber = parseInt(newTowerData.number.trim());
+        if (!isNaN(towerNumber)) {
+          towerData.tower_number = towerNumber;
+        }
+      }
+
+      // Call the API to create the tower
+      const response = await propertiesAPI.createTower(towerData);
+
+      // Refresh the towers list
+      const towersResponse = await propertiesAPI.getTowers(projectId);
+      if (Array.isArray(towersResponse)) {
+        setAllTowers(towersResponse);
+      } else if (towersResponse && Array.isArray(towersResponse.data)) {
+        setAllTowers(towersResponse.data);
+      }
+
+      // Select the newly created tower
+      if (response && response.id) {
+        setSelectedTower(response.name || newTowerData.name.trim());
+        setSelectedTowerId(response.id);
+      } else {
+        setSelectedTower(newTowerData.name.trim());
+        setSelectedTowerId(null);
+      }
+
       alert('Tower created successfully!');
+      handleCloseCreateTowerForm();
+    } catch (error) {
+      console.error('Error creating tower:', error);
+      alert(`Failed to create tower: ${error.message || 'Unknown error'}`);
     }
   };
 
@@ -520,9 +881,28 @@ const NewProject = ({ onPageChange }) => {
       const loadBlocks = async () => {
         try {
           setBlocksLoading(true);
-          const response = await fetchBlocksByProject(selectedProject);
-          if (response.success) {
+          // Get project ID - selectedProject should be numeric ID from first step
+          const projectId = typeof selectedProject === 'number' 
+            ? selectedProject 
+            : (typeof selectedProject === 'string' && !isNaN(selectedProject) 
+              ? parseInt(selectedProject) 
+              : allProjects.find(p => p.id === selectedProject || p.name === selectedProject)?.id);
+          
+          if (projectId) {
+            // Get tower ID if tower is required and selected
+            let towerId = null;
+            if (projectStructureData && projectStructureData.project_type === 'tower' && selectedTowerId) {
+              towerId = selectedTowerId;
+            }
+            
+            const response = await propertiesAPI.getBlocks(projectId, towerId);
+            if (Array.isArray(response)) {
+              setAllBlocks(response);
+            } else if (response && Array.isArray(response.data)) {
             setAllBlocks(response.data);
+            } else {
+              setAllBlocks([]);
+            }
           }
           setBlocksLoading(false);
         } catch (error) {
@@ -532,10 +912,11 @@ const NewProject = ({ onPageChange }) => {
       };
       loadBlocks();
     }
-  }, [currentStepId, selectedProject]);
+  }, [currentStepId, selectedProject, allProjects, projectStructureData, selectedTowerId]);
 
   const handleBlockSelect = (block) => {
     setSelectedBlock(block.name);
+    setSelectedBlockId(block.id || null);
     setShowBlockDropdown(false);
   };
 
@@ -549,20 +930,71 @@ const NewProject = ({ onPageChange }) => {
     setNewBlockDescription('');
   };
 
-  const handleSubmitNewBlock = (e) => {
+  const handleSubmitNewBlock = async (e) => {
     e.preventDefault();
-    if (newBlockName.trim()) {
-      // Create new block - in real app, make API call
-      const newBlock = {
-        id: Date.now(),
+    if (!newBlockName.trim()) {
+      return;
+    }
+
+    try {
+      // Get project ID - selectedProject should be numeric ID from first step
+      const projectId = typeof selectedProject === 'number' 
+        ? selectedProject 
+        : (typeof selectedProject === 'string' && !isNaN(selectedProject) 
+          ? parseInt(selectedProject) 
+          : allProjects.find(p => p.id === selectedProject || p.name === selectedProject)?.id);
+
+      if (!projectId) {
+        alert('Please select a project first');
+        return;
+      }
+
+      // Prepare block data
+      const blockData = {
+        project: projectId,
         name: newBlockName.trim(),
         description: newBlockDescription.trim()
       };
-      setAllBlocks(prev => [...prev, newBlock]);
-      setSelectedBlock(newBlock.name);
-      handleCloseCreateBlockForm();
-      // Optionally show success message
+
+      // Only include tower field if structure requires tower step (project_type === 'tower')
+      if (projectStructureData && projectStructureData.project_type === 'tower') {
+        if (!selectedTowerId) {
+          alert('Please select a tower first');
+          return;
+        }
+        blockData.tower = selectedTowerId;
+      }
+
+      // Call the API to create the block
+      const response = await propertiesAPI.createBlock(blockData);
+
+      // Refresh the blocks list
+      let towerId = null;
+      if (projectStructureData && projectStructureData.project_type === 'tower' && selectedTowerId) {
+        towerId = selectedTowerId;
+      }
+      
+      const blocksResponse = await propertiesAPI.getBlocks(projectId, towerId);
+      if (Array.isArray(blocksResponse)) {
+        setAllBlocks(blocksResponse);
+      } else if (blocksResponse && Array.isArray(blocksResponse.data)) {
+        setAllBlocks(blocksResponse.data);
+      }
+
+      // Select the newly created block
+      if (response && response.id) {
+        setSelectedBlock(response.name || newBlockName.trim());
+        setSelectedBlockId(response.id);
+      } else {
+        setSelectedBlock(newBlockName.trim());
+        setSelectedBlockId(null);
+      }
+
       alert('Block created successfully!');
+      handleCloseCreateBlockForm();
+    } catch (error) {
+      console.error('Error creating block:', error);
+      alert(`Failed to create block: ${error.message || 'Unknown error'}`);
     }
   };
 
@@ -589,12 +1021,14 @@ const NewProject = ({ onPageChange }) => {
   const handleOpenAddTemplateForm = () => {
     setShowAddTemplateForm(true);
     setNewTemplateName('');
+    setNewTemplateDescription('');
     setNewTemplateFlats([{ flatNumber: '', type: '', area: '' }]);
   };
 
   const handleCloseAddTemplateForm = () => {
     setShowAddTemplateForm(false);
     setNewTemplateName('');
+    setNewTemplateDescription('');
     setNewTemplateFlats([{ flatNumber: '', type: '', area: '' }]);
   };
 
@@ -614,19 +1048,79 @@ const NewProject = ({ onPageChange }) => {
     ));
   };
 
-  const handleSubmitNewTemplate = (e) => {
+  const handleSubmitNewTemplate = async (e) => {
     e.preventDefault();
-    if (newTemplateName.trim() && newTemplateFlats.length > 0) {
-      const newTemplate = {
-        id: Date.now(), // Generate unique ID
+    
+    if (!selectedProject) {
+      alert('Please select a project first');
+      return;
+    }
+
+    if (!newTemplateName.trim() || newTemplateFlats.length === 0) {
+      alert('Please provide template name and at least one flat');
+      return;
+    }
+
+    try {
+      // Get project ID
+      const projectId = typeof selectedProject === 'number' 
+        ? selectedProject 
+        : (typeof selectedProject === 'string' && !isNaN(selectedProject) 
+          ? parseInt(selectedProject) 
+          : allProjects.find(p => p.id === selectedProject || p.name === selectedProject)?.id);
+
+      if (!projectId) {
+        alert('Please select a project first');
+        return;
+      }
+
+      // Filter out empty flats
+      const validFlats = newTemplateFlats.filter(flat => 
+        flat.flatNumber && flat.flatNumber.trim() !== '' && 
+        flat.type && flat.type.trim() !== ''
+      );
+
+      if (validFlats.length === 0) {
+        alert('Please provide at least one valid flat with flat number and type');
+        return;
+      }
+
+      // Format flat_items according to API format
+      const flatItems = validFlats.map(flat => ({
+        flat_number_pattern: flat.flatNumber.trim(),
+        flat_type: flat.type.trim(),
+        area_sqft: parseInt(flat.area.trim()) || 0
+      }));
+
+      // Call the API to create template
+      await propertiesAPI.createFlatTemplate({
         name: newTemplateName.trim(),
-        flats: newTemplateFlats.filter(flat => flat.flatNumber || flat.type || flat.area)
-      };
-      setFlatTemplates(prev => [...prev, newTemplate]);
+        description: newTemplateDescription.trim() || '',
+        project_id: projectId,
+        is_active: true,
+        flat_items: flatItems
+      });
+
+      // Refetch templates to get the updated list
+      const response = await propertiesAPI.getFlatTemplates(projectId);
+      const templates = Array.isArray(response) ? response : (response ? [response] : []);
+      const formattedTemplates = templates.map(template => ({
+        id: template.id,
+        name: template.name,
+        description: template.description,
+        flats: (template.flat_items || []).map(item => ({
+          flatNumber: item.flat_number_pattern || '',
+          type: item.flat_type || '',
+          area: item.area_sqft || ''
+        }))
+      }));
+      setFlatTemplates(formattedTemplates);
+
       handleCloseAddTemplateForm();
       alert('Template created successfully!');
-      // In a real app, you would also call an API to save the template
-      // await saveTemplate(newTemplate);
+    } catch (error) {
+      console.error('Error creating template:', error);
+      alert(`Failed to create template: ${error.message || 'Unknown error'}`);
     }
   };
 
@@ -678,6 +1172,64 @@ const NewProject = ({ onPageChange }) => {
             )
           }
         : floor
+    ));
+  };
+
+  // Villa handlers
+  const handleAddVilla = () => {
+    const newVilla = {
+      id: Date.now(),
+      villaNumber: '',
+      landArea: '',
+      buildUpArea: '',
+      bedrooms: '',
+      bathrooms: '',
+      villaType: '',
+      facing: '',
+      cornerUnit: false,
+      mainRoadFacing: false,
+      price: ''
+    };
+    setVillas([...villas, newVilla]);
+  };
+
+  const handleRemoveVilla = (villaId) => {
+    if (villas.length > 1) {
+      setVillas(villas.filter(villa => villa.id !== villaId));
+    }
+  };
+
+  const handleVillaChange = (villaId, field, value) => {
+    setVillas(villas.map(villa => 
+      villa.id === villaId ? { ...villa, [field]: value } : villa
+    ));
+  };
+
+  // Plot handlers
+  const handleAddPlot = () => {
+    const newPlot = {
+      id: Date.now(),
+      plotNumber: '',
+      area: '',
+      plotType: '',
+      facing: '',
+      cornerUnit: false,
+      mainRoadFacing: false,
+      pricePerSqft: '',
+      totalPrice: ''
+    };
+    setPlots([...plots, newPlot]);
+  };
+
+  const handleRemovePlot = (plotId) => {
+    if (plots.length > 1) {
+      setPlots(plots.filter(plot => plot.id !== plotId));
+    }
+  };
+
+  const handlePlotChange = (plotId, field, value) => {
+    setPlots(plots.map(plot => 
+      plot.id === plotId ? { ...plot, [field]: value } : plot
     ));
   };
 
@@ -864,7 +1416,7 @@ const NewProject = ({ onPageChange }) => {
                              >
                                <div className="font-medium text-gray-900 mb-0.5">{project.name}</div>
                               <div className="text-sm text-gray-600">
-                                {project.address || project.location || 'Address not available'}
+                                {project.builderName || project.builder || 'Builder not available'}
                               </div>
                              </button>
                            ))
@@ -963,16 +1515,27 @@ const NewProject = ({ onPageChange }) => {
                          {/* Dropdown Menu */}
                          {showStructureDropdown && (
                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                             {PROJECT_STRUCTURE_OPTIONS.map((type) => (
+                             {structureOptionsLoading ? (
+                               <div className="px-3 py-3 text-gray-500 text-center text-sm">
+                                 <div className="flex items-center justify-center gap-2">
+                                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-500"></div>
+                                   <span>Loading...</span>
+                                 </div>
+                               </div>
+                             ) : structureOptions.length === 0 ? (
+                               <div className="px-3 py-3 text-gray-500 text-center text-sm">No structure options available</div>
+                             ) : (
+                               structureOptions.filter(structure => structure.id !== 3).map((structure) => (
                                <button
-                                 key={type}
+                                   key={structure.id}
                                  type="button"
-                                 onClick={() => handleStructureSelect(type)}
+                                   onClick={() => handleStructureSelect(structure)}
                                  className="w-full px-3 py-2.5 text-left hover:bg-orange-50 transition-colors border-b border-gray-100 last:border-b-0 first:rounded-t-lg last:rounded-b-lg text-base"
                                >
-                                 <div className="font-medium text-gray-900">{type}</div>
+                                   <div className="font-medium text-gray-900">{structure.structure_type}</div>
                                </button>
-                             ))}
+                               ))
+                             )}
                            </div>
                          )}
                        </div>
@@ -1267,7 +1830,7 @@ const NewProject = ({ onPageChange }) => {
                  </>
                )}
 
-              {/* Step: Floors & Flats */}
+              {/* Step: Floors & Flats / Villas / Plots */}
               {currentStepId === 'floors' && (
                  <>
                    {/* Header Section */}
@@ -1276,14 +1839,185 @@ const NewProject = ({ onPageChange }) => {
                        className="font-bold text-gray-900 mb-1"
                        style={{ fontSize: 'clamp(1.125rem, 1.375rem, 1.625rem)' }}
                      >
-                       Floors & Flats
+                       {projectStructureData?.unit_type === 'villas' ? 'Villas' : 
+                        projectStructureData?.unit_type === 'plots' ? 'Plots' : 
+                        'Floors & Flats'}
                      </h2>
                      <p className="text-gray-500 text-sm">
-                       Please provide Floor Number and Flat Details
+                       {projectStructureData?.unit_type === 'villas' ? 'Please provide Villa Details' : 
+                        projectStructureData?.unit_type === 'plots' ? 'Please provide Plot Details' : 
+                        'Please provide Floor Number and Flat Details'}
                      </p>
                    </div>
 
-                   {/* Form Content */}
+                   {/* Form Content - Conditional based on unit_type */}
+                   <div className="space-y-6">
+                   {projectStructureData?.unit_type === 'villas' ? (
+                     /* Villas Form */
+                     <div className="space-y-6">
+                       <div className="space-y-4">
+                         {villas.map((villa, index) => (
+                           <div key={villa.id} className="border-2 border-gray-200 rounded-lg p-4 bg-gray-50">
+                             <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-300">
+                               <h3 className="font-semibold text-gray-800">Villa {index + 1}</h3>
+                               {villas.length > 1 && (
+                                 <button
+                                   type="button"
+                                   onClick={() => handleRemoveVilla(villa.id)}
+                                   className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                 >
+                                   <HiTrash className="w-5 h-5" />
+                                 </button>
+                               )}
+                             </div>
+                             <div className="grid grid-cols-2 gap-4">
+                               <div>
+                                 <label className="block font-medium text-gray-700 mb-1.5 text-sm">Villa Number <span className="text-red-500">*</span></label>
+                                 <input type="text" value={villa.villaNumber} onChange={(e) => handleVillaChange(villa.id, 'villaNumber', e.target.value)} placeholder="Villa Number" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm" />
+                               </div>
+                               <div>
+                                 <label className="block font-medium text-gray-700 mb-1.5 text-sm">Land Area (sqft) <span className="text-red-500">*</span></label>
+                                 <input type="text" value={villa.landArea} onChange={(e) => handleVillaChange(villa.id, 'landArea', e.target.value)} placeholder="Land area" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm" />
+                               </div>
+                               <div>
+                                 <label className="block font-medium text-gray-700 mb-1.5 text-sm">Build-up Area (sqft) <span className="text-red-500">*</span></label>
+                                 <input type="text" value={villa.buildUpArea} onChange={(e) => handleVillaChange(villa.id, 'buildUpArea', e.target.value)} placeholder="Build-up area" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm" />
+                               </div>
+                               <div>
+                                 <label className="block font-medium text-gray-700 mb-1.5 text-sm">Bedrooms <span className="text-red-500">*</span></label>
+                                 <input type="text" value={villa.bedrooms} onChange={(e) => handleVillaChange(villa.id, 'bedrooms', e.target.value)} placeholder="Bedrooms" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm" />
+                               </div>
+                               <div>
+                                 <label className="block font-medium text-gray-700 mb-1.5 text-sm">Bathrooms <span className="text-red-500">*</span></label>
+                                 <input type="text" value={villa.bathrooms} onChange={(e) => handleVillaChange(villa.id, 'bathrooms', e.target.value)} placeholder="Bathrooms" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm" />
+                               </div>
+                               <div>
+                                 <label className="block font-medium text-gray-700 mb-1.5 text-sm">Villa Type <span className="text-red-500">*</span></label>
+                                 <input type="text" value={villa.villaType} onChange={(e) => handleVillaChange(villa.id, 'villaType', e.target.value)} placeholder="Villa Type" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm" />
+                               </div>
+                               <div>
+                                 <label className="block font-medium text-gray-700 mb-1.5 text-sm">Facing <span className="text-red-500">*</span></label>
+                                 <select value={villa.facing} onChange={(e) => handleVillaChange(villa.id, 'facing', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm">
+                                   <option value="">Select Facing</option>
+                                   <option value="north">North</option>
+                                   <option value="south">South</option>
+                                   <option value="east">East</option>
+                                   <option value="west">West</option>
+                                   <option value="north-east">North-East</option>
+                                   <option value="north-west">North-West</option>
+                                   <option value="south-east">South-East</option>
+                                   <option value="south-west">South-West</option>
+                                 </select>
+                               </div>
+                               <div>
+                                 <label className="block font-medium text-gray-700 mb-1.5 text-sm">Price <span className="text-red-500">*</span></label>
+                                 <input type="text" value={villa.price} onChange={(e) => handleVillaChange(villa.id, 'price', e.target.value)} placeholder="Price" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm" />
+                               </div>
+                               <div className="col-span-2">
+                                 <label className="block font-medium text-gray-700 mb-2 text-sm">Options</label>
+                                 <div className="flex gap-6">
+                                   <label className="flex items-center gap-2 cursor-pointer">
+                                     <input type="radio" name={`corner-${villa.id}`} checked={villa.cornerUnit} onChange={() => handleVillaChange(villa.id, 'cornerUnit', true)} className="w-4 h-4 text-orange-500" />
+                                     <span className="text-sm text-gray-700">Corner Unit</span>
+                                   </label>
+                                   <label className="flex items-center gap-2 cursor-pointer">
+                                     <input type="radio" name={`corner-${villa.id}`} checked={!villa.cornerUnit && villa.mainRoadFacing} onChange={() => { handleVillaChange(villa.id, 'cornerUnit', false); handleVillaChange(villa.id, 'mainRoadFacing', true); }} className="w-4 h-4 text-orange-500" />
+                                     <span className="text-sm text-gray-700">Main Road Facing</span>
+                                   </label>
+                                 </div>
+                               </div>
+                             </div>
+                           </div>
+                         ))}
+                       </div>
+                       <div className="flex justify-center pt-2 border-t border-gray-200">
+                         <button type="button" onClick={handleAddVilla} className="px-4 py-2 text-sm font-medium text-orange-600 border-2 border-dashed border-orange-400 bg-orange-50/30 rounded-md hover:bg-orange-50 transition-all flex items-center gap-2">
+                           <HiPlus className="w-4 h-4" />
+                           <span>Add Another Villa</span>
+                         </button>
+                       </div>
+                     </div>
+                   ) : projectStructureData?.unit_type === 'plots' ? (
+                     /* Plots Form */
+                     <div className="space-y-6">
+                       <div className="space-y-4">
+                         {plots.map((plot, index) => (
+                           <div key={plot.id} className="border-2 border-gray-200 rounded-lg p-4 bg-gray-50">
+                             <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-300">
+                               <h3 className="font-semibold text-gray-800">Plot {index + 1}</h3>
+                               {plots.length > 1 && (
+                                 <button type="button" onClick={() => handleRemovePlot(plot.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                                   <HiTrash className="w-5 h-5" />
+                                 </button>
+                               )}
+                             </div>
+                             <div className="grid grid-cols-2 gap-4">
+                               <div>
+                                 <label className="block font-medium text-gray-700 mb-1.5 text-sm">Plot Number <span className="text-red-500">*</span></label>
+                                 <input type="text" value={plot.plotNumber} onChange={(e) => handlePlotChange(plot.id, 'plotNumber', e.target.value)} placeholder="Plot Number" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm" />
+                               </div>
+                               <div>
+                                 <label className="block font-medium text-gray-700 mb-1.5 text-sm">Area (sqft) <span className="text-red-500">*</span></label>
+                                 <input type="text" value={plot.area} onChange={(e) => handlePlotChange(plot.id, 'area', e.target.value)} placeholder="Area" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm" />
+                               </div>
+                               <div>
+                                 <label className="block font-medium text-gray-700 mb-1.5 text-sm">Plot Type <span className="text-red-500">*</span></label>
+                                 <select value={plot.plotType} onChange={(e) => handlePlotChange(plot.id, 'plotType', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm">
+                                   <option value="">Select Plot Type</option>
+                                   <option value="residential">Residential</option>
+                                   <option value="commercial">Commercial</option>
+                                   <option value="industrial">Industrial</option>
+                                   <option value="mixed_use">Mixed Use</option>
+                                 </select>
+                               </div>
+                               <div>
+                                 <label className="block font-medium text-gray-700 mb-1.5 text-sm">Facing <span className="text-red-500">*</span></label>
+                                 <select value={plot.facing} onChange={(e) => handlePlotChange(plot.id, 'facing', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm">
+                                   <option value="">Select Facing</option>
+                                   <option value="north">North</option>
+                                   <option value="south">South</option>
+                                   <option value="east">East</option>
+                                   <option value="west">West</option>
+                                   <option value="north-east">North-East</option>
+                                   <option value="north-west">North-West</option>
+                                   <option value="south-east">South-East</option>
+                                   <option value="south-west">South-West</option>
+                                 </select>
+                               </div>
+                               <div>
+                                 <label className="block font-medium text-gray-700 mb-1.5 text-sm">Price per sqft <span className="text-red-500">*</span></label>
+                                 <input type="text" value={plot.pricePerSqft} onChange={(e) => handlePlotChange(plot.id, 'pricePerSqft', e.target.value)} placeholder="Price per sqft" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm" />
+                               </div>
+                               <div>
+                                 <label className="block font-medium text-gray-700 mb-1.5 text-sm">Total Price <span className="text-red-500">*</span></label>
+                                 <input type="text" value={plot.totalPrice} onChange={(e) => handlePlotChange(plot.id, 'totalPrice', e.target.value)} placeholder="Total Price" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm" />
+                               </div>
+                               <div className="col-span-2">
+                                 <label className="block font-medium text-gray-700 mb-2 text-sm">Options</label>
+                                 <div className="flex gap-6">
+                                   <label className="flex items-center gap-2 cursor-pointer">
+                                     <input type="radio" name={`corner-${plot.id}`} checked={plot.cornerUnit} onChange={() => handlePlotChange(plot.id, 'cornerUnit', true)} className="w-4 h-4 text-orange-500" />
+                                     <span className="text-sm text-gray-700">Corner Unit</span>
+                                   </label>
+                                   <label className="flex items-center gap-2 cursor-pointer">
+                                     <input type="radio" name={`corner-${plot.id}`} checked={!plot.cornerUnit && plot.mainRoadFacing} onChange={() => { handlePlotChange(plot.id, 'cornerUnit', false); handlePlotChange(plot.id, 'mainRoadFacing', true); }} className="w-4 h-4 text-orange-500" />
+                                     <span className="text-sm text-gray-700">Main Road Facing</span>
+                                   </label>
+                                 </div>
+                               </div>
+                             </div>
+                           </div>
+                         ))}
+                       </div>
+                       <div className="flex justify-center pt-2 border-t border-gray-200">
+                         <button type="button" onClick={handleAddPlot} className="px-4 py-2 text-sm font-medium text-orange-600 border-2 border-dashed border-orange-400 bg-orange-50/30 rounded-md hover:bg-orange-50 transition-all flex items-center gap-2">
+                           <HiPlus className="w-4 h-4" />
+                           <span>Add Another Plot</span>
+                         </button>
+                       </div>
+                     </div>
+                   ) : (
+                     /* Floors & Flats Form (default) */
                    <div className="space-y-6">
                      {/* Floors Grid */}
                      <div className="space-y-4">
@@ -1482,6 +2216,8 @@ const NewProject = ({ onPageChange }) => {
                          <span>Add New Template</span>
                        </button>
                      </div>
+                   </div>
+                   )}
 
                      {/* Navigation Buttons */}
                      <div className="pt-4 flex justify-between items-center border-t border-gray-200">
@@ -1896,6 +2632,21 @@ const NewProject = ({ onPageChange }) => {
                 />
               </div>
 
+              {/* Tower Field - Only show if structure requires tower step */}
+              {projectStructureData && projectStructureData.project_type === 'tower' && (
+                <div>
+                  <label className="block font-medium text-gray-700 mb-1.5 text-sm">
+                    Tower <span className="text-red-500">*</span>
+                  </label>
+                  <div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-700">
+                    {selectedTower || 'No tower selected'}
+                  </div>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Tower is selected from the previous step
+                  </p>
+                </div>
+              )}
+
               <div>
                 <label className="block font-medium text-gray-700 mb-1.5 text-sm">
                   Description <span className="text-gray-500 text-xs">(Optional)</span>
@@ -2034,6 +2785,20 @@ const NewProject = ({ onPageChange }) => {
                   placeholder="Enter template name"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
                   required
+                />
+              </div>
+
+              {/* Template Description */}
+              <div>
+                <label className="block font-medium text-gray-700 mb-1.5 text-sm">
+                  Description
+                </label>
+                <input
+                  type="text"
+                  value={newTemplateDescription}
+                  onChange={(e) => setNewTemplateDescription(e.target.value)}
+                  placeholder="Enter template description"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
                 />
               </div>
 

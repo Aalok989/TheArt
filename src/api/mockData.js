@@ -1037,10 +1037,7 @@ const projectsData = [
     endDate: '2025-06-30',
     isActive: true,
     createdAt: '22-03-2021',
-    blocks: [
-      { id: 1, name: 'Tower 1', description: 'Premium tower with 25 floors' },
-      { id: 2, name: 'Tower 2', description: 'Luxury tower with 30 floors' }
-    ]
+    blocks: []
   },
   {
     id: 3,
@@ -1067,11 +1064,7 @@ const projectsData = [
     endDate: '2025-12-31',
     isActive: true,
     createdAt: '05-08-2021',
-    blocks: [
-      { id: 1, name: 'Tower A', description: 'Sea-facing premium apartments' },
-      { id: 2, name: 'Tower B', description: 'City-view luxury flats' },
-      { id: 3, name: 'Tower C', description: 'Garden-facing spacious units' }
-    ]
+    blocks: []
   },
   {
     id: 5,
@@ -1143,11 +1136,7 @@ const projectsData = [
     endDate: '2026-12-31',
     isActive: true,
     createdAt: '10-05-2022',
-    blocks: [
-      { id: 1, name: 'Tower 1', description: '40-floor residential tower' },
-      { id: 2, name: 'Tower 2', description: '35-floor residential tower' },
-      { id: 3, name: 'Tower 3', description: '30-floor residential tower' }
-    ]
+    blocks: []
   },
   {
     id: 10,
@@ -1460,44 +1449,24 @@ export const fetchBlocks = async () => {
   };
 };
 
-const defaultTowers = [
-  { id: 1, name: 'Tower A', number: 'T1', description: 'Primary residential tower' },
-  { id: 2, name: 'Tower B', number: 'T2', description: 'Secondary residential tower' },
-  { id: 3, name: 'Tower C', number: 'T3', description: 'Premium amenities tower' }
-];
-
 export const fetchTowersByProject = async (projectId) => {
-  const project = projectsData.find(p => p.id === projectId || p.name === projectId);
-  if (project && project.towers) {
-    return {
-      success: true,
-      data: project.towers
-    };
-  }
+  // This function is kept for backward compatibility but should use API
+  // Components should use propertiesAPI.getTowers() directly
+  // For now, return empty array - components should use API
   return {
     success: true,
-    data: defaultTowers
+    data: []
   };
 };
 
 // Fetch blocks by project ID
-export const fetchBlocksByProject = async (projectId) => {
-  // Find project by ID
-  const project = projectsData.find(p => p.id === projectId || p.name === projectId);
-  if (project && project.blocks) {
-    return {
-      success: true,
-      data: project.blocks
-    };
-  }
-  // Fallback to default blocks if project not found
+export const fetchBlocksByProject = async (projectId, towerId = null) => {
+  // This function is kept for backward compatibility but should use API
+  // Import propertiesAPI at the top of the file if needed, or use directly in components
+  // For now, return empty array - components should use propertiesAPI.getBlocks() directly
   return {
     success: true,
-    data: [
-      { id: 1, name: 'Block A' },
-      { id: 2, name: 'Block B' },
-      { id: 3, name: 'Block C' }
-    ]
+    data: []
   };
 };
 
@@ -2198,6 +2167,178 @@ export const fetchConstructionStagesInstallments = async (paymentPlan) => {
   };
 };
 
+// ==================== BUILDERS DATA ====================
+const buildersData = [
+  {
+    id: 1,
+    name: 'ABC Developers',
+    companyName: 'ABC Developers Pvt Ltd',
+    email: 'contact@abcdevelopers.com',
+    phone: '+91 9876543210',
+    alternatePhone: '+91 9876543211',
+    type: 'Company',
+    status: 'Verified',
+    totalProjects: 12,
+    joinedOn: '2023-01-15',
+    avatar: null,
+    address: {
+      street: '123 Main Street',
+      city: 'Mumbai',
+      state: 'Maharashtra',
+      country: 'India',
+      pincode: '400001'
+    },
+    website: 'https://www.abcdevelopers.com',
+    gstNumber: '27AABCU9603R1ZM',
+    defaultCommission: '5',
+    businessDescription: 'Leading real estate developer with over 20 years of experience in residential and commercial projects.',
+    documents: [
+      { id: 1, type: 'PAN', fileName: 'pan_card.pdf', status: 'Verified', uploadedOn: '2024-01-15' },
+      { id: 2, type: 'GST', fileName: 'gst_certificate.pdf', status: 'Verified', uploadedOn: '2024-01-16' },
+      { id: 3, type: 'RERA', fileName: 'rera_registration.pdf', status: 'Verified', uploadedOn: '2024-01-17' }
+    ],
+    projects: [
+      { id: 1, name: 'Green Gardens', type: 'Residential', status: 'Active', units: 120, createdOn: '2023-02-10' },
+      { id: 2, name: 'Sky Towers', type: 'Commercial', status: 'Active', units: 80, createdOn: '2023-05-20' },
+      { id: 3, name: 'Sunset Villas', type: 'Residential', status: 'Completed', units: 50, createdOn: '2022-11-15' }
+    ],
+    activityLog: [
+      { id: 1, activity: 'Builder created', performedBy: 'Admin User', timestamp: '2024-01-15 10:00 AM' },
+      { id: 2, activity: 'Email updated', performedBy: 'Admin User', timestamp: '2024-01-16 11:30 AM' },
+      { id: 3, activity: 'Document approved', performedBy: 'Admin User', timestamp: '2024-01-17 03:45 PM' },
+      { id: 4, activity: 'Status changed to Verified', performedBy: 'Admin User', timestamp: '2024-01-18 09:15 AM' }
+    ],
+    notes: [
+      { id: 1, note: 'Initial verification pending', timestamp: '2024-01-15 10:30 AM', admin: 'Admin User' },
+      { id: 2, note: 'Documents submitted', timestamp: '2024-01-16 02:15 PM', admin: 'Admin User' }
+    ]
+  },
+  {
+    id: 2,
+    name: 'John Smith',
+    companyName: 'Smith Constructions',
+    email: 'john@smithconstructions.com',
+    phone: '+91 9876543211',
+    alternatePhone: '',
+    type: 'Individual',
+    status: 'Pending',
+    totalProjects: 5,
+    joinedOn: '2024-03-20',
+    avatar: null,
+    address: {
+      street: '456 Park Avenue',
+      city: 'Delhi',
+      state: 'Delhi',
+      country: 'India',
+      pincode: '110001'
+    },
+    website: 'https://www.smithconstructions.com',
+    gstNumber: '07AASCS1234M1Z5',
+    defaultCommission: '4.5',
+    businessDescription: 'Experienced individual builder specializing in residential projects.',
+    documents: [
+      { id: 1, type: 'PAN', fileName: 'pan_card.pdf', status: 'Pending', uploadedOn: '2024-03-20' },
+      { id: 2, type: 'Identity', fileName: 'identity_proof.pdf', status: 'Pending', uploadedOn: '2024-03-20' }
+    ],
+    projects: [
+      { id: 1, name: 'Modern Homes', type: 'Residential', status: 'Active', units: 60, createdOn: '2024-03-25' }
+    ],
+    activityLog: [
+      { id: 1, activity: 'Builder created', performedBy: 'Admin User', timestamp: '2024-03-20 09:00 AM' }
+    ],
+    notes: [
+      { id: 1, note: 'Awaiting document verification', timestamp: '2024-03-20 09:15 AM', admin: 'Admin User' }
+    ]
+  },
+  {
+    id: 3,
+    name: 'XYZ Builders',
+    companyName: 'XYZ Builders Group',
+    email: 'info@xyzbuilders.com',
+    phone: '+91 9876543212',
+    alternatePhone: '+91 9876543213',
+    type: 'Developer',
+    status: 'Suspended',
+    totalProjects: 8,
+    joinedOn: '2022-11-10',
+    avatar: null,
+    address: {
+      street: '789 Business Park',
+      city: 'Bangalore',
+      state: 'Karnataka',
+      country: 'India',
+      pincode: '560001'
+    },
+    website: 'https://www.xyzbuilders.com',
+    gstNumber: '29AAECX5678K1Z2',
+    defaultCommission: '6',
+    businessDescription: 'Large scale developer with multiple ongoing projects.',
+    documents: [
+      { id: 1, type: 'PAN', fileName: 'pan_card.pdf', status: 'Verified', uploadedOn: '2022-11-10' },
+      { id: 2, type: 'GST', fileName: 'gst_certificate.pdf', status: 'Verified', uploadedOn: '2022-11-10' },
+      { id: 3, type: 'RERA', fileName: 'rera_registration.pdf', status: 'Rejected', uploadedOn: '2022-11-12' }
+    ],
+    projects: [
+      { id: 1, name: 'Luxury Heights', type: 'Residential', status: 'Active', units: 200, createdOn: '2022-12-01' }
+    ],
+    activityLog: [
+      { id: 1, activity: 'Builder created', performedBy: 'Admin User', timestamp: '2022-11-10 10:00 AM' },
+      { id: 2, activity: 'Status changed to Suspended', performedBy: 'Admin User', timestamp: '2024-01-10 02:00 PM' }
+    ],
+    notes: [
+      { id: 1, note: 'Suspended due to non-compliance', timestamp: '2024-01-10 02:00 PM', admin: 'Admin User' }
+    ]
+  }
+];
+
+export const fetchBuilders = async () => {
+  return {
+    success: true,
+    data: buildersData
+  };
+};
+
+export const fetchBuilderById = async (id) => {
+  const builder = buildersData.find(b => b.id === parseInt(id));
+  return {
+    success: !!builder,
+    data: builder || null
+  };
+};
+
+export const fetchBuilderProjects = async (builderId) => {
+  const builder = buildersData.find(b => b.id === parseInt(builderId));
+  return {
+    success: true,
+    data: builder?.projects || []
+  };
+};
+
+export const fetchBuilderDocuments = async (builderId) => {
+  const builder = buildersData.find(b => b.id === parseInt(builderId));
+  return {
+    success: true,
+    data: builder?.documents || []
+  };
+};
+
+export const fetchBuilderActivityLog = async (builderId) => {
+  const builder = buildersData.find(b => b.id === parseInt(builderId));
+  return {
+    success: true,
+    data: builder?.activityLog || []
+  };
+};
+
+export const fetchBuilderNotes = async (builderId) => {
+  const builder = buildersData.find(b => b.id === parseInt(builderId));
+  return {
+    success: true,
+    data: builder?.notes || []
+  };
+};
+
+// Add builder functions to default export
 export default {
   fetchUserProfile,
   fetchDetailedInformation,
@@ -2250,5 +2391,11 @@ export default {
   fetchLoanBanks,
   fetchConstructionStagesBlocks,
   fetchConstructionStagesInstallments,
+  fetchBuilders,
+  fetchBuilderById,
+  fetchBuilderProjects,
+  fetchBuilderDocuments,
+  fetchBuilderActivityLog,
+  fetchBuilderNotes,
 };
 
