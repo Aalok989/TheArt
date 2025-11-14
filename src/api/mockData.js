@@ -2498,6 +2498,146 @@ const builderDocumentTypes = [
   { id: 'OTHER', value: 'Other', label: 'Other Documents' }
 ];
 
+const builderAdminsSeed = [
+  {
+    id: 1,
+    builderId: 1,
+    builderCode: 'BUILDER-001',
+    fullName: 'Rajesh Kumar',
+    assignedCompany: 'ABC Developers',
+    email: 'rajesh.kumar@abcdevelopers.com',
+    phone: '+91 9876543220',
+    status: 'Active',
+    createdOn: '2024-01-15',
+    profileImage: null,
+    personal: {
+      firstName: 'Rajesh',
+      lastName: 'Kumar',
+      alternatePhone: '+91 9876543221'
+    },
+    address: {
+      street: '123 Corporate Park',
+      city: 'Mumbai',
+      state: 'Maharashtra',
+      country: 'India',
+      pincode: '400005'
+    },
+    professional: {
+      employeeId: 'EMP-00001',
+      panNumber: 'ABCDE1234F',
+      aadharNumber: '987654321012',
+      gstNumber: '27ABCDE1234F1Z5',
+      reraNumber: 'MHMRE/123456/2024',
+      dateOfAssigning: '2024-01-10',
+      notes: 'Senior builder admin for western region'
+    },
+    bank: {
+      accountName: 'Rajesh Kumar',
+      accountNumber: 'XXXX1234567890',
+      ifsc: 'HDFC0001234',
+      bankName: 'HDFC Bank',
+      branch: 'Bandra West',
+      upiId: 'rajesh.kumar@hdfcbank'
+    },
+    assignment: {
+      company: 'ABC Developers',
+      notes: 'Handles premium projects'
+    }
+  },
+  {
+    id: 2,
+    builderId: 4,
+    builderCode: 'BUILDER-002',
+    fullName: 'Amit Patel',
+    assignedCompany: 'Premier Builders & Developers Ltd',
+    email: 'amit.patel@premierbuilders.com',
+    phone: '+91 9876543218',
+    status: 'Suspended',
+    createdOn: '2023-07-05',
+    profileImage: null,
+    personal: {
+      firstName: 'Amit',
+      lastName: 'Patel',
+      alternatePhone: '+91 9876543219'
+    },
+    address: {
+      street: '45 Skyline Towers',
+      city: 'Pune',
+      state: 'Maharashtra',
+      country: 'India',
+      pincode: '411045'
+    },
+    professional: {
+      employeeId: 'EMP-00045',
+      panNumber: 'PQRSX5678L',
+      aadharNumber: '123498765432',
+      gstNumber: '27PQRSX5678L1Z2',
+      reraNumber: 'MHMRE/456789/2023',
+      dateOfAssigning: '2023-06-20',
+      notes: 'Currently suspended pending review'
+    },
+    bank: {
+      accountName: 'Amit Patel',
+      accountNumber: 'XXXX2345678901',
+      ifsc: 'ICIC0004567',
+      bankName: 'ICICI Bank',
+      branch: 'Koregaon Park',
+      upiId: 'amit.patel@icici'
+    },
+    assignment: {
+      company: 'Premier Builders & Developers Ltd',
+      notes: 'Managed luxury villas portfolio'
+    }
+  },
+  {
+    id: 3,
+    builderId: 5,
+    builderCode: 'BUILDER-003',
+    fullName: 'Suresh Reddy',
+    assignedCompany: 'Metro Constructions Pvt Ltd',
+    email: 'suresh.reddy@metconstructions.com',
+    phone: '+91 9876543222',
+    status: 'Inactive',
+    createdOn: '2024-02-12',
+    profileImage: null,
+    personal: {
+      firstName: 'Suresh',
+      lastName: 'Reddy',
+      alternatePhone: '+91 9876543223'
+    },
+    address: {
+      street: '78 Metro Plaza',
+      city: 'Hyderabad',
+      state: 'Telangana',
+      country: 'India',
+      pincode: '500032'
+    },
+    professional: {
+      employeeId: 'EMP-00057',
+      panNumber: 'LMNOP6789D',
+      aadharNumber: '564738291012',
+      gstNumber: '36LMNOP6789D1Z4',
+      reraNumber: 'TSRERA/112233/2024',
+      dateOfAssigning: '2024-02-01',
+      notes: 'On extended leave'
+    },
+    bank: {
+      accountName: 'Suresh Reddy',
+      accountNumber: 'XXXX3456789012',
+      ifsc: 'SBIN0007890',
+      bankName: 'State Bank of India',
+      branch: 'Banjara Hills',
+      upiId: 'suresh.reddy@sbi'
+    },
+    assignment: {
+      company: 'Metro Constructions Pvt Ltd',
+      notes: 'Focus on affordable housing projects'
+    }
+  }
+];
+
+let builderAdmins = [...builderAdminsSeed];
+
 export const fetchBuilders = async () => {
   return {
     success: true,
@@ -2509,6 +2649,50 @@ export const fetchBuilderDocumentTypes = async () => ({
   success: true,
   data: builderDocumentTypes
 });
+
+export const fetchBuilderAdmins = async () => ({
+  success: true,
+  data: builderAdmins
+});
+
+export const updateBuilderAdmin = async (adminId, updates) => {
+  builderAdmins = builderAdmins.map((admin) => {
+    if (admin.id !== adminId) return admin;
+
+    const merged = {
+      ...admin,
+      ...updates,
+      personal: {
+        ...admin.personal,
+        ...(updates.personal || {})
+      },
+      address: {
+        ...admin.address,
+        ...(updates.address || {})
+      },
+      professional: {
+        ...admin.professional,
+        ...(updates.professional || {})
+      },
+      bank: {
+        ...admin.bank,
+        ...(updates.bank || {})
+      },
+      assignment: {
+        ...admin.assignment,
+        ...(updates.assignment || {})
+      }
+    };
+
+    merged.fullName = `${merged.personal?.firstName || ''} ${merged.personal?.lastName || ''}`.trim() || merged.fullName;
+    merged.assignedCompany = merged.assignment?.company || merged.assignedCompany;
+
+    return merged;
+  });
+
+  const updatedAdmin = builderAdmins.find((admin) => admin.id === adminId);
+  return { success: true, data: updatedAdmin };
+};
 
 export const fetchBuilderById = async (id) => {
   const builder = buildersData.find(b => b.id === parseInt(id));

@@ -69,18 +69,6 @@ import TodayReport from "./Dashboard_Admin/TodayReport";
 import DatewiseReport from "./Dashboard_Admin/DatewiseReport";
 import Dashboard from "./Dashboard_Admin/Dashboard";
 import CommonDocs from "./Dashboard_Admin/CommonDocs";
-import FlatDocs from "./Dashboard_Admin/FlatDocs";
-import LegalDocs from "./Dashboard_Admin/LegalDocs";
-import FlatLegalDocs from "./Dashboard_Admin/FlatLegalDocs";
-import ActivityType from "./Dashboard_Admin/ActivityType";
-import ViewActivities from "./Dashboard_Admin/ViewActivities";
-import Customize from "./Dashboard_Admin/Customize";
-import ViewCustomization from "./Dashboard_Admin/ViewCustomization";
-import AddActivity from "./Dashboard_Admin/AddActivity";
-import AddSubactivity from "./Dashboard_Admin/AddSubactivity";
-import ViewActivity from "./Dashboard_Admin/ViewActivity";
-import FlatHandover from "./Dashboard_Admin/FlatHandover";
-import ViewHandover from "./Dashboard_Admin/ViewHandover";
 
 // Superadmin components
 import SADashboard from "./Dashboard_SuperAdmin/Dashboard";
@@ -141,6 +129,8 @@ import SAFlatLegalDocs from "./Dashboard_SuperAdmin/FlatLegalDocs";
 import BuildersPage from "./Dashboard_SuperAdmin/Builder_Management/BuildersPage";
 import AddBuilder from "./Dashboard_SuperAdmin/Builder_Management/AddBuilder";
 import AddUser from "./Dashboard_SuperAdmin/AddUser";
+import UserAccount from "./Dashboard_SuperAdmin/UserAccount";
+import NewBooking from "./Dashboard_SuperAdmin/NewBooking";
 import Proprite from "../assets/proprite.png";
 import Hamburger from "../assets/Hamburger.png";
 import flatDetailsIcon from "../assets/flat details.png";
@@ -535,10 +525,6 @@ const Layout = ({
     
     // Handle different quick tools
     switch (tool) {
-      case 'new-bookings':
-        // Navigate to appropriate page or open booking popup
-        alert('New Bookings feature - Coming soon!');
-        break;
       case 'new-customer':
         // Navigate to customer management or open customer popup
         alert('New Customer feature - Coming soon!');
@@ -564,6 +550,16 @@ const Layout = ({
         // Only super admins can access builder management
         if (isSuperAdmin) {
           onPageChange('builders');
+        }
+        break;
+      case 'user-account':
+        if (isSuperAdmin) {
+          onPageChange('userAccount');
+        }
+        break;
+      case 'new-booking':
+        if (isSuperAdmin) {
+          onPageChange('newBooking');
         }
         break;
       default:
@@ -1227,6 +1223,30 @@ const Layout = ({
                 key={`addUser-${animationKey}`}
                 onPageChange={onPageChange}
                 onSuccess={() => onPageChange('manageUser')}
+              />
+            </div>
+          );
+        case "userAccount":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <UserAccount key={`userAccount-${animationKey}`} />
+            </div>
+          );
+        case "newBooking":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <NewBooking
+                key={`newBooking-${animationKey}`}
+                onPageChange={onPageChange}
+                onSuccess={() => onPageChange('dashboard')}
               />
             </div>
           );
@@ -2090,26 +2110,6 @@ const Layout = ({
                     
                     {/* Tiles Grid with Scale Animation */}
                     <div className="absolute bottom-16 left-0 flex flex-col gap-2 z-50 origin-bottom-left animate-scale-in">
-                      {/* New Bookings Tile */}
-                      <button
-                        onClick={() => handleQuickToolClick('new-bookings')}
-                        className="bg-gray-100 rounded-lg shadow-xl border border-gray-300 px-4 py-2 hover:shadow-2xl transition-all duration-300 hover:scale-105 whitespace-nowrap group"
-                        style={{
-                          background: 'rgb(243, 244, 246)',
-                          borderColor: 'rgb(209, 213, 219)',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)';
-                          e.currentTarget.style.borderColor = '#FC7117';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'rgb(243, 244, 246)';
-                          e.currentTarget.style.borderColor = 'rgb(209, 213, 219)';
-                        }}
-                      >
-                        <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">New Bookings</span>
-                      </button>
-
                       {/* New Customer Tile */}
                       <button
                         onClick={() => handleQuickToolClick('new-customer')}
@@ -2211,6 +2211,50 @@ const Layout = ({
                         }}
                       >
                         <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">Builder Management</span>
+                      </button>
+                      )}
+
+                      {/* User Account Tile */}
+                      {isSuperAdmin && (
+                      <button
+                        onClick={() => handleQuickToolClick('user-account')}
+                        className="bg-gray-100 rounded-lg shadow-xl border border-gray-300 px-4 py-2 hover:shadow-2xl transition-all duration-300 hover:scale-105 whitespace-nowrap group"
+                        style={{
+                          background: 'rgb(243, 244, 246)',
+                          borderColor: 'rgb(209, 213, 219)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)';
+                          e.currentTarget.style.borderColor = '#FC7117';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgb(243, 244, 246)';
+                          e.currentTarget.style.borderColor = 'rgb(209, 213, 219)';
+                        }}
+                      >
+                        <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">User Account</span>
+                      </button>
+                      )}
+
+                      {/* New Booking Tile */}
+                      {isSuperAdmin && (
+                      <button
+                        onClick={() => handleQuickToolClick('new-booking')}
+                        className="bg-gray-100 rounded-lg shadow-xl border border-gray-300 px-4 py-2 hover:shadow-2xl transition-all duration-300 hover:scale-105 whitespace-nowrap group"
+                        style={{
+                          background: 'rgb(243, 244, 246)',
+                          borderColor: 'rgb(209, 213, 219)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)';
+                          e.currentTarget.style.borderColor = '#FC7117';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgb(243, 244, 246)';
+                          e.currentTarget.style.borderColor = 'rgb(209, 213, 219)';
+                        }}
+                      >
+                        <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">New Booking</span>
                       </button>
                       )}
                     </div>
