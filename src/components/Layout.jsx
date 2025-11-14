@@ -140,6 +140,7 @@ import SALegalDocs from "./Dashboard_SuperAdmin/LegalDocs";
 import SAFlatLegalDocs from "./Dashboard_SuperAdmin/FlatLegalDocs";
 import BuildersPage from "./Dashboard_SuperAdmin/Builder_Management/BuildersPage";
 import AddBuilder from "./Dashboard_SuperAdmin/Builder_Management/AddBuilder";
+import AddUser from "./Dashboard_SuperAdmin/AddUser";
 import Proprite from "../assets/proprite.png";
 import Hamburger from "../assets/Hamburger.png";
 import flatDetailsIcon from "../assets/flat details.png";
@@ -545,6 +546,13 @@ const Layout = ({
       case 'new-staff':
         // Navigate to staff management or open staff popup
         alert('New Staff feature - Coming soon!');
+        break;
+      case 'add-user':
+        if (isSuperAdmin) {
+          onPageChange('addUser');
+        } else {
+          alert('Access restricted. Please contact administrator.');
+        }
         break;
       case 'new-projects':
         // Only super admins can access new project creation
@@ -1188,9 +1196,7 @@ const Layout = ({
                 isAnimating ? "opacity-50" : ""
               }`}
             >
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
-                <BuildersPage key={`builders-${animationKey}`} onPageChange={onPageChange} />
-              </div>
+              <BuildersPage key={`builders-${animationKey}`} onPageChange={onPageChange} />
             </div>
           );
         case "addBuilder":
@@ -1207,6 +1213,20 @@ const Layout = ({
                   // Builder will be added to the list when navigating back
                   onPageChange('builders');
                 }}
+              />
+            </div>
+          );
+        case "addUser":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <AddUser
+                key={`addUser-${animationKey}`}
+                onPageChange={onPageChange}
+                onSuccess={() => onPageChange('manageUser')}
               />
             </div>
           );
@@ -2128,6 +2148,26 @@ const Layout = ({
                         }}
                       >
                         <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">New Staff</span>
+                      </button>
+
+                      {/* Add User Tile */}
+                      <button
+                        onClick={() => handleQuickToolClick('add-user')}
+                        className="bg-gray-100 rounded-lg shadow-xl border border-gray-300 px-4 py-2 hover:shadow-2xl transition-all duration-300 hover:scale-105 whitespace-nowrap group"
+                        style={{
+                          background: 'rgb(243, 244, 246)',
+                          borderColor: 'rgb(209, 213, 219)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)';
+                          e.currentTarget.style.borderColor = '#FC7117';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgb(243, 244, 246)';
+                          e.currentTarget.style.borderColor = 'rgb(209, 213, 219)';
+                        }}
+                      >
+                        <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">Add User</span>
                       </button>
 
                       {/* New Projects Tile */}

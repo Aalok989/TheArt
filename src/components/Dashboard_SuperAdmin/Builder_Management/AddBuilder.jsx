@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { HiPlus, HiChevronDown, HiX, HiPhotograph, HiTrash, HiCloudUpload } from 'react-icons/hi';
+import { HiX, HiPhotograph, HiTrash, HiCloudUpload } from 'react-icons/hi';
 
 const STEP_META = {
   basic: {
-    title: 'Basic Information',
-    subtitle: 'Enter builder name, company, type, and contact details.'
+    title: 'Company Information',
+    subtitle: 'Enter company name and business details.'
   },
   address: {
     title: 'Address Details',
@@ -27,11 +27,10 @@ const STEP_META = {
 const AddBuilder = ({ onPageChange, onSuccess }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    name: '',
-    companyName: '',
-    builderType: '',
-    email: '',
-    phone: '',
+    name: '', // Company name
+    companyName: '', // Legal company name (optional)
+    email: '', // Company email
+    phone: '', // Company phone
     alternatePhone: '',
     address: {
       street: '',
@@ -52,7 +51,6 @@ const AddBuilder = ({ onPageChange, onSuccess }) => {
   const [errors, setErrors] = useState({});
   const [logoPreview, setLogoPreview] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
 
   const stepSequence = ['basic', 'address', 'business', 'documents', 'review'];
   const currentStepId = stepSequence[currentStep - 1] || stepSequence[stepSequence.length - 1];
@@ -100,14 +98,13 @@ const AddBuilder = ({ onPageChange, onSuccess }) => {
     const newErrors = {};
 
     if (stepId === 'basic') {
-      if (!formData.name.trim()) newErrors.name = 'Builder name is required';
-      if (!formData.builderType) newErrors.builderType = 'Builder type is required';
+      if (!formData.name.trim()) newErrors.name = 'Company name is required';
       if (!formData.email.trim()) {
-        newErrors.email = 'Email is required';
+        newErrors.email = 'Company email is required';
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
         newErrors.email = 'Invalid email format';
       }
-      if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
+      if (!formData.phone.trim()) newErrors.phone = 'Company phone is required';
     }
 
     if (stepId === 'address') {
@@ -203,15 +200,15 @@ const AddBuilder = ({ onPageChange, onSuccess }) => {
       return;
     }
 
-    // Create builder object
+    // Create builder object (company)
     const newBuilder = {
       id: Date.now(),
-      name: formData.name,
-      companyName: formData.companyName,
-      email: formData.email,
-      phone: formData.phone,
+      name: formData.name, // Company name
+      companyName: formData.companyName, // Legal company name
+      email: formData.email, // Company email
+      phone: formData.phone, // Company phone
       alternatePhone: formData.alternatePhone,
-      type: formData.builderType,
+      type: 'Company', // Builders are always companies
       status: 'Pending',
       totalProjects: 0,
       joinedOn: new Date().toISOString().split('T')[0],
@@ -240,8 +237,8 @@ const AddBuilder = ({ onPageChange, onSuccess }) => {
       {/* Left Side - Step Bar */}
       <div className="w-full lg:w-[30%] min-w-0 flex flex-col max-h-[50%] lg:max-h-none overflow-hidden">
         <div className="flex-shrink-0" style={{ padding: 'clamp(1rem, 1.5rem, 2rem)', paddingBottom: 'clamp(0.75rem, 1rem, 1.5rem)' }}>
-          <h2 className="font-bold text-gray-800 break-words" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)', marginBottom: 'clamp(0.5rem, 0.75rem, 1rem)' }}>Add Builder</h2>
-          <p className="text-gray-600 break-words" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>Follow the steps to add a new builder</p>
+          <h2 className="font-bold text-gray-800 break-words" style={{ fontSize: 'clamp(1rem, 1.25rem, 1.5rem)', marginBottom: 'clamp(0.5rem, 0.75rem, 1rem)' }}>Add Builder Company</h2>
+          <p className="text-gray-600 break-words" style={{ fontSize: 'clamp(0.75rem, 0.875rem, 1rem)' }}>Follow the steps to add a new builder company</p>
         </div>
         <div className="flex-1 overflow-auto min-h-0" style={{ paddingLeft: 'clamp(1rem, 1.5rem, 2rem)', paddingRight: 'clamp(1rem, 1.5rem, 2rem)', paddingBottom: 'clamp(1rem, 1.5rem, 2rem)' }}>
           <div className="bg-gradient-to-b from-gray-50 to-gray-100 rounded-xl flex flex-col shadow-inner w-full min-h-full overflow-hidden" style={{ padding: 'clamp(2rem, 2.5rem, 3rem)' }}>
@@ -359,17 +356,17 @@ const AddBuilder = ({ onPageChange, onSuccess }) => {
                   <>
                     <div className="mb-6 pb-4 border-b border-gray-200">
                       <h2 className="font-bold text-gray-900 mb-1" style={{ fontSize: 'clamp(1.125rem, 1.375rem, 1.625rem)' }}>
-                        Basic Information
+                        Company Information
                       </h2>
                       <p className="text-gray-500 text-sm">
-                        Enter builder name, company, type, and contact details
+                        Enter company name and contact details
                       </p>
                     </div>
 
                     <div className="space-y-5">
                       <div>
                         <label className="block font-medium text-gray-700 mb-2 text-base">
-                          Builder Name <span className="text-red-500">*</span>
+                          Company Name <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
@@ -378,14 +375,14 @@ const AddBuilder = ({ onPageChange, onSuccess }) => {
                           className={`w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base ${
                             errors.name ? 'border-red-500' : 'border-gray-300'
                           }`}
-                          placeholder="Enter builder name"
+                          placeholder="e.g., The Art"
                         />
                         {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                       </div>
 
                       <div>
                         <label className="block font-medium text-gray-700 mb-2 text-base">
-                          Company Name
+                          Legal Company Name (Optional)
                         </label>
                         <input
                           type="text"
@@ -396,52 +393,10 @@ const AddBuilder = ({ onPageChange, onSuccess }) => {
                         />
                       </div>
 
-                      <div>
-                        <label className="block font-medium text-gray-700 mb-2 text-base">
-                          Builder Type <span className="text-red-500">*</span>
-                        </label>
-                        <div className="relative">
-                          <button
-                            type="button"
-                            onClick={() => setShowTypeDropdown(!showTypeDropdown)}
-                            className={`w-full px-3 py-2.5 bg-white border rounded-lg text-left flex items-center justify-between transition-all hover:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base ${
-                              errors.builderType ? 'border-red-500' : 'border-gray-300'
-                            }`}
-                          >
-                            <span className={formData.builderType ? 'text-gray-900' : 'text-gray-400'}>
-                              {formData.builderType || 'Select Builder Type'}
-                            </span>
-                            <HiChevronDown
-                              className={`text-gray-400 transition-all ${
-                                showTypeDropdown ? 'transform rotate-180 text-orange-500' : ''
-                              }`}
-                              style={{ fontSize: '1.25rem' }}
-                            />
-                          </button>
-                          {showTypeDropdown && (
-                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                              {['Company', 'Individual', 'Developer'].map((type) => (
-                                <button
-                                  key={type}
-                                  type="button"
-                                  onClick={() => {
-                                    handleInputChange('builderType', type);
-                                    setShowTypeDropdown(false);
-                                  }}
-                                  className="w-full px-3 py-2.5 text-left hover:bg-orange-50 transition-colors border-b border-gray-100 last:border-b-0 first:rounded-t-lg last:rounded-b-lg text-base"
-                                >
-                                  <div className="font-medium text-gray-900">{type}</div>
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        {errors.builderType && <p className="text-red-500 text-xs mt-1">{errors.builderType}</p>}
-                      </div>
 
                       <div>
                         <label className="block font-medium text-gray-700 mb-2 text-base">
-                          Email <span className="text-red-500">*</span>
+                          Company Email <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="email"
@@ -450,14 +405,14 @@ const AddBuilder = ({ onPageChange, onSuccess }) => {
                           className={`w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base ${
                             errors.email ? 'border-red-500' : 'border-gray-300'
                           }`}
-                          placeholder="builder@example.com"
+                          placeholder="company@example.com"
                         />
                         {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                       </div>
 
                       <div>
                         <label className="block font-medium text-gray-700 mb-2 text-base">
-                          Phone <span className="text-red-500">*</span>
+                          Company Phone <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="tel"
@@ -851,7 +806,6 @@ const AddBuilder = ({ onPageChange, onSuccess }) => {
                         <div className="space-y-2 text-sm">
                           <div><span className="font-medium">Name:</span> {formData.name || 'N/A'}</div>
                           <div><span className="font-medium">Company:</span> {formData.companyName || 'N/A'}</div>
-                          <div><span className="font-medium">Type:</span> {formData.builderType || 'N/A'}</div>
                           <div><span className="font-medium">Email:</span> {formData.email || 'N/A'}</div>
                           <div><span className="font-medium">Phone:</span> {formData.phone || 'N/A'}</div>
                           {formData.alternatePhone && (
@@ -921,13 +875,6 @@ const AddBuilder = ({ onPageChange, onSuccess }) => {
         </div>
       </div>
 
-      {/* Click outside to close dropdowns */}
-      {showTypeDropdown && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setShowTypeDropdown(false)}
-        />
-      )}
     </div>
   );
 };

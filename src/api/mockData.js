@@ -2190,6 +2190,19 @@ const buildersData = [
     },
     website: 'https://www.abcdevelopers.com',
     gstNumber: '27AABCU9603R1ZM',
+    reraNumber: 'MHMRE/123456/2023',
+    companyOwner: {
+      name: 'Priya Mehta',
+      email: 'priya.mehta@abcdevelopers.com',
+      phone: '+91 9876543200',
+      alternatePhone: '+91 9876543201'
+    },
+    builderAdmin: {
+      name: 'Rajesh Kumar',
+      email: 'rajesh.kumar@abcdevelopers.com',
+      phone: '+91 9876543220',
+      alternatePhone: '+91 9876543221'
+    },
     defaultCommission: '5',
     businessDescription: 'Leading real estate developer with over 20 years of experience in residential and commercial projects.',
     documents: [
@@ -2215,12 +2228,12 @@ const buildersData = [
   },
   {
     id: 2,
-    name: 'John Smith',
-    companyName: 'Smith Constructions',
+    name: 'Smith Constructions',
+    companyName: 'Smith Constructions Pvt Ltd',
     email: 'john@smithconstructions.com',
     phone: '+91 9876543211',
-    alternatePhone: '',
-    type: 'Individual',
+    alternatePhone: '+91 9876543212',
+    type: 'Company',
     status: 'Pending',
     totalProjects: 5,
     joinedOn: '2024-03-20',
@@ -2234,11 +2247,25 @@ const buildersData = [
     },
     website: 'https://www.smithconstructions.com',
     gstNumber: '07AASCS1234M1Z5',
+    reraNumber: 'DLRERA/789012/2024',
+    companyOwner: {
+      name: 'Michael Smith',
+      email: 'michael.smith@smithconstructions.com',
+      phone: '+91 9876543205',
+      alternatePhone: '+91 9876543206'
+    },
+    builderAdmin: {
+      name: 'John Smith',
+      email: 'john.smith@smithconstructions.com',
+      phone: '+91 9876543213',
+      alternatePhone: '+91 9876543214'
+    },
     defaultCommission: '4.5',
     businessDescription: 'Experienced individual builder specializing in residential projects.',
     documents: [
       { id: 1, type: 'PAN', fileName: 'pan_card.pdf', status: 'Pending', uploadedOn: '2024-03-20' },
-      { id: 2, type: 'Identity', fileName: 'identity_proof.pdf', status: 'Pending', uploadedOn: '2024-03-20' }
+      { id: 2, type: 'Identity', fileName: 'identity_proof.pdf', status: 'Pending', uploadedOn: '2024-03-20' },
+      { id: 3, type: 'RERA', fileName: 'rera_registration.pdf', status: 'Pending', uploadedOn: '2024-03-21' }
     ],
     projects: [
       { id: 1, name: 'Modern Homes', type: 'Residential', status: 'Active', units: 60, createdOn: '2024-03-25' }
@@ -2257,7 +2284,7 @@ const buildersData = [
     email: 'info@xyzbuilders.com',
     phone: '+91 9876543212',
     alternatePhone: '+91 9876543213',
-    type: 'Developer',
+    type: 'Company',
     status: 'Suspended',
     totalProjects: 8,
     joinedOn: '2022-11-10',
@@ -2271,6 +2298,19 @@ const buildersData = [
     },
     website: 'https://www.xyzbuilders.com',
     gstNumber: '29AAECX5678K1Z2',
+    reraNumber: 'KARERA/345678/2022',
+    companyOwner: {
+      name: 'Anita Desai',
+      email: 'anita.desai@xyzbuilders.com',
+      phone: '+91 9876543207',
+      alternatePhone: '+91 9876543208'
+    },
+    builderAdmin: {
+      name: 'Vikram Sharma',
+      email: 'vikram.sharma@xyzbuilders.com',
+      phone: '+91 9876543214',
+      alternatePhone: '+91 9876543215'
+    },
     defaultCommission: '6',
     businessDescription: 'Large scale developer with multiple ongoing projects.',
     documents: [
@@ -2287,6 +2327,164 @@ const buildersData = [
     ],
     notes: [
       { id: 1, note: 'Suspended due to non-compliance', timestamp: '2024-01-10 02:00 PM', admin: 'Admin User' }
+    ]
+  },
+  {
+    id: 4,
+    name: 'Premier Builders',
+    companyName: 'Premier Builders & Developers Ltd',
+    email: 'info@premierbuilders.com',
+    phone: '+91 9876543216',
+    alternatePhone: '+91 9876543217',
+    type: 'Company',
+    status: 'Verified',
+    totalProjects: 15,
+    joinedOn: '2023-06-10',
+    avatar: null,
+    address: {
+      street: '321 Corporate Tower',
+      city: 'Pune',
+      state: 'Maharashtra',
+      country: 'India',
+      pincode: '411001'
+    },
+    website: 'https://www.premierbuilders.com',
+    gstNumber: '27AAPBU9876R1Z3',
+    reraNumber: 'MHMRE/456789/2023',
+    companyOwner: {
+      name: 'Rohit Khanna',
+      email: 'rohit.khanna@premierbuilders.com',
+      phone: '+91 9876543230',
+      alternatePhone: '+91 9876543231'
+    },
+    builderAdmin: {
+      name: 'Amit Patel',
+      email: 'amit.patel@premierbuilders.com',
+      phone: '+91 9876543218',
+      alternatePhone: '+91 9876543219'
+    },
+    defaultCommission: '5.5',
+    businessDescription: 'Premium real estate developer focusing on luxury residential projects.',
+    documents: [
+      { id: 1, type: 'PAN', fileName: 'pan_card.pdf', status: 'Verified', uploadedOn: '2023-06-10' },
+      { id: 2, type: 'GST', fileName: 'gst_certificate.pdf', status: 'Verified', uploadedOn: '2023-06-11' },
+      { id: 3, type: 'RERA', fileName: 'rera_registration.pdf', status: 'Verified', uploadedOn: '2023-06-12' }
+    ],
+    projects: [
+      { id: 1, name: 'Elite Residences', type: 'Residential', status: 'Active', units: 150, createdOn: '2023-07-01' },
+      { id: 2, name: 'Royal Gardens', type: 'Residential', status: 'Active', units: 90, createdOn: '2023-08-15' }
+    ],
+    activityLog: [
+      { id: 1, activity: 'Builder created', performedBy: 'Admin User', timestamp: '2023-06-10 11:00 AM' },
+      { id: 2, activity: 'Status changed to Verified', performedBy: 'Admin User', timestamp: '2023-06-15 02:30 PM' }
+    ],
+    notes: [
+      { id: 1, note: 'Premium builder with excellent track record', timestamp: '2023-06-10 11:15 AM', admin: 'Admin User' }
+    ]
+  },
+  {
+    id: 5,
+    name: 'Metro Constructions',
+    companyName: 'Metro Constructions Pvt Ltd',
+    email: 'contact@metconstructions.com',
+    phone: '+91 9876543220',
+    alternatePhone: '+91 9876543221',
+    type: 'Company',
+    status: 'Pending',
+    totalProjects: 7,
+    joinedOn: '2024-01-05',
+    avatar: null,
+    address: {
+      street: '654 Metro Plaza',
+      city: 'Hyderabad',
+      state: 'Telangana',
+      country: 'India',
+      pincode: '500001'
+    },
+    website: 'https://www.metconstructions.com',
+    gstNumber: '36AAMTC2345M1Z4',
+    reraNumber: 'TSRERA/112233/2024',
+    companyOwner: {
+      name: 'Sunita Rao',
+      email: 'sunita.rao@metconstructions.com',
+      phone: '+91 9876543232',
+      alternatePhone: '+91 9876543233'
+    },
+    builderAdmin: {
+      name: 'Suresh Reddy',
+      email: 'suresh.reddy@metconstructions.com',
+      phone: '+91 9876543222',
+      alternatePhone: '+91 9876543223'
+    },
+    defaultCommission: '4.8',
+    businessDescription: 'Growing construction company specializing in affordable housing.',
+    documents: [
+      { id: 1, type: 'PAN', fileName: 'pan_card.pdf', status: 'Pending', uploadedOn: '2024-01-05' },
+      { id: 2, type: 'GST', fileName: 'gst_certificate.pdf', status: 'Pending', uploadedOn: '2024-01-06' },
+      { id: 3, type: 'RERA', fileName: 'rera_registration.pdf', status: 'Pending', uploadedOn: '2024-01-07' }
+    ],
+    projects: [
+      { id: 1, name: 'Affordable Homes', type: 'Residential', status: 'Active', units: 100, createdOn: '2024-01-10' }
+    ],
+    activityLog: [
+      { id: 1, activity: 'Builder created', performedBy: 'Admin User', timestamp: '2024-01-05 09:30 AM' }
+    ],
+    notes: [
+      { id: 1, note: 'Awaiting document verification', timestamp: '2024-01-05 09:45 AM', admin: 'Admin User' }
+    ]
+  },
+  {
+    id: 6,
+    name: 'Golden Properties',
+    companyName: 'Golden Properties Developers',
+    email: 'info@goldenproperties.com',
+    phone: '+91 9876543224',
+    alternatePhone: '+91 9876543225',
+    type: 'Company',
+    status: 'Verified',
+    totalProjects: 20,
+    joinedOn: '2022-05-15',
+    avatar: null,
+    address: {
+      street: '987 Golden Tower',
+      city: 'Chennai',
+      state: 'Tamil Nadu',
+      country: 'India',
+      pincode: '600001'
+    },
+    website: 'https://www.goldenproperties.com',
+    gstNumber: '33AAGPD5678M1Z5',
+    reraNumber: 'TNRERA/998877/2022',
+    companyOwner: {
+      name: 'Deepak Nair',
+      email: 'deepak.nair@goldenproperties.com',
+      phone: '+91 9876543234',
+      alternatePhone: '+91 9876543235'
+    },
+    builderAdmin: {
+      name: 'Karthik Iyer',
+      email: 'karthik.iyer@goldenproperties.com',
+      phone: '+91 9876543226',
+      alternatePhone: '+91 9876543227'
+    },
+    defaultCommission: '6.5',
+    businessDescription: 'Established developer with strong presence in South India.',
+    documents: [
+      { id: 1, type: 'PAN', fileName: 'pan_card.pdf', status: 'Verified', uploadedOn: '2022-05-15' },
+      { id: 2, type: 'GST', fileName: 'gst_certificate.pdf', status: 'Verified', uploadedOn: '2022-05-16' },
+      { id: 3, type: 'RERA', fileName: 'rera_registration.pdf', status: 'Verified', uploadedOn: '2022-05-17' }
+    ],
+    projects: [
+      { id: 1, name: 'Golden Heights', type: 'Residential', status: 'Active', units: 180, createdOn: '2022-06-01' },
+      { id: 2, name: 'Platinum Towers', type: 'Commercial', status: 'Active', units: 120, createdOn: '2022-08-10' },
+      { id: 3, name: 'Diamond Residency', type: 'Residential', status: 'Completed', units: 95, createdOn: '2021-12-05' }
+    ],
+    activityLog: [
+      { id: 1, activity: 'Builder created', performedBy: 'Admin User', timestamp: '2022-05-15 10:00 AM' },
+      { id: 2, activity: 'Status changed to Verified', performedBy: 'Admin User', timestamp: '2022-05-20 03:00 PM' }
+    ],
+    notes: [
+      { id: 1, note: 'Established builder with good reputation', timestamp: '2022-05-15 10:15 AM', admin: 'Admin User' }
     ]
   }
 ];
