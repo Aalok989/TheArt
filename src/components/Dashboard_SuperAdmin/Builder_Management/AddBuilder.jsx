@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { HiX, HiPhotograph, HiTrash, HiCloudUpload } from 'react-icons/hi';
+import { fetchBuilderDocumentTypes } from '../../../api/mockData';
 
 const STEP_META = {
   basic: {
@@ -51,6 +52,25 @@ const AddBuilder = ({ onPageChange, onSuccess }) => {
   const [errors, setErrors] = useState({});
   const [logoPreview, setLogoPreview] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [documentTypes, setDocumentTypes] = useState([]);
+  const [documentTypesLoading, setDocumentTypesLoading] = useState(false);
+  useEffect(() => {
+    const loadDocumentTypes = async () => {
+      setDocumentTypesLoading(true);
+      try {
+        const response = await fetchBuilderDocumentTypes();
+        if (response.success) {
+          setDocumentTypes(response.data);
+        }
+      } catch (error) {
+        console.error('Error loading document types:', error);
+      } finally {
+        setDocumentTypesLoading(false);
+      }
+    };
+
+    loadDocumentTypes();
+  }, []);
 
   const stepSequence = ['basic', 'address', 'business', 'documents', 'review'];
   const currentStepId = stepSequence[currentStep - 1] || stepSequence[stepSequence.length - 1];
@@ -744,14 +764,17 @@ const AddBuilder = ({ onPageChange, onSuccess }) => {
                                   <select
                                     value={doc.type}
                                     onChange={(e) => handleDocumentTypeChange(doc.id, e.target.value)}
-                                    className="mt-1 text-xs px-2 py-1 border border-gray-300 rounded"
+                                    disabled={documentTypesLoading || documentTypes.length === 0}
+                                    className="mt-1 text-xs px-2 py-1 border border-gray-300 rounded disabled:bg-gray-100"
                                   >
-                                    <option value="">Select document type</option>
-                                    <option value="PAN">PAN</option>
-                                    <option value="GST">GST</option>
-                                    <option value="RERA">RERA</option>
-                                    <option value="Identity">Identity Proof</option>
-                                    <option value="Registration">Company Registration</option>
+                                    <option value="">
+                                      {documentTypesLoading ? 'Loading types...' : 'Select document type'}
+                                    </option>
+                                    {documentTypes.map((type) => (
+                                      <option key={type.id} value={type.value}>
+                                        {type.label}
+                                      </option>
+                                    ))}
                                   </select>
                                 </div>
                                 <button

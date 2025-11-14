@@ -1,5 +1,6 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { HiX, HiPhotograph, HiTrash, HiCloudUpload } from 'react-icons/hi';
+import { fetchBuilders } from '../../api/mockData';
 
 const STEP_META = {
   personal: {
@@ -27,14 +28,6 @@ const STEP_META = {
     subtitle: 'Upload signature sample and important documents.'
   }
 };
-
-const AVAILABLE_COMPANIES = [
-  'The Art Estates',
-  'ABC Developers',
-  'Metro Constructions',
-  'Golden Properties',
-  'Premier Builders'
-];
 
 const AddUser = ({ onPageChange, onSuccess }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -81,6 +74,39 @@ const AddUser = ({ onPageChange, onSuccess }) => {
   const [profilePreview, setProfilePreview] = useState(null);
   const [uploadedDocuments, setUploadedDocuments] = useState([]);
   const profileInputRef = useRef(null);
+  const [companyOptions, setCompanyOptions] = useState([]);
+  const [companiesLoading, setCompaniesLoading] = useState(false);
+  const [companiesError, setCompaniesError] = useState(null);
+  useEffect(() => {
+    const loadCompanies = async () => {
+      setCompaniesLoading(true);
+      setCompaniesError(null);
+      try {
+        const response = await fetchBuilders();
+        if (response.success) {
+          const uniqueCompanies = response.data
+            .map(builder => ({
+              id: builder.id,
+              label: builder.name || builder.companyName || builder.email || `Builder ${builder.id}`
+            }))
+            .filter(
+              (company, index, array) =>
+                array.findIndex(item => item.label === company.label) === index
+            );
+          setCompanyOptions(uniqueCompanies);
+        } else {
+          setCompaniesError('Unable to load companies');
+        }
+      } catch (error) {
+        console.error('Error loading companies:', error);
+        setCompaniesError('Unable to load companies');
+      } finally {
+        setCompaniesLoading(false);
+      }
+    };
+
+    loadCompanies();
+  }, []);
 
   const stepSequence = ['personal', 'address', 'professional', 'bank', 'assignment', 'documents'];
   const currentStepId = stepSequence[currentStep - 1] || stepSequence[stepSequence.length - 1];
@@ -982,14 +1008,26 @@ const AddUser = ({ onPageChange, onSuccess }) => {
                             errors['assignment.company'] ? 'border-red-500' : 'border-gray-300'
                           }`}
                         >
-                          <option value="">Choose company</option>
-                          {AVAILABLE_COMPANIES.map(company => (
-                            <option key={company} value={company}>
-                              {company}
+                          <option value="">
+                            {companiesLoading ? 'Loading companies...' : 'Choose company'}
+                          </option>
+                          {companyOptions.map(company => (
+                            <option key={company.id} value={company.label}>
+                              {company.label}
                             </option>
                           ))}
                         </select>
-                        {errors['assignment.company'] && <p className="text-red-500 text-xs mt-1">{errors['assignment.company']}</p>}
+                        {companiesError && (
+                          <p className="text-red-500 text-xs mt-1">{companiesError}</p>
+                        )}
+                        {!companiesLoading && companyOptions.length === 0 && !companiesError && (
+                          <p className="text-gray-500 text-xs mt-1">
+                            No companies available. Please add a builder first.
+                          </p>
+                        )}
+                        {errors['assignment.company'] && (
+                          <p className="text-red-500 text-xs mt-1">{errors['assignment.company']}</p>
+                        )}
                       </div>
 
                       <div>

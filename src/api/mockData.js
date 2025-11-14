@@ -2489,12 +2489,26 @@ const buildersData = [
   }
 ];
 
+const builderDocumentTypes = [
+  { id: 'PAN', value: 'PAN', label: 'PAN Card' },
+  { id: 'GST', value: 'GST', label: 'GST Certificate' },
+  { id: 'RERA', value: 'RERA', label: 'RERA Registration' },
+  { id: 'IDENTITY', value: 'Identity', label: 'Identity Proof' },
+  { id: 'REGISTRATION', value: 'Registration', label: 'Company Registration' },
+  { id: 'OTHER', value: 'Other', label: 'Other Documents' }
+];
+
 export const fetchBuilders = async () => {
   return {
     success: true,
     data: buildersData
   };
 };
+
+export const fetchBuilderDocumentTypes = async () => ({
+  success: true,
+  data: builderDocumentTypes
+});
 
 export const fetchBuilderById = async (id) => {
   const builder = buildersData.find(b => b.id === parseInt(id));
@@ -2595,5 +2609,6 @@ export default {
   fetchBuilderDocuments,
   fetchBuilderActivityLog,
   fetchBuilderNotes,
+  fetchBuilderDocumentTypes,
 };
 
