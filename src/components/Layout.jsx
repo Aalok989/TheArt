@@ -129,6 +129,10 @@ import SAFlatLegalDocs from "./Dashboard_SuperAdmin/FlatLegalDocs";
 import BuildersPage from "./Dashboard_SuperAdmin/Builder_Management/BuildersPage";
 import AddBuilder from "./Dashboard_SuperAdmin/Builder_Management/AddBuilder";
 import AddUser from "./Dashboard_SuperAdmin/AddUser";
+import AddBank from "./Dashboard_SuperAdmin/AddBank";
+import AddPaymentPlan from "./Dashboard_SuperAdmin/AddPaymentPlan";
+import AddStaff from "./Dashboard_SuperAdmin/AddStaff";
+import AddChannelPartner from "./Dashboard_SuperAdmin/AddChannelPartner";
 import UserAccount from "./Dashboard_SuperAdmin/UserAccount";
 import NewBooking from "./Dashboard_SuperAdmin/NewBooking";
 import Proprite from "../assets/proprite.png";
@@ -530,12 +534,29 @@ const Layout = ({
         alert('New Customer feature - Coming soon!');
         break;
       case 'new-staff':
-        // Navigate to staff management or open staff popup
-        alert('New Staff feature - Coming soon!');
+        if (isSuperAdmin) {
+          onPageChange('addStaff');
+        } else {
+          alert('Access restricted. Please contact administrator.');
+        }
         break;
       case 'add-user':
         if (isSuperAdmin) {
           onPageChange('addUser');
+        } else {
+          alert('Access restricted. Please contact administrator.');
+        }
+        break;
+      case 'add-bank':
+        if (isSuperAdmin) {
+          onPageChange('addBank');
+        } else {
+          alert('Access restricted. Please contact administrator.');
+        }
+        break;
+      case 'add-payment-plan':
+        if (isSuperAdmin) {
+          onPageChange('addPaymentPlan');
         } else {
           alert('Access restricted. Please contact administrator.');
         }
@@ -560,6 +581,13 @@ const Layout = ({
       case 'new-booking':
         if (isSuperAdmin) {
           onPageChange('newBooking');
+        }
+        break;
+      case 'add-channel-partner':
+        if (isSuperAdmin) {
+          onPageChange('addChannelPartner');
+        } else {
+          alert('Access restricted. Please contact administrator.');
         }
         break;
       default:
@@ -1226,6 +1254,48 @@ const Layout = ({
               />
             </div>
           );
+        case "addBank":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <AddBank
+                key={`addBank-${animationKey}`}
+                onPageChange={onPageChange}
+                onSuccess={() => onPageChange('manageBank')}
+              />
+            </div>
+          );
+        case "addPaymentPlan":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <AddPaymentPlan
+                key={`addPaymentPlan-${animationKey}`}
+                onPageChange={onPageChange}
+                onSuccess={() => onPageChange('manageBank')}
+              />
+            </div>
+          );
+        case "addChannelPartner":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <AddChannelPartner
+                key={`addChannelPartner-${animationKey}`}
+                onPageChange={onPageChange}
+                onSuccess={() => onPageChange('manageChannelPartner')}
+              />
+            </div>
+          );
         case "userAccount":
           return (
             <div
@@ -1247,6 +1317,20 @@ const Layout = ({
                 key={`newBooking-${animationKey}`}
                 onPageChange={onPageChange}
                 onSuccess={() => onPageChange('dashboard')}
+              />
+            </div>
+          );
+        case "addStaff":
+          return (
+            <div
+              className={`page-container h-full flex flex-col ${
+                isAnimating ? "opacity-50" : ""
+              }`}
+            >
+              <AddStaff
+                key={`addStaff-${animationKey}`}
+                onPageChange={onPageChange}
+                onSuccess={() => onPageChange('manageUser')}
               />
             </div>
           );
@@ -2147,7 +2231,7 @@ const Layout = ({
                           e.currentTarget.style.borderColor = 'rgb(209, 213, 219)';
                         }}
                       >
-                        <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">New Staff</span>
+                        <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">Add Staff</span>
                       </button>
 
                       {/* Add User Tile */}
@@ -2169,6 +2253,72 @@ const Layout = ({
                       >
                         <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">Add User</span>
                       </button>
+
+                      {/* Add Bank Tile */}
+                      {isSuperAdmin && (
+                      <button
+                        onClick={() => handleQuickToolClick('add-bank')}
+                        className="bg-gray-100 rounded-lg shadow-xl border border-gray-300 px-4 py-2 hover:shadow-2xl transition-all duration-300 hover:scale-105 whitespace-nowrap group"
+                        style={{
+                          background: 'rgb(243, 244, 246)',
+                          borderColor: 'rgb(209, 213, 219)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)';
+                          e.currentTarget.style.borderColor = '#FC7117';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgb(243, 244, 246)';
+                          e.currentTarget.style.borderColor = 'rgb(209, 213, 219)';
+                        }}
+                      >
+                        <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">Add Bank</span>
+                      </button>
+                      )}
+
+                      {/* Add Payment Plan Tile */}
+                      {isSuperAdmin && (
+                      <button
+                        onClick={() => handleQuickToolClick('add-payment-plan')}
+                        className="bg-gray-100 rounded-lg shadow-xl border border-gray-300 px-4 py-2 hover:shadow-2xl transition-all duration-300 hover:scale-105 whitespace-nowrap group"
+                        style={{
+                          background: 'rgb(243, 244, 246)',
+                          borderColor: 'rgb(209, 213, 219)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)';
+                          e.currentTarget.style.borderColor = '#FC7117';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgb(243, 244, 246)';
+                          e.currentTarget.style.borderColor = 'rgb(209, 213, 219)';
+                        }}
+                      >
+                        <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">Add Payment Plan</span>
+                      </button>
+                      )}
+
+                      {/* Add Channel Partner Tile */}
+                      {isSuperAdmin && (
+                      <button
+                        onClick={() => handleQuickToolClick('add-channel-partner')}
+                        className="bg-gray-100 rounded-lg shadow-xl border border-gray-300 px-4 py-2 hover:shadow-2xl transition-all duration-300 hover:scale-105 whitespace-nowrap group"
+                        style={{
+                          background: 'rgb(243, 244, 246)',
+                          borderColor: 'rgb(209, 213, 219)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(0deg, #FC7117 0%, #FF8C42 100%)';
+                          e.currentTarget.style.borderColor = '#FC7117';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgb(243, 244, 246)';
+                          e.currentTarget.style.borderColor = 'rgb(209, 213, 219)';
+                        }}
+                      >
+                        <span className="text-sm font-semibold text-gray-700 font-montserrat group-hover:text-white transition-colors duration-300">Add Channel Partner</span>
+                      </button>
+                      )}
 
                       {/* New Projects Tile */}
                       {isSuperAdmin && (

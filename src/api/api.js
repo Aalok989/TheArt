@@ -423,6 +423,16 @@ export const propertiesAPI = {
   }
 };
 
+export const projectHierarchyAPI = {
+  async getProjectDetails(projectId) {
+    return api.get(`/properties/projects/?project_id=${projectId}`);
+  },
+
+  async getProjectHierarchy(projectId) {
+    return api.get(`/properties/projects/hierarchy/?project_id=${projectId}`);
+  }
+};
+
 // Builders API methods
 export const buildersAPI = {
   async createBuilder(builderData) {
@@ -436,6 +446,183 @@ export const buildersAPI = {
 
   async getBuilders() {
     return api.get('/tenants/builders/');
+  }
+};
+
+export const billingAPI = {
+  async getBanks(projectId) {
+    const endpoint = projectId ? `/billing/banks/?project_id=${projectId}` : '/billing/banks/';
+    return api.get(endpoint);
+  },
+
+  async createBank(projectId, bankData) {
+    const endpoint = projectId ? `/billing/banks/?project_id=${projectId}` : '/billing/banks/';
+    const payload = {
+      name: bankData.name || '',
+      branch: bankData.branch || '',
+      ifsc_code: (bankData.ifscCode || '').toUpperCase(),
+      pincode: bankData.pincode || '',
+      address: bankData.address || '',
+      email: bankData.email || '',
+      is_active: bankData.isActive !== undefined ? bankData.isActive : true
+    };
+
+    return api.post(endpoint, payload);
+  },
+
+  async createPaymentPlan(projectId, planData) {
+    const endpoint = projectId ? `/billing/payment-plans/?project_id=${projectId}` : '/billing/payment-plans/';
+    const payload = {
+      name: planData.name || '',
+      description: planData.description || '',
+      duration_months: planData.durationMonths ? parseInt(planData.durationMonths, 10) : null,
+      interest_rate: planData.interestRate || '',
+      plan_type: planData.planType || '',
+      down_payment_percentage: planData.downPaymentPercentage || '',
+      booking_amount_percentage: planData.bookingAmountPercentage || '',
+      bank_id: planData.bankId ? Number(planData.bankId) : null,
+      is_active: planData.isActive !== undefined ? planData.isActive : true
+    };
+
+    return api.post(endpoint, payload);
+  },
+
+  async getPaymentPlans(projectId) {
+    const endpoint = `/billing/payment-plans/?project_id=${projectId}`;
+    return api.get(endpoint);
+  },
+
+  async createBooking(bookingData) {
+    const endpoint = `/billing/bookings/`;
+    return api.post(endpoint, bookingData);
+  }
+};
+
+export const accountsAPI = {
+  async createChannelPartner(projectId, partnerData) {
+    const payload = {
+      project_id: projectId,
+      dealer_id: partnerData.dealer_id || partnerData.dealerId || '',
+      username: partnerData.username || '',
+      email: partnerData.email || '',
+      password: partnerData.password || '',
+      first_name: partnerData.first_name || partnerData.firstName || '',
+      last_name: partnerData.last_name || partnerData.lastName || '',
+      phone_number: partnerData.phone_number || partnerData.phoneNumber || '',
+      user_address: partnerData.user_address || partnerData.userAddress || '',
+      father_or_husband_name: partnerData.father_or_husband_name || partnerData.fatherOrHusbandName || '',
+      dob: partnerData.dob || '',
+      phone_no_2: partnerData.phone_no_2 || partnerData.phoneNo2 || '',
+      address: partnerData.address || '',
+      is_active: partnerData.is_active !== undefined ? partnerData.is_active : partnerData.isActive !== undefined ? partnerData.isActive : true
+    };
+
+    return api.post('/accounts/channel-partners/', payload);
+  },
+
+  async createStaff(projectId, staffData) {
+    const endpoint = '/accounts/staff/';
+    const payload = {
+      project_id: projectId,
+      username: staffData.username || '',
+      email: staffData.email || '',
+      password: staffData.password || '',
+      first_name: staffData.firstName || '',
+      last_name: staffData.lastName || '',
+      phone_number: staffData.phoneNumber || '',
+      address: staffData.address || '',
+      role: staffData.role || '',
+      department: staffData.department || '',
+      employee_id: staffData.employeeId || '',
+      joining_date: staffData.joiningDate || '',
+      salary: staffData.salary || '',
+      status: staffData.status || 'ACTIVE',
+      is_active: staffData.isActive !== undefined ? staffData.isActive : true,
+      can_view_customers: !!staffData.canViewCustomers,
+      can_edit_customers: !!staffData.canEditCustomers,
+      can_view_financials: !!staffData.canViewFinancials,
+      can_edit_financials: !!staffData.canEditFinancials,
+      can_view_reports: !!staffData.canViewReports,
+      can_manage_properties: !!staffData.canManageProperties
+    };
+
+    return api.post(endpoint, payload);
+  },
+
+  getCustomers: async (projectId) => {
+    const endpoint = `/accounts/customers/?project_id=${projectId}`;
+    return api.get(endpoint);
+  },
+
+  createCustomer: async (projectId, customerData) => {
+    const endpoint = `/accounts/customers/?project_id=${projectId}`;
+    const payload = {
+      project_id: projectId,
+      username: customerData.username,
+      email: customerData.email,
+      password: customerData.password,
+      first_name: customerData.firstName,
+      last_name: customerData.lastName,
+      phone_number: customerData.phoneNumber,
+      address: customerData.address,
+      kyc_id: customerData.kycId || '',
+      kyc_verified: !!customerData.kycVerified,
+      status: customerData.status || 'ACTIVE',
+      father_name: customerData.fatherName,
+      date_of_birth: customerData.dateOfBirth,
+      pan_number: customerData.panNumber,
+      occupation: customerData.occupation || '',
+      company_name: customerData.companyName || '',
+      annual_income: customerData.annualIncome || '0.00',
+      emergency_contact_name: customerData.emergencyContactName || '',
+      emergency_contact_phone: customerData.emergencyContactPhone || '',
+      emergency_contact_relation: customerData.emergencyContactRelation || ''
+    };
+    return api.post(endpoint, payload);
+  },
+
+  createCoApplicant: async (projectId, customerId, coApplicantData) => {
+    const endpoint = `/accounts/co-applicants/`;
+    const payload = {
+      project_id: parseInt(projectId),
+      customer_id: parseInt(customerId),
+      name: coApplicantData.name.trim(),
+      father_name: coApplicantData.fatherName.trim(),
+      date_of_birth: coApplicantData.dateOfBirth,
+      gender: coApplicantData.gender,
+      email: coApplicantData.email.trim(),
+      phone_number: coApplicantData.phoneNumber.trim(),
+      address: coApplicantData.address.trim(),
+      pan_number: coApplicantData.panNumber.trim().substring(0, 10), // Limit to 10 characters
+      occupation: coApplicantData.occupation.trim() || '',
+      annual_income: coApplicantData.annualIncome && coApplicantData.annualIncome !== '' ? `${coApplicantData.annualIncome}.00` : '0.00',
+      relationship: coApplicantData.relationship
+    };
+    
+    return api.post(endpoint, payload);
+  },
+
+  createNominee: async (projectId, customerId, nomineeData) => {
+    const endpoint = `/accounts/nominees/`;
+    const payload = {
+      project_id: parseInt(projectId),
+      customer_id: parseInt(customerId),
+      name: nomineeData.name.trim(),
+      father_husband_name: nomineeData.fatherHusbandName.trim(),
+      email: nomineeData.email.trim(),
+      date_of_birth: nomineeData.dateOfBirth,
+      phone_number: nomineeData.phoneNumber.trim(),
+      address: nomineeData.address.trim(),
+      pan_number: nomineeData.panNumber.trim(),
+      relationship: nomineeData.relationship
+    };
+    
+    return api.post(endpoint, payload);
+  },
+
+  getChannelPartners: async (projectId) => {
+    const endpoint = `/accounts/channel-partners/?project_id=${projectId}`;
+    return api.get(endpoint);
   }
 };
 
